@@ -1,12 +1,16 @@
 const express = require("express");
 const movieRoutes = require("./routes/movies");
+const rentedMoviesRoutes = require("./routes/rentedMovies");
+const usersRoutes = require("./routes/users");
 const expressWinston = require("express-winston");
 const { transports, format } = require("winston");
-const db = require("./utils/database");
+const postgresdb = require("./config/postgres");
 require("dotenv").config();
 
 // Test DB
-db.authenticate().then(() => console.log("Database connected successfully")).catch(err => console.log("Error: " + err));
+postgresdb.authenticate()
+  .then(() => console.log("Database connected successfully"))
+  .catch((err) => console.log("Error: " + err));
 
 const app = express();
 
@@ -22,7 +26,10 @@ app.use(
   })
 );
 
-app.use("/movies", movieRoutes);
+app
+  .use("/movies", movieRoutes)
+  .use("/rentedMovies", rentedMoviesRoutes)
+  .use("/users", usersRoutes);
 
 try {
   app.listen(process.env.PORT || 5000, () =>

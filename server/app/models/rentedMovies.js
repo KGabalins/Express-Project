@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/postgres");
 
-const Movie = db.define("movie", {
+const RentedMovie = db.define("rentedmovie", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -10,22 +10,25 @@ const Movie = db.define("movie", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
   },
   genre: {
     type: DataTypes.STRING,
+    allowNull: false,
+  },
+  time: {
+    type: DataTypes.NUMBER,
     allowNull: false,
   },
   price: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  stock: {
-    type: DataTypes.INTEGER,
+  renter: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
 });
 
 module.exports = {
-  Movie,
+  RentedMovie,
 };

@@ -1,8 +1,12 @@
+const { RentedMovie } = require("../models/rentedMovies");
 const { Movie } = require("../models/movies");
 
-// Get all movies
-const getMovies = (req, res) => {
-  Movie.findAll()
+const getMoviesByEmail = (req, res) => {
+  RentedMovie.findAll({
+    where: {
+      renter: req.params.email,
+    },
+  })
     .then((movies) => {
       if (!movies.length) {
         return res.status(404).json({ message: "No movies found" });
@@ -16,12 +20,15 @@ const getMovies = (req, res) => {
     });
 };
 
-const getMovieByName = (req, res) => {
-  Movie.findOne({ where: { name: req.params.name } })
+const getMovieById = (req, res) => {
+  RentedMovie.findOne({
+    where: {
+      id: req.params.id,
+    },
+  })
     .then((movie) => {
-      console.log(movie);
       if (!movie) {
-        return res.status(404).json({ message: "Movie not found" });
+        return res.status(404).json({ message: "No movie found" });
       } else {
         return res.status(200).json(movie);
       }
@@ -33,45 +40,34 @@ const getMovieByName = (req, res) => {
 };
 
 const addMovie = (req, res) => {
-  Movie.findOne({ where: { name: req.body.name || "" } })
+  RentedMovie.create(req.body)
     .then((movie) => {
-      if (movie) {
-        return res.status(400).json({ message: "Movie already exists" });
-      } else {
-        Movie.create(req.body)
-          .then((movie) => {
-            return res.status(201).json(movie);
-          })
-          .catch((err) => {
-            // console.log(err);
-            return res.sendStatus(422);
-          });
-      }
+      res.status(201).json(movie);
     })
     .catch((err) => {
       // console.log(err);
-      return res.sendStatus(500);
+      res.sendStatus(422);
     });
 };
 
 const updateMovie = (req, res) => {
   const key = Object.keys(req.body)[0];
 
-  if (key !== "stock") {
+  if (key !== "time") {
     return res.sendStatus(422);
   }
 
-  Movie.findOne({ where: { name: req.params.name } })
+  RentedMovie.findOne({ where: { id: req.params.id } })
     .then((movie) => {
       if (!movie) {
-        return res.status(404).json({ message: "Movie not found" });
+        return res.status(404).json({ message: "No movie found" });
       } else {
-        Movie.update(
-          { stock: req.body.stock },
-          { where: { name: req.params.name } }
+        RentedMovie.update(
+          { time: req.body.time },
+          { where: { id: req.params.id } }
         )
           .then(() => {
-            return res.status(200).json({ message: "Movie stock updated!" });
+            return res.status(200).json({ message: "Movie time updated" });
           })
           .catch((err) => {
             // console.log(err);
@@ -86,14 +82,14 @@ const updateMovie = (req, res) => {
 };
 
 const deleteMovie = (req, res) => {
-  Movie.findOne({ where: { name: req.params.name } })
+  RentedMovie.findOne({ where: { id: req.params.id } })
     .then((movie) => {
       if (!movie) {
-        return res.status(404).json({ message: "Movie not found" });
+        return res.status(404).json({ message: "No movie found" });
       } else {
-        Movie.destroy({ where: { name: req.params.name } })
+        RentedMovie.destroy({ where: { id: req.params.id } })
           .then(() => {
-            return res.status(200).json({ message: "Movie deleted!" });
+            return res.status(200).json({ message: "Movie deleted" });
           })
           .catch((err) => {
             // console.log(err);
@@ -108,8 +104,8 @@ const deleteMovie = (req, res) => {
 };
 
 module.exports = {
-  getMovies,
-  getMovieByName,
+  getMoviesByEmail,
+  getMovieById,
   addMovie,
   updateMovie,
   deleteMovie,

@@ -11,6 +11,7 @@ describe("Movies API", () => {
         expect(response.body).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
+              id: expect.any(Number),
               name: expect.any(String),
               genre: expect.any(String),
               price: expect.any(String),
@@ -29,6 +30,7 @@ describe("Movies API", () => {
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
+            id: expect.any(Number),
             name: expect.any(String),
             genre: expect.any(String),
             price: expect.any(String),
@@ -67,39 +69,61 @@ describe("Movies API", () => {
       });
   });
 
+  it("POST /movies ---> validate name", () => {
+    return supertest(app)
+      .post("/movies")
+      .send({
+        name: "Jaws",
+        genre: "Action",
+        price: "4.99$",
+        stock: 2,
+      })
+      .expect(400);
+  });
+
   it("POST /movies ---> validate request body", () => {
     return supertest(app)
       .post("/movies")
       .send({
-        name: "Testing",
         genre: "Testing",
       })
       .expect(422);
   });
 
   it("PUT /movies/:name ---> update movie stock by name", () => {
-    return supertest(app).put("/movies/Jaws").send({
-      stock: 10,
-    }).expect(200);
+    return supertest(app)
+      .put("/movies/Jaws")
+      .send({
+        stock: 10,
+      })
+      .expect(200);
   });
 
   it("PUT /movies/:name ---> validate request body", () => {
-    return supertest(app).put("/movies/Jaws").send({
-      name: 10,
-    }).expect(422);
+    return supertest(app)
+      .put("/movies/Jaws")
+      .send({
+        name: "five",
+      })
+      .expect(422);
   });
 
   it("PUT /movies/:name ---> validate movie name", () => {
-    return supertest(app).put("/movies/ThisMovieProbablyDoesntExist").send({
-      stock: 10,
-    }).expect(404);
+    return supertest(app)
+      .put("/movies/ThisMovieProbablyDoesntExist")
+      .send({
+        stock: 10,
+      })
+      .expect(404);
   });
 
-  it("DELETE /movies/:name ---> delete a movie by name", () => {
+  it("DELETE /movies/:name ---> delete movie by name", () => {
     return supertest(app).delete("/movies/Die Hard").expect(200);
   });
 
   it("DELETE /movies/:name ---> validate movie name", () => {
-    return supertest(app).delete("/movies/ThisMovieProbablyDoesntExist").expect(404);
+    return supertest(app)
+      .delete("/movies/ThisMovieProbablyDoesntExist")
+      .expect(404);
   });
 });
