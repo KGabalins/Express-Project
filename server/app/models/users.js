@@ -15,6 +15,7 @@ const userSchema = new dynamoose.Schema({
   surname: {
     type: String,
     required: false,
+    default: "",
   },
   password: {
     type: String,
@@ -22,4 +23,23 @@ const userSchema = new dynamoose.Schema({
   },
 });
 
-module.exports = dynamoose.model("users", userSchema)
+const User = dynamoose.model("users", userSchema)
+
+const userPermSchema = new dynamoose.Schema({
+  email: {
+    type: String,
+    hashKey: true,
+    required: true,
+  },
+  role: {
+    type: String,
+    required: true,
+  },
+});
+
+const UserPerm = dynamoose.model("permissions", userPermSchema)
+
+module.exports = {
+  User,
+  UserPerm
+}

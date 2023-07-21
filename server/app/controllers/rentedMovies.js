@@ -1,106 +1,153 @@
 const { RentedMovie } = require("../models/rentedMovies");
 const { Movie } = require("../models/movies");
+const moviesController = require("../controllers/movies");
 
-const getMoviesByEmail = (req, res) => {
-  RentedMovie.findAll({
-    where: {
-      renter: req.params.email,
-    },
-  })
-    .then((movies) => {
-      if (!movies.length) {
-        return res.status(404).json({ message: "No movies found" });
-      } else {
-        return res.status(200).json(movies);
+const getMoviesByEmail = async (req, res) => {
+  try {
+    // Get rented movies by email
+    const movies = await RentedMovie.findAll({
+      where: { email: req.params.email },
+    });
+    // Validate user or check if user is admin
+    if (req.params.email !== req.user.email && req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to view these" });
+      // Check if there are any rented movies
+    } else if (!movies.length) {
+      return res.status(404).json({ message: "No movies found" });
+    }
+    return res.status(200).json(movies);
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+const getMovieById = async (req, res) => {
+  try {
+    // Get rented movie by id
+    const rentedMovie = await RentedMovie.findOne({
+      where: { id: req.params.id },
+    });
+    // Check if rented movie exists and validate user or check if user is admin
+    if (!rentedMovie) {
+      return res.status(404).json({ message: "No movie found" });
+    } else if (
+      rentedMovie.renter !== req.user.email &&
+      req.user.role !== "admin"
+    ) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to view this" });
+    }
+    return res.status(200).json(rentedMovie);
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+const addMovie = async (req, res) => {
+  try {
+    // Check if movie exists and if stock is available
+    const movie = await Movie.findOne({ where: { name: req.params.name } });
+    if (!movie) {
+      return res.status(404).json({ message: "No movie found" });
+    } else if (movie.stock <= 0) {
+      return res.status(422).json({ message: "Movie is out of stock" });
+    }
+    try {
+      // Update movie stock
+      await Movie.update(
+        { stock: movie.stock - 1 },
+        { where: { name: movie.name } }
+      );
+      try {
+        // Create rented movie
+        const rentedMovie = await RentedMovie.create({
+          name: movie.name,
+          genre: movie.genre,
+          price: movie.price,
+          renter: req.user.email,
+        });
+        return res.status(201).json(rentedMovie);
+      } catch (error) {
+        return res.status(500).send({ message: error.message });
       }
-    })
-    .catch((err) => {
-      // console.log(err);
-      return res.sendStatus(500);
-    });
+    } catch (error) {
+      return res.status(500).send({ message: error.message });
+    }
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
 };
 
-const getMovieById = (req, res) => {
-  RentedMovie.findOne({
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then((movie) => {
-      if (!movie) {
-        return res.status(404).json({ message: "No movie found" });
-      } else {
-        return res.status(200).json(movie);
-      }
-    })
-    .catch((err) => {
-      // console.log(err);
-      return res.sendStatus(500);
-    });
-};
-
-const addMovie = (req, res) => {
-  RentedMovie.create(req.body)
-    .then((movie) => {
-      res.status(201).json(movie);
-    })
-    .catch((err) => {
-      // console.log(err);
-      res.sendStatus(422);
-    });
-};
-
-const updateMovie = (req, res) => {
-  const key = Object.keys(req.body)[0];
-
-  if (key !== "time") {
-    return res.sendStatus(422);
+const updateMovie = async (req, res) => {
+  // Validate request parameters
+  if (!req.body.time || !Number.isInteger(req.body.time)) {
+    return res.status(422).json({ message: "No valid time in request!" });
   }
 
-  RentedMovie.findOne({ where: { id: req.params.id } })
-    .then((movie) => {
-      if (!movie) {
-        return res.status(404).json({ message: "No movie found" });
-      } else {
-        RentedMovie.update(
-          { time: req.body.time },
-          { where: { id: req.params.id } }
-        )
-          .then(() => {
-            return res.status(200).json({ message: "Movie time updated" });
-          })
-          .catch((err) => {
-            // console.log(err);
-            return res.sendStatus(422);
-          });
-      }
-    })
-    .catch((err) => {
-      // console.log(err);
-      return res.sendStatus(500);
+  try {
+    // Check if rented movie exists
+    const rentedMovie = await RentedMovie.findOne({
+      where: { id: req.params.id },
     });
+    if (!rentedMovie) {
+      return res.status(404).json({ message: "No movie found" });
+    }
+    try {
+      // Update rented movie time
+      await RentedMovie.update(
+        { time: req.body.time },
+        { where: { id: req.params.id } }
+      );
+      return res.status(200).json({ message: "Movie time updated" });
+    } catch (error) {
+      return res.status(500).send({ message: error.message });
+    }
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
 };
 
-const deleteMovie = (req, res) => {
-  RentedMovie.findOne({ where: { id: req.params.id } })
-    .then((movie) => {
-      if (!movie) {
-        return res.status(404).json({ message: "No movie found" });
-      } else {
-        RentedMovie.destroy({ where: { id: req.params.id } })
-          .then(() => {
-            return res.status(200).json({ message: "Movie deleted" });
-          })
-          .catch((err) => {
-            // console.log(err);
-            return res.sendStatus(400);
-          });
-      }
-    })
-    .catch((err) => {
-      // console.log(err);
-      return res.sendStatus(500);
+const deleteMovie = async (req, res) => {
+  try {
+    // Check if rented movie exists
+    const rentedMovie = await RentedMovie.findOne({
+      where: { id: req.params.id },
     });
+    if (!rentedMovie) {
+      return res.status(404).json({ message: "No movie found" });
+    } else if (rentedMovie.renter !== req.user.email && req.user.role) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    try {
+      // Delete rented movie
+      await RentedMovie.destroy({ where: { id: req.params.id } });
+      try {
+        // Get movie by rented movie name
+        const movie = await Movie.findOne({
+          where: { name: rentedMovie.name },
+        });
+        try {
+          // Update movie stock
+          await Movie.update(
+            { stock: movie.stock + 1 },
+            { where: { name: movie.name } }
+          );
+          return res.status(200).json({ message: "Movie deleted" });
+        } catch (error) {
+          return res.status(500).send({ message: error.message });
+        }
+      } catch (error) {
+        return res.status(500).send({ message: error.message });
+      }
+    } catch (error) {
+      return res.status(500).send({ message: error.message });
+    }
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
 };
 
 module.exports = {

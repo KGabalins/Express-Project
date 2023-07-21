@@ -18,6 +18,7 @@ const RentedMovie = db.define("rentedmovie", {
   time: {
     type: DataTypes.NUMBER,
     allowNull: false,
+    defaultValue: 12,
   },
   price: {
     type: DataTypes.STRING,

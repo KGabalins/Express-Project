@@ -5,12 +5,13 @@ const { requireAuth, authRole } = require("../middleware/authentication");
 
 router
   .get("/", requireAuth, controller.getMyUser)
-  .get("/:email", requireAuth, authRole("admin"), controller.getUser)
-  .get("/perm/:email", controller.getPerm)
+  .get("/:email", requireAuth, controller.getUser)
+  .get("/perm/:email", requireAuth, controller.getPerm)
   .post("/", controller.addUser)
   .post("/login", controller.loginUser)
-  .post("/:email", controller.updateUserEmail)
-  .put("/:email", controller.updateUserPassword)
-  .delete("/:email", controller.deleteUser);
+  .put("/perm/:email", requireAuth, controller.updateUserPerm)
+  .put("/", requireAuth, controller.updateUserEmail)
+  .put("/:email", requireAuth, controller.updateUserPassword)
+  .delete("/:email", requireAuth, controller.deleteUser);
 
 module.exports = router;

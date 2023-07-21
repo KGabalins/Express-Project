@@ -1,110 +1,105 @@
 const { Movie } = require("../models/movies");
 
 // Get all movies
-const getMovies = (req, res) => {
-  Movie.findAll()
-    .then((movies) => {
-      if (!movies.length) {
-        return res.status(404).json({ message: "No movies found" });
-      } else {
-        return res.status(200).json(movies);
-      }
-    })
-    .catch((err) => {
-      // console.log(err);
-      return res.sendStatus(500);
-    });
+const getMovies = async (req, res) => {
+  try {
+    // Get all movies from db
+    const movies = await Movie.findAll();
+    if (!movies.length) {
+      return res.status(404).json({ message: "No movies found" });
+    }
+    return res.status(200).json(movies);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
 
-const getMovieByName = (req, res) => {
-  Movie.findOne({ where: { name: req.params.name } })
-    .then((movie) => {
-      console.log(movie);
-      if (!movie) {
-        return res.status(404).json({ message: "Movie not found" });
-      } else {
-        return res.status(200).json(movie);
-      }
-    })
-    .catch((err) => {
-      // console.log(err);
-      return res.sendStatus(500);
-    });
+const getMovieByName = async (req, res) => {
+  try {
+    // Check if movie exists
+    const movie = await Movie.findOne({ where: { name: req.params.name } });
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+    return res.status(200).json(movie);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
 
-const addMovie = (req, res) => {
-  Movie.findOne({ where: { name: req.body.name || "" } })
-    .then((movie) => {
-      if (movie) {
-        return res.status(400).json({ message: "Movie already exists" });
-      } else {
-        Movie.create(req.body)
-          .then((movie) => {
-            return res.status(201).json(movie);
-          })
-          .catch((err) => {
-            // console.log(err);
-            return res.sendStatus(422);
-          });
-      }
-    })
-    .catch((err) => {
-      // console.log(err);
-      return res.sendStatus(500);
-    });
-};
-
-const updateMovie = (req, res) => {
-  const key = Object.keys(req.body)[0];
-
-  if (key !== "stock") {
-    return res.sendStatus(422);
+const addMovie = async (req, res) => {
+  // Validate request parameters
+  if (
+    !req.body.name ||
+    !req.body.genre ||
+    !req.body.price ||
+    !req.body.stock ||
+    !Number.isInteger(req.body.stock)
+  ) {
+    return res.status(422).json({ message: "All fields are required" });
   }
 
-  Movie.findOne({ where: { name: req.params.name } })
-    .then((movie) => {
-      if (!movie) {
-        return res.status(404).json({ message: "Movie not found" });
-      } else {
-        Movie.update(
-          { stock: req.body.stock },
-          { where: { name: req.params.name } }
-        )
-          .then(() => {
-            return res.status(200).json({ message: "Movie stock updated!" });
-          })
-          .catch((err) => {
-            // console.log(err);
-            return res.sendStatus(422);
-          });
-      }
-    })
-    .catch((err) => {
-      // console.log(err);
-      return res.sendStatus(500);
-    });
+  try {
+    // Check if movie already exists
+    const movieExists = await Movie.findOne({ where: { name: req.body.name } });
+    if (movieExists) {
+      return res.status(400).json({ message: "Movie already exists" });
+    }
+    try {
+      // Create new movie
+      const movie = await Movie.create(req.body);
+      return res.status(201).json(movie);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
 
-const deleteMovie = (req, res) => {
-  Movie.findOne({ where: { name: req.params.name } })
-    .then((movie) => {
-      if (!movie) {
-        return res.status(404).json({ message: "Movie not found" });
-      } else {
-        Movie.destroy({ where: { name: req.params.name } })
-          .then(() => {
-            return res.status(200).json({ message: "Movie deleted!" });
-          })
-          .catch((err) => {
-            // console.log(err);
-            return res.sendStatus(400);
-          });
-      }
-    })
-    .catch((err) => {
-      // console.log(err);
-      return res.sendStatus(500);
-    });
+const updateMovie = async (req, res) => {
+  // Validate request parameters
+  if (!req.body.stock || !Number.isInteger(req.body.stock)) {
+    return res.status(422).json({ message: "Invalid request parameters!" });
+  }
+  try {
+    // Check if movie exists
+    const movie = await Movie.findOne({ where: { name: req.params.name } });
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+    try {
+      // Update movie stock
+      await Movie.update(
+        { stock: req.body.stock },
+        { where: { name: req.params.name } }
+      );
+      return res.status(200).json({ message: "Stock updated" });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteMovie = async (req, res) => {
+  try {
+    // Check if movie exists
+    const movie = await Movie.findOne({ where: { name: req.params.name } });
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+    try {
+      // Delete movie
+      await Movie.destroy({ where: { name: req.params.name } });
+      return res.status(200).json({ message: "Movie deleted" });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 module.exports = {
