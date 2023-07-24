@@ -1,14 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/movies");
-const { requireAuth, authRole } = require("../middleware/authentication");
+const { requireUser } = require("../middleware/requireUser");
+const { requireAdmin } = require("../middleware/requireAdmin");
 
 // CRUD routes
 router
-  .get("/", requireAuth, controller.getMovies)
-  .get("/:name", requireAuth, controller.getMovieByName)
-  .post("/", requireAuth, authRole("admin"), controller.addMovie)
-  .put("/:name", requireAuth, controller.updateMovie)
-  .delete("/:name", requireAuth, authRole("admin"), controller.deleteMovie);
+  .get("/", controller.getMovies)
+  .get("/:name", requireUser, controller.getMovieByName)
+  .post("/", requireUser, requireAdmin, controller.addMovie)
+  .put("/:name", requireUser, controller.updateMovie)
+  .delete("/:name", requireUser, requireAdmin, controller.deleteMovie);
 
 module.exports = router;

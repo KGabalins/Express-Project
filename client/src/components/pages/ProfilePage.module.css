@@ -1,0 +1,46 @@
+.main {
+  background-color: #FFFFFF;
+  text-align: center;
+  padding: 20px 20px;
+  margin-top: 30px;
+  border-radius: 20px;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 180px 500px;
+  row-gap: 25px;
+  column-gap: 25px;
+  padding: 0px 100px;
+  margin-bottom: 50px;
+}
+
+.picture {
+  width: 100%;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  row-gap: 10px;
+}
+
+.button {
+  background-color: #363636;
+  color: #FFFFFF;
+  border: none;
+  font-size: 15px;
+  width: 140px;
+  height: 25px;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.emailButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}

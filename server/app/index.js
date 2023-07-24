@@ -5,16 +5,24 @@ const usersRoutes = require("./routes/users");
 const expressWinston = require("express-winston");
 const { transports, format } = require("winston");
 const postgresdb = require("./config/postgres");
+const cookieParser = require("cookie-parser");
+const { deserializeUser } = require("./middleware/deserializeUser");
 require("dotenv").config();
 
 // Test DB
-postgresdb.authenticate()
+postgresdb
+  .authenticate()
   .then(() => console.log("Database connected successfully"))
   .catch((err) => console.log("Error: " + err));
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }));
+
+app.use(deserializeUser);
+
 app.use(
   expressWinston.logger({
     transports: [new transports.Console()],

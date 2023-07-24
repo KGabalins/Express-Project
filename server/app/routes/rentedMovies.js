@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/rentedMovies");
-const { requireAuth } = require("../middleware/authentication");
+const { requireUser } = require("../middleware/requireUser");
 
 // CRUD routes
 router
-  .get("/:email", requireAuth, controller.getMoviesByEmail)
-  .get("/id/:id", requireAuth, controller.getMovieById)
-  .post("/:name", requireAuth, controller.addMovie)
-  .put("/id/:id", requireAuth, controller.updateMovie)
-  .delete("/id/:id", requireAuth, controller.deleteMovie);
+  .get("/:email", requireUser, controller.getMoviesByEmail)
+  .get("/id/:id", requireUser, controller.getMovieById)
+  .post("/:name", requireUser, controller.addMovie)
+  .put("/id/:id", requireUser, controller.updateMovie)
+  .delete("/id/:id", requireUser, controller.deleteMovie);
 
 module.exports = router;

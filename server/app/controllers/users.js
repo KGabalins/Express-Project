@@ -1,11 +1,14 @@
 const { User, UserPerm } = require("../models/users");
 const { Movie } = require("../models/movies");
 const { RentedMovie } = require("../models/rentedMovies");
+const { Session } = require("../models/sessions");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { signJWT } = require("../utils/jwt.utils");
 require("dotenv").config();
 
 const getMyUser = (req, res) => {
+  console.log(req.user);
   return res.status(200).json(req.user);
 };
 
@@ -73,47 +76,107 @@ const addUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  // Validate body data
-  if (req.body.email === undefined || req.body.password === undefined) {
-    return res.sendStatus(422);
-  }
+  const { email, password } = req.body;
+
   try {
-    // Check if user exists
-    const user = await User.get(req.body.email);
+    const user = await User.get(email);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    // Check if password is correct
-    const passwordCheck = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
-    if (!passwordCheck) {
-      return res.status(401).json({ message: "Invalid password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
     try {
-      // Get user role
-      console.log(user);
-      const userPerm = await UserPerm.get(user.email);
-      console.log(userPerm);
-      // Create token
-      const token = jwt.sign(
-        {
+      const userPerm = await UserPerm.get(email);
+
+      try {
+        const session = await Session.create({
           email: user.email,
-          password: user.password,
           name: user.name,
           surname: user.surname,
           role: userPerm.role,
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        {
-          expiresIn: 600,
-        }
-      );
-      return res.status(200).json({ user, userPerm, token });
+        });
+
+        // Create access token
+        const accessToken = signJWT(
+          {
+            sessionId: session.sessionId,
+            email: user.email,
+            name: user.name,
+            surname: user.surname,
+            role: userPerm.role,
+          },
+          "5s"
+        );
+        // Create refresh token
+        const refreshToken = signJWT({ sessionId: session.sessionId }, "1y");
+
+        // Set access token in cookie
+        res.cookie("accessToken", accessToken, {
+          maxAge: 60000, // 1 minutes
+          httpOnly: true,
+        });
+
+        // Set refresh token cookie
+        res.cookie("refreshToken", refreshToken, {
+          maxAge: 3.154e10, //1 Year
+          httpOnly: true,
+        });
+
+        // Send user back
+        return res.send(session);
+      } catch (error) {
+        return res.status(500).json({ message: error.message });
+      }
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const logoutUser = async (req, res) => {
+  res.cookie("accessToken", "", {
+    maxAge: 0,
+    httpOnly: true,
+  });
+
+  res.cookie("refreshToken", "", {
+    maxAge: 0,
+    httpOnly: true,
+  });
+
+  try {
+    await Session.destroy({ where: { sessionId: req.user.sessionId } });
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+
+  return res.send({ message: "Logout successful" });
+};
+
+const refreshToken = async (req, res) => {
+  const refreshToken = req.body.token;
+  if (!refreshToken) return res.sendStatus(401);
+  try {
+    const tokenExists = await RefreshToken.findOne({
+      where: { token: refreshToken },
+    });
+    if (!tokenExists) return res.sendStatus(403);
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+      if (err) return res.status(403).json({ message: err.message });
+      const token = jwt.sign(
+        {
+          email: user.email,
+          name: user.name,
+          surname: user.surname,
+          role: user.role,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+          expiresIn: "30s",
+        }
+      );
+      return res.status(200).json(token);
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -131,7 +194,6 @@ const updateUserPerm = async (req, res) => {
   try {
     // Check if user permission exists and check if user is admin
     const userPerm = await UserPerm.get(email);
-    console.log(userPerm)
     if (!userPerm) {
       return res.status(404).json({ message: "User not found" });
     } else if (userPerm.role !== "admin") {
@@ -291,6 +353,8 @@ module.exports = {
   getPerm,
   addUser,
   loginUser,
+  logoutUser,
+  refreshToken,
   updateUserPerm,
   updateUserEmail,
   updateUserPassword,

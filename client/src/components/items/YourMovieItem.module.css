@@ -1,0 +1,38 @@
+.container {
+  display: grid;
+  grid-template-columns: 5fr 5fr 5fr 2fr 2fr;
+  background-color: #D9D9D9;
+  border-radius: 25px;
+  margin-bottom: 20px;
+}
+
+.container div {
+  padding: 15px 20px;
+  text-align: left;
+}
+
+.removeButton {
+  background-color: #C93333;
+  border: none;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 20px;
+  height: 100%;
+  width: 100%;
+}
+
+.time {
+  text-align: center;
+  width: 50px;
+  border: none;
+  height: 100%;
+  font-weight: bold;
+}
+
+.timeButton {
+  width: 20px;
+  height: 100%;
+  border: none;
+  background-color: #363636;
+  color: white;
+}

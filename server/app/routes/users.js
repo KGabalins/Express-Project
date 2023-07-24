@@ -1,17 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/users");
-const { requireAuth, authRole } = require("../middleware/authentication");
+const { requireUser } = require("../middleware/requireUser");
 
 router
-  .get("/", requireAuth, controller.getMyUser)
-  .get("/:email", requireAuth, controller.getUser)
-  .get("/perm/:email", requireAuth, controller.getPerm)
+  .get("/", requireUser, controller.getMyUser)
+  .get("/:email", requireUser, controller.getUser)
+  .get("/perm/:email", requireUser, controller.getPerm)
   .post("/", controller.addUser)
   .post("/login", controller.loginUser)
-  .put("/perm/:email", requireAuth, controller.updateUserPerm)
-  .put("/", requireAuth, controller.updateUserEmail)
-  .put("/:email", requireAuth, controller.updateUserPassword)
-  .delete("/:email", requireAuth, controller.deleteUser);
+  .post("/token", controller.refreshToken)
+  .put("/perm/:email", requireUser, controller.updateUserPerm)
+  .put("/", requireUser, controller.updateUserEmail)
+  .put("/:email", requireUser, controller.updateUserPassword)
+  .delete("/logout", requireUser, controller.logoutUser)
+  .delete("/:email", requireUser, controller.deleteUser);
 
 module.exports = router;

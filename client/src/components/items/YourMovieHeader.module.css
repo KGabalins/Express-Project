@@ -1,0 +1,9 @@
+.container {
+  display: grid;
+  grid-template-columns: 5fr 5fr 5fr 2fr 2fr;
+}
+
+.container p {
+  padding: 0px 20px;
+  text-align: left;
+}
