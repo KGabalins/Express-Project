@@ -12,12 +12,10 @@ function App() {
     <>
       <Routes>
         <Route element={<Layout />}>
-          {/* <Route element={<PrivateRoute/>}> */}
           <Route path="/" element={<HomePage />} />
           <Route path="/yourMovies" element={<YourMoviesPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/addMovies" element={<AddMoviesPage />} />
-          {/* </Route> */}
         </Route>
         <Route path="/login" element={<LoginPage />} />
       </Routes>

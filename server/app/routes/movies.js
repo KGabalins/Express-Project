@@ -6,7 +6,7 @@ const { requireAdmin } = require("../middleware/requireAdmin");
 
 // CRUD routes
 router
-  .get("/", controller.getMovies)
+  .get("/",requireUser, controller.getMovies)
   .get("/:name", requireUser, controller.getMovieByName)
   .post("/", requireUser, requireAdmin, controller.addMovie)
   .put("/:name", requireUser, controller.updateMovie)
