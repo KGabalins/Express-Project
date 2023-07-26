@@ -9,7 +9,7 @@ router
   .get("/",requireUser, controller.getMovies)
   .get("/:name", requireUser, controller.getMovieByName)
   .post("/", requireUser, requireAdmin, controller.addMovie)
-  .put("/:name", requireUser, controller.updateMovie)
+  .put("/", requireUser, requireAdmin, controller.updateMovie)
   .delete("/:name", requireUser, requireAdmin, controller.deleteMovie);
 
 module.exports = router;

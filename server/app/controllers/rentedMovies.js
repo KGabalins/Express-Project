@@ -2,6 +2,17 @@ const { RentedMovie } = require("../models/rentedMovies");
 const { Movie } = require("../models/movies");
 const moviesController = require("../controllers/movies");
 
+const getMyMovies = async (req, res) => {
+  const { email } = req.user;
+
+  try {
+    const myMovies = await RentedMovie.findAll({ where: { renter: email } });
+    return res.status(200).json(myMovies);
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
 const getMoviesByEmail = async (req, res) => {
   try {
     // Get rented movies by email
@@ -129,6 +140,10 @@ const deleteMovie = async (req, res) => {
         const movie = await Movie.findOne({
           where: { name: rentedMovie.name },
         });
+        console.log(movie)
+        if(!movie) {
+          return res.status(200).json({ message: "Movie deleted" });
+        }
         try {
           // Update movie stock
           await Movie.update(
@@ -151,6 +166,7 @@ const deleteMovie = async (req, res) => {
 };
 
 module.exports = {
+  getMyMovies,
   getMoviesByEmail,
   getMovieById,
   addMovie,

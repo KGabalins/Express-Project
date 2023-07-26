@@ -4,70 +4,23 @@ import axios from "axios";
 
 const ProfilePage = () => {
   const [currUser, setCurrUser] = useState({});
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    getUserData();
-  }, []);
-
-  const getUserData = () => {
     axios
-      .get("/user", { headers: { Authorization: token } })
+      .get("/users/")
       .then((response) => {
         setCurrUser(response.data);
       })
       .catch((error) => console.log(error));
-  };
+  }, []);
 
-  const changeEmail = () => {
-    const enteredEmail = prompt("Change email:");
+  function changeEmail () {
+    const newEmail = prompt("Enter new email: ");
+  }
 
-    if (validEmail(enteredEmail)) {
-      axios.get(`/user/perm/${enteredEmail}`).then((resp) => {
-        if (resp.data.Items.length === 0) {
-          axios.get(`/user/${enteredEmail}`).then((response) => {
-            if (response.data.Items.length === 0) {
-              axios
-                .post(`/user/${currUser.email}`, { email: enteredEmail })
-                .then((response) => {
-                  setCurrUser(response.data.Items[0]);
-                  localStorage.setItem(
-                    "currentUser",
-                    JSON.stringify(response.data.Items[0])
-                  );
-                });
-            } else {
-              alert("User with this email already exists!");
-            }
-          });
-        } else {
-          alert("User with this email already exists!");
-        }
-      });
-    } else {
-      alert("This is not a valid email!");
-    }
-  };
-
-  const changePassword = () => {
-    const enteredPassword = prompt("Change password:") || "";
-
-    if (enteredPassword.length > 7) {
-      axios
-        .put(`/user/${currUser.email}`, { password: enteredPassword })
-        .then(alert("Password changed succesfully!"));
-    } else {
-      alert("Your password should be atleast 8 characters long!");
-    }
-  };
-
-  const validEmail = (email) => {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  };
+  function changePassword () {
+    const newPassword = prompt("Enter new password: ");
+  }
 
   return (
     <div className={classes.main}>
@@ -87,6 +40,9 @@ const ProfilePage = () => {
           </span>
           <span>
             <strong>Email: </strong> {currUser.email}
+          </span>
+          <span>
+            <strong>Role: </strong> {currUser.role}
           </span>
         </div>
         <div>

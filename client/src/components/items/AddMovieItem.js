@@ -14,20 +14,25 @@ const AddMovieItem = () => {
     const enteredName = nameInputRef.current.value;
     const enteredGenre = genreInputRef.current.value;
     const enteredPrice = priceInputRef.current.value + "$";
-    const enteredStock = stockInputRef.current.value;
+    const enteredStock = Number.parseInt(stockInputRef.current.value);
+
+    const newMovie = {
+      name: enteredName,
+      genre: enteredGenre,
+      price: enteredPrice,
+      stock: enteredStock,
+    };
 
     axios
-      .post("/movies", {
-        name: enteredName,
-        genre: enteredGenre,
-        price: enteredPrice,
-        stock: enteredStock,
-      })
+      .post("/movies/", newMovie)
       .then(
-        e.target.reset(), 
+        e.target.reset(),
         // e.target.children[0].children["success"].style.display = "inline-block"
-        document.getElementById("success").style.display = "inline-block"
-        );
+        (document.getElementById("success").style.display = "inline-block")
+      )
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (

@@ -5,48 +5,56 @@ import classes from "./HomePage.module.css";
 import axios from "axios";
 
 const HomePage = () => {
-  const [availableMovies, setAvailableMovies] = useState([{}]);
+  const [availableMovies, setAvailableMovies] = useState([]);
 
   useEffect(() => {
-    axios.get("/movies/").then((response) => {
-      setAvailableMovies(response.data);
-    }).catch((error) => {
-      console.log(error.message)
-    })
+    renderMovies();
   }, []);
 
-  // function getMovies() {
-  //   axios
-  //     .get("/movies")
-  //     .then((response) => {
-  //       console.log(response)
-  //       setAvailableMovies(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // }
+  function renderMovies() {
+    axios
+      .get("/movies/")
+      .then((response) => {
+        response.data.sort((a, b) => {
+          return a.id - b.id;
+        });
+        setAvailableMovies(response.data);
+      })
+      .catch((error) => {
+        console.log(error)
+        // if (error.response.status === 404) {
+        //   setAvailableMovies([]);
+        // }
+      });
+  }
 
-  // function rentMovieHandler(rentedMovieData) {
-  //   axios
-  //     .post(
-  //       "/rentedMovies/",
-  //       { name: rentedMovieData.name },
-  //       {
-  //         headers: { Authorization: token },
-  //       }
-  //     )
-  //     .then(getMovies())
-  //     .catch((error) => console.log(error));
-  // }
+  function rentMovieHandler(rentedMovieData) {
+    const movieName = rentedMovieData.name;
+
+    axios
+      .post(`/rentedMovies/${movieName}`)
+      .then(() => {
+        renderMovies();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   return (
     <div className={classes.main}>
       <h2 className={classes.title}>Available Movies</h2>
-      <AvailableMoviesList
-        movies={availableMovies}
-        // onRentMovie={rentMovieHandler}
-      />
+      {availableMovies.length ? 
+            <AvailableMoviesList
+            movies={availableMovies}
+            onRentMovie={rentMovieHandler}
+          />
+          :
+          <div>
+            <p>No movies available</p>
+          </div>
+      }
+
     </div>
   );
 };

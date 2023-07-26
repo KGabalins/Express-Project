@@ -51,11 +51,11 @@ async function deserializeUser(req, res, next) {
         surname: session.surname,
         role: session.role,
       },
-      "5s"
+      "15m"
     );
 
     res.cookie("accessToken", newAccessToken, {
-      maxAge: 60000, // 1 minutes
+      maxAge: 1.8e+6, // 30 minutes
       httpOnly: true,
     });
     console.log(req.user);

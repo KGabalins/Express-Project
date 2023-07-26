@@ -1,5 +1,5 @@
-const supertest = require("supertest");
-const app = require("../index");
+// const supertest = require("supertest");
+// const app = require("../index");
 
 // describe("Rented movies API", () => {
   // it("GET /rentedMovies/:email ---> array of movies", () => {

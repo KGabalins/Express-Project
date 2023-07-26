@@ -10,3 +10,11 @@ body {
   font-style: italic;
   color: #FFFFFF;
 }
+
+button:hover {
+  opacity: 80%;
+}
+
+button:active {
+  opacity: 90%;
+}

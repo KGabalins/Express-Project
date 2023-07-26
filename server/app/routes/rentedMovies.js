@@ -5,6 +5,7 @@ const { requireUser } = require("../middleware/requireUser");
 
 // CRUD routes
 router
+  .get("/", requireUser, controller.getMyMovies)
   .get("/:email", requireUser, controller.getMoviesByEmail)
   .get("/id/:id", requireUser, controller.getMovieById)
   .post("/:name", requireUser, controller.addMovie)

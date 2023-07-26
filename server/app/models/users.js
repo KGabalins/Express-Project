@@ -25,22 +25,8 @@ const userSchema = new dynamoose.Schema({
 
 const User = dynamoose.model("users", userSchema);
 
-const userPermSchema = new dynamoose.Schema({
-  email: {
-    type: String,
-    hashKey: true,
-    required: true,
-  },
-  role: {
-    type: String,
-    required: true,
-    default: "user",
-  },
-});
 
-const UserPerm = dynamoose.model("permissions", userPermSchema);
 
 module.exports = {
-  User,
-  UserPerm,
+  User
 };

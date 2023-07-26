@@ -1,6 +1,6 @@
 function requireUser(req, res, next) {
   if (!req.user) {
-    return res.status(403).json({ message: "Invalid token!" });
+    return res.status(403).json({ message: "You're not logged in!" });
   }
 
   return next();

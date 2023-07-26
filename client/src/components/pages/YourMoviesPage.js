@@ -5,32 +5,30 @@ import classes from "./YourMoviesPage.module.css";
 import YourMoviesList from "../lists/YourMoviesList";
 
 const YourMoviesPage = () => {
-  const [rentedMovies, setRentedMovies] = useState([{}]);
-  const token = localStorage.getItem("token") || [];
+  const [rentedMovies, setRentedMovies] = useState([]);
+
   useEffect(() => {
-    getRentedMovies();
+    renderRentedMovies();
   }, []);
 
-  function getRentedMovies() {
+  function renderRentedMovies() {
     axios
-      .get("/rentedMovies/", {
-        headers: { Authorization: token },
-      })
+      .get("/rentedMovies/")
       .then((response) => {
+        response.data.sort((a, b) => {
+          return a.id - b.id;
+        });
         setRentedMovies(response.data);
       })
       .catch((error) => {
         console.log(error);
-        
       });
   }
 
   async function removeMovieHandler(removedMovieData) {
     axios
-      .delete(`/rentedMovies/${removedMovieData.id}`, {
-        headers: { Authorization: token },
-      })
-      .then(getRentedMovies())
+      .delete(`/rentedMovies/id/${removedMovieData.id}`)
+      .then(() => renderRentedMovies())
       .catch((error) => console.log(error));
   }
 
@@ -39,17 +37,17 @@ const YourMoviesPage = () => {
     const rentedMovieId = movie.substr(0, movie.length - 1);
 
     axios.get(`/rentedMovies/id/${rentedMovieId}`).then((response) => {
-      let currTime = Number(response.data[0].time);
+      let currTime = Number.parseInt(response.data.time);
       if (currTime > 0 && timeMethod === "-") {
         currTime -= 12;
         axios
-          .put(`/rentedMovies/${rentedMovieId}`, { time: currTime })
-          .then(getRentedMovies());
+          .put(`/rentedMovies/id/${rentedMovieId}`, { time: currTime })
+          .then(() => renderRentedMovies());
       } else if (currTime < 168 && timeMethod === "+") {
         currTime += 12;
         axios
-          .put(`/rentedMovies/${rentedMovieId}`, { time: currTime })
-          .then(getRentedMovies());
+          .put(`/rentedMovies/id/${rentedMovieId}`, { time: currTime })
+          .then(() => renderRentedMovies());
       }
     });
   }
@@ -57,11 +55,18 @@ const YourMoviesPage = () => {
   return (
     <div className={classes.main}>
       <h2 className={classes.title}>Your movies</h2>
-      <YourMoviesList
-        movies={rentedMovies}
-        onRemoveMovie={removeMovieHandler}
-        onChangeTime={changeTimeHandler}
-      />
+      {rentedMovies.length ? 
+            <YourMoviesList
+            movies={rentedMovies}
+            onRemoveMovie={removeMovieHandler}
+            onChangeTime={changeTimeHandler}
+          />
+          :
+          <div>
+            <p>You haven't rented any movie!</p>
+          </div>
+      }
+
     </div>
   );
 };
