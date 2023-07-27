@@ -20,6 +20,8 @@
     "knex": "^2.5.1",
     "pg": "^8.11.1",
     "sequelize": "^6.32.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
     "winston": "^3.10.0"
   },
   "devDependencies": {

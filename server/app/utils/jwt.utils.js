@@ -11,7 +11,7 @@ const verifyJWT = (token) => {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     return {payload: decoded, expired: false}
   } catch (error) {
-    return {payload: null, expired: true}
+    return {payload: null, expired: error.message}
   }
 }
 

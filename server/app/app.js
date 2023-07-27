@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser");
 const { deserializeUser } = require("./middleware/deserializeUser");
 require("dotenv").config();
 
+
 const app = express();
 
 app.use(express.json());

@@ -10,7 +10,6 @@ require("dotenv").config();
 
 // Get loged in user data
 const getMyUser = (req, res) => {
-  console.log(req.user);
   return res.status(200).json(req.user);
 };
 
@@ -94,50 +93,20 @@ const addUser = async (req, res) => {
 const loginUser = async (req, res) => {
   // Get email and password from request body
   const { email, password } = req.body;
+  // Validate request body data
+  if (!email || !password)
+    return res.status(422).json({ message: "Missing required fields!" });
   // Check if email and password are valid
   try {
     const user = await User.get(email);
     if (!user)
       return res.status(401).json({ message: "Invalid email or password" });
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword)
-      return res.status(401).json({ message: "Invalid email or password" });
     try {
-      const userPerm = await UserPerm.get(email);
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword)
+        return res.status(401).json({ message: "Invalid email or password" });
       try {
-        const sessionExists = await Session.findOne({
-          where: { email: user.email },
-        });
-        if (sessionExists) {
-          // Create access token
-          const accessToken = signJWT(
-            {
-              sessionId: sessionExists.sessionId,
-              email: user.email,
-              name: user.name,
-              surname: user.surname,
-              role: userPerm.role,
-            },
-            "15m"
-          );
-          // Create refresh token
-          const refreshToken = signJWT(
-            { sessionId: sessionExists.sessionId },
-            "1y"
-          );
-          // Set access token in cookie
-          res.cookie("accessToken", accessToken, {
-            maxAge: 1.8e6, // 30 minutes
-            httpOnly: true,
-          });
-          // Set refresh token cookie
-          res.cookie("refreshToken", refreshToken, {
-            maxAge: 3.154e10, //1 Year
-            httpOnly: true,
-          });
-          // Send user back
-          return res.send(sessionExists);
-        }
+        const userPerm = await UserPerm.get(email);
         try {
           const session = await Session.create({
             email: user.email,
@@ -148,11 +117,11 @@ const loginUser = async (req, res) => {
           // Create access token
           const accessToken = signJWT(
             {
-              sessionId: session.sessionId,
               email: user.email,
               name: user.name,
               surname: user.surname,
               role: userPerm.role,
+              sessionId: session.sessionId,
             },
             "15m"
           );
@@ -197,40 +166,21 @@ const logoutUser = async (req, res) => {
   });
   // Delete session from db
   try {
-    await Session.destroy({ where: { sessionId: req.user.sessionId } });
+    await Session.update(
+      { valid: false },
+      { where: { sessionId: req.user.sessionId } }
+    );
+    try {
+      const session = await Session.findOne({
+        where: { sessionId: req.user.sessionId },
+      });
+      // Respond with success message
+      return res.status(200).json(session);
+    } catch (error) {
+      return res.status(500).send({ message: error.message });
+    }
   } catch (error) {
     return res.status(500).send({ message: error.message });
-  }
-  // Respond with success message
-  return res.send({ message: "Logout successful" });
-};
-
-const refreshToken = async (req, res) => {
-  const refreshToken = req.body.token;
-  if (!refreshToken) return res.sendStatus(401);
-  try {
-    const tokenExists = await RefreshToken.findOne({
-      where: { token: refreshToken },
-    });
-    if (!tokenExists) return res.sendStatus(403);
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-      if (err) return res.status(403).json({ message: err.message });
-      const token = jwt.sign(
-        {
-          email: user.email,
-          name: user.name,
-          surname: user.surname,
-          role: user.role,
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        {
-          expiresIn: "30s",
-        }
-      );
-      return res.status(200).json(token);
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -376,7 +326,6 @@ module.exports = {
   addUser,
   loginUser,
   logoutUser,
-  refreshToken,
   updateUserEmail,
   updateUserPassword,
   deleteUser,

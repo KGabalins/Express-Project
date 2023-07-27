@@ -24,6 +24,11 @@ const Session = db.define("session", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  valid: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
 });
 
 module.exports = {

@@ -4,23 +4,7 @@ const { verifyJWT, signJWT } = require("../utils/jwt.utils");
 async function deserializeUser(req, res, next) {
   const { accessToken, refreshToken } = req.cookies;
 
-  if (!accessToken && refreshToken) {
-    try {
-      const sessionId = verifyJWT(refreshToken).payload.sessionId;
-      console.log(sessionId);
-      await Session.destroy({ where: { sessionId } });
-      res.cookie("refreshToken", "", {
-        maxAge: 0,
-        httpOnly: true,
-      });
-      next();
-    } catch (error) {
-      return res.status(500).send({ message: error.message });
-    }
-  }
-  if (!accessToken) {
-    return next();
-  }
+  if (!accessToken) return next();
 
   const { payload, expired } = verifyJWT(accessToken);
 
@@ -43,22 +27,24 @@ async function deserializeUser(req, res, next) {
       where: { sessionId: refresh.sessionId },
     });
 
+    if (!session) return next();
+
     const newAccessToken = signJWT(
       {
-        sessionId: session.sessionId,
         email: session.email,
         name: session.name,
         surname: session.surname,
         role: session.role,
+        sessionId: session.sessionId,
       },
       "15m"
     );
 
     res.cookie("accessToken", newAccessToken, {
-      maxAge: 1.8e+6, // 30 minutes
+      maxAge: 1.8e6, // 30 minutes
       httpOnly: true,
     });
-    console.log(req.user);
+    
     req.user = verifyJWT(newAccessToken).payload;
   } catch (error) {
     return res.status(500).send({ message: error.message });
