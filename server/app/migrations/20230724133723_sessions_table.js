@@ -7,8 +7,9 @@ exports.up = function(knex) {
     table.increments("sessionId").primary();
     table.string("email").notNullable();
     table.string("name").notNullable();
-    table.integer("surname");
+    table.string("surname");
     table.string("role").notNullable();
+    table.boolean("valid").notNullable();
   });
 };
 
