@@ -34,7 +34,7 @@ router
    *      - in: path
    *        name: name
    *        required: true
-   *        schema: 
+   *        schema:
    *          type: string
    *        description: The name of the movie
    *    responses:
@@ -48,7 +48,7 @@ router
    *        description: Unauthorized - User is not logged in
    */
   .get("/:name", requireUser, controller.getMovieByName)
-    /**
+  /**
    * @openapi
    * /movies:
    *  post:
@@ -70,7 +70,7 @@ router
    *            schema:
    *              $ref: "#/components/schemas/GetMovieResponse"
    *      400:
-   *        description: Bad request - Movie already exists
+   *        description: Bad Request - Movie already exists
    *      401:
    *        description: Unauthorized - User is not logged in
    *      403:
@@ -79,7 +79,7 @@ router
    *        description: Unprocessable Entity - Invalid request body
    */
   .post("/", requireUser, requireAdmin, controller.addMovie)
-      /**
+  /**
    * @openapi
    * /movies/{name}:
    *  put:
@@ -90,7 +90,7 @@ router
    *      - in: path
    *        name: name
    *        required: true
-   *        schema: 
+   *        schema:
    *          type: string
    *        description: The name of the movie
    *    requestBody:
@@ -108,12 +108,12 @@ router
    *      403:
    *        description: Forbiden - User is not an admin
    *      404:
-   *        description: Not found - Movie does not exist
+   *        description: Not Found - Movie does not exist
    *      422:
    *        description: Unprocessable Entity - Invalid request body
    */
   .put("/:name", requireUser, requireAdmin, controller.updateMovie)
-        /**
+  /**
    * @openapi
    * /movies/{name}:
    *  delete:
@@ -124,7 +124,7 @@ router
    *      - in: path
    *        name: name
    *        required: true
-   *        schema: 
+   *        schema:
    *          type: string
    *        description: The name of the movie
    *    responses:
@@ -135,7 +135,7 @@ router
    *      403:
    *        description: Forbiden - User is not an admin
    *      404:
-   *        description: Not found - Movie does not exist
+   *        description: Not Found - Movie does not exist
    */
   .delete("/:name", requireUser, requireAdmin, controller.deleteMovie);
 

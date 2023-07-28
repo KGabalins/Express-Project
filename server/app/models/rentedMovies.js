@@ -84,4 +84,14 @@ module.exports = {
  *        renter:
  *          type: string
  *          description: Rented movie's renter email
+ *    UpdateRentedMovieTimeInput:
+ *      type: object
+ *      required:
+ *        - method
+ *      properties:
+ *        method:
+ *          type: string
+ *          description: Method to update rented movie time
+ *      example:
+ *        method: "+"
  */

@@ -58,14 +58,14 @@ const getMovieById = async (req, res) => {
 };
 
 const addMovie = async (req, res) => {
-  const name = req.params.name
+  const name = req.params.name;
   try {
     // Check if movie exists and if stock is available
     const movie = await Movie.findOne({ where: { name } });
     if (!movie) {
       return res.status(404).json({ message: "Movie does not exist!" });
     } else if (movie.stock <= 0) {
-      return res.status(400).json({ message: "Movie is out of stock!" });
+      return res.status(409).json({ message: "Movie is out of stock!" });
     }
     try {
       // Update movie stock
@@ -78,6 +78,7 @@ const addMovie = async (req, res) => {
         const rentedMovie = await RentedMovie.create({
           name: movie.name,
           genre: movie.genre,
+          time: 12,
           price: movie.price,
           renter: req.user.email,
         });
@@ -93,29 +94,59 @@ const addMovie = async (req, res) => {
   }
 };
 
-const updateMovie = async (req, res) => {
-  // Validate request parameters
-  if (!req.body.time || !Number.isInteger(req.body.time)) {
-    return res.status(422).json({ message: "No valid time in request!" });
+const updateTime = async (req, res) => {
+  const { email } = req.user;
+  const id = parseFloat(req.params.id);
+  const method = req.body.method;
+  // Validate parameter
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ message: "Invalid id!" });
   }
-
+  console.log(method);
+  // Validate request parameters
+  if (!method || (method !== "+" && method !== "-")) {
+    return res.status(422).json({ message: "Invalid request body!" });
+  }
   try {
     // Check if rented movie exists
     const rentedMovie = await RentedMovie.findOne({
-      where: { id: req.params.id },
+      where: { id },
     });
     if (!rentedMovie) {
-      return res.status(404).json({ message: "No movie found" });
+      return res.status(404).json({ message: "No rented movie found" });
     }
-    try {
-      // Update rented movie time
-      await RentedMovie.update(
-        { time: req.body.time },
-        { where: { id: req.params.id } }
-      );
-      return res.status(200).json({ message: "Movie time updated" });
-    } catch (error) {
-      return res.status(500).send({ message: error.message });
+    const currTime = rentedMovie.time;
+    // Check if the rented movie's renter is the current user
+    if (rentedMovie.renter !== email) {
+      return res.status(403).json({ message: "You do not rent this movie!" });
+    }
+    // If the method is "+" and the rented movie's time is less than 168
+    if (method === "+" && currTime < 168) {
+      try {
+        // Update rented movie time
+        await RentedMovie.update(
+          { time: currTime + 12 },
+          { where: { id } }
+        );
+        return res.status(200).json({ message: "Movie time updated" });
+      } catch (error) {
+        return res.status(500).send({ message: error.message });
+      }
+    // If the method is "-" and the rented movie's time is more than 0
+    } else if (method === "-" && currTime > 0) {
+      try {
+        // Update rented movie time
+        await RentedMovie.update(
+          { time: currTime - 12 },
+          { where: { id } }
+        );
+        return res.status(200).json({ message: "Movie time updated" });
+      } catch (error) {
+        return res.status(500).send({ message: error.message });
+      }
+    // If the rented movie's time is either at its maximum or minimum
+    } else {
+      return res.status(409).json({ message: "Rented movie's time has reached its maximum or minimum!" });
     }
   } catch (error) {
     return res.status(500).send({ message: error.message });
@@ -171,6 +202,6 @@ module.exports = {
   getMoviesByEmail,
   getMovieById,
   addMovie,
-  updateMovie,
+  updateTime,
   deleteMovie,
 };

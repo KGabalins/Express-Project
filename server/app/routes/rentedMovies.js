@@ -49,7 +49,7 @@ router
    *      403:
    *        description: Forbiden - User is not an admin
    *      404:
-   *        description: Not found - User does not exist
+   *        description: Not Found - User does not exist
    */
   .get("/:email", requireUser, requireAdmin, controller.getMoviesByEmail)
   /**
@@ -74,13 +74,13 @@ router
    *            schema:
    *              $ref: "#/components/schemas/GetRentedMovieResponse"
    *      400:
-   *        description: Bad request - Invalid parameters
+   *        description: Bad Request - Invalid parameters
    *      401:
    *        description: Unauthorized - User is not logged in
    *      403:
    *        description: Forbiden - User is not an admin
    *      404:
-   *        description: Not found - Movie does not exist
+   *        description: Not Found - Movie does not exist
    */
   .get("/id/:id", requireUser, requireAdmin, controller.getMovieById)
   /**
@@ -104,15 +104,53 @@ router
    *          application/json:
    *            schema:
    *              $ref: "#/components/schemas/GetRentedMovieResponse"
-   *      400:
-   *        description: Bad request - Movie is out of stock
    *      401:
    *        description: Unauthorized - User is not logged in
    *      404:
-   *        description: Not found - Movie does not exist
+   *        description: Not Found - Movie does not exist
+   *      409:
+   *        description: Conflict - Movie is out of stock
    */
   .post("/:name", requireUser, controller.addMovie)
-  .put("/id/:id", requireUser, controller.updateMovie)
+    /**
+   * @openapi
+   * /rentedMovies/id/{id}:
+   *  put:
+   *    tags:
+   *    - Rented Movies
+   *    summary: Update rented movie's time
+   *    parameters:
+   *      - in: path
+   *        required: true
+   *        schema:
+   *          type: integer
+   *        name: id
+   *        description: Rented movie's id
+   *    requestBody:
+   *      required: true
+   *      description: A JSON object containing method with values "+" or "-"
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: "#/components/schemas/UpdateRentedMovieTimeInput"
+   *    responses:
+   *      200:
+   *        description: Success - Rented movie's time has been updated
+   *      400:
+   *        description: Bad Request - Invalid parameters
+   *      401:
+   *        description: Unauthorized - User is not logged in
+   *      403:
+   *        description: Forbiden - User isn't this movie's renter
+   *      404:
+   *        description: Not Found - Rented movie does not exist
+   *      409:
+   *        description: Conflict - Rented movie's time has reached either its maximum or minimum
+   *      422:
+   *        description: Unprocessable Entity - Invalid request body
+   */
+  .put("/id/:id", requireUser, controller.updateTime)
+  
   .delete("/id/:id", requireUser, controller.deleteMovie);
 
 module.exports = router;
