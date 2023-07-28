@@ -33,7 +33,7 @@ const addMovie = async (req, res) => {
     !req.body.stock ||
     !Number.isInteger(req.body.stock)
   ) {
-    return res.status(422).json({ message: "All fields are required" });
+    return res.status(422).json({ message: "Invalid request body data!" });
   }
 
   try {

@@ -153,37 +153,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-const logoutUser = async (req, res) => {
-  // Delete access token cookie
-  res.cookie("accessToken", "", {
-    maxAge: 0,
-    httpOnly: true,
-  });
-  // Delete refresh token cookie
-  res.cookie("refreshToken", "", {
-    maxAge: 0,
-    httpOnly: true,
-  });
-  // Delete session from db
-  try {
-    await Session.update(
-      { valid: false },
-      { where: { sessionId: req.user.sessionId } }
-    );
-    try {
-      const session = await Session.findOne({
-        where: { sessionId: req.user.sessionId },
-      });
-      // Respond with success message
-      return res.status(200).json(session);
-    } catch (error) {
-      return res.status(500).send({ message: error.message });
-    }
-  } catch (error) {
-    return res.status(500).send({ message: error.message });
-  }
-};
-
 const updateUserEmail = async (req, res) => {
   // Validate body data
   if (Object.keys(req.body)[0] !== "email") {
@@ -282,6 +251,37 @@ const updateUserPassword = async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+const logoutUser = async (req, res) => {
+  // Delete access token cookie
+  res.cookie("accessToken", "", {
+    maxAge: 0,
+    httpOnly: true,
+  });
+  // Delete refresh token cookie
+  res.cookie("refreshToken", "", {
+    maxAge: 0,
+    httpOnly: true,
+  });
+  // Delete session from db
+  try {
+    await Session.update(
+      { valid: false },
+      { where: { sessionId: req.user.sessionId } }
+    );
+    try {
+      const session = await Session.findOne({
+        where: { sessionId: req.user.sessionId },
+      });
+      // Respond with success message
+      return res.status(200).json(session);
+    } catch (error) {
+      return res.status(500).send({ message: error.message });
+    }
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
   }
 };
 

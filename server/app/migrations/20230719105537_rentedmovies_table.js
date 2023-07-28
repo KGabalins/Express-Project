@@ -8,7 +8,7 @@ exports.up = function (knex) {
     table.string("name").notNullable();
     table.string("genre").notNullable();
     table.integer("time").notNullable();
-    table.string("price").notNullable();
+    table.float("price").notNullable();
     table.string("renter").notNullable();
   });
 };

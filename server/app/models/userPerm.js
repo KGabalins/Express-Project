@@ -20,3 +20,21 @@ const UserPerm = dynamoose.model("permissions", userPermSchema);
 module.exports = {
   UserPerm,
 };
+
+// Swagger user permission schemas
+
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    UpdatePermissionInput:
+ *      type: object
+ *      required:
+ *        - role
+ *      properties:
+ *        role:
+ *          type: string
+ *          description: New user role
+ *      example:
+ *        role: user
+ */

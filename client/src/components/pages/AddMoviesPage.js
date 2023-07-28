@@ -1,4 +1,3 @@
-
 import AddMovieItem from "../items/AddMovieItem";
 
 const AddMoviesPage = () => {

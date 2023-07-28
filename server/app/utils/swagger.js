@@ -1,6 +1,6 @@
-const swaggerJsdoc = require("swagger-jsdoc")
-const swaggerUi = require("swagger-ui-express")
-const {version} = require("../../package.json")
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+const { version } = require("../../package.json");
 
 const options = {
   definition: {
@@ -10,22 +10,36 @@ const options = {
       version,
     },
   },
-  apis: ["app/routes/*.js"],
+  // components: {
+  //   securitySchemas: {
+  //     cookieAuth: {
+  //       type: "apiKey",
+  //       in: "cookie",
+  //       name: "accessToken",
+  //     },
+  //   },
+  // },
+  // security: [
+  //   {
+  //     cookieAuth: [],
+  //   },
+  // ],
+  apis: ["app/routes/*.js", "app/models/*.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
 
 function swaggerDocs(app, port) {
   // Swagger page
-  app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+  app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   // Docs in JSON format
   app.get("docs.json", (req, res) => {
     res.setHeader("Content-Type", "application/json");
-    res.send(swaggerSpec)
-  })
+    res.send(swaggerSpec);
+  });
 }
 
 module.exports = {
-  swaggerDocs
-}
+  swaggerDocs,
+};

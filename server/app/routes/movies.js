@@ -4,54 +4,75 @@ const controller = require("../controllers/movies");
 const { requireUser } = require("../middleware/requireUser");
 const { requireAdmin } = require("../middleware/requireAdmin");
 
-/**
- * @openapi
- * components:
- *  schemas:
- *    GetMoviesResponse:
- *      type: array
- *      items:
- *        type: object
- *        properties:
- *          id:
- *            type: integer
- *            description: Automatically generated id from database
- *          name:
- *            type: string
- *            description: Name of the movie
- *          genre:
- *            type: string
- *            description: Genre of the movie
- *          price:
- *            type: string
- *            description: Price of the movie
- *          stock:
- *            type: integer
- *            description: Stock of the movie
- * 
- */
-
 // CRUD routes
 router
-    /**
+  /**
    * @openapi
    * /movies:
    *  get:
    *    tags:
    *    - Movies
-   *    summary: Gets a list of all movies
+   *    summary: Get all movies
    *    responses:
-   *      201:
+   *      200:
    *        description: Success
-   *        content: 
-   *          application/json: 
+   *        content:
+   *          application/json:
    *            schema:
    *              $ref: "#/components/schemas/GetMoviesResponse"
-   *      403:
-   *        description: Forbidden
-   */       
-  .get("/",requireUser, controller.getMovies)
+   *      401:
+   *        description: Unauthorized - User is not logged in
+   */
+  .get("/", requireUser, controller.getMovies)
+  /**
+   * @openapi
+   * /movies/{name}:
+   *  get:
+   *    tags:
+   *    - Movies
+   *    summary: Get a movie by name
+   *    parameters:
+   *      - in: path
+   *        name: name
+   *        required: true
+   *        schema: 
+   *          type: string
+   *        description: The name of the movie
+   *    responses:
+   *      200:
+   *        description: Success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: "#/components/schemas/GetMovieResponse"
+   *      401:
+   *        description: Unauthorized - User is not logged in
+   */
   .get("/:name", requireUser, controller.getMovieByName)
+    /**
+   * @openapi
+   * /movies:
+   *  post:
+   *    tags:
+   *    - Movies
+   *    summary: Add a new movie (requires admin privileges)
+   *    requestBody:
+   *      required: true
+   *      description: A JSON object containing name, genre, price and stock
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: "#/components/schemas/CreateMovieInput"
+   *    responses:
+   *      200:
+   *        description: Success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: "#/components/schemas/GetMovieResponse"
+   *      401:
+   *        description: Unauthorized - User is not logged in
+   */
   .post("/", requireUser, requireAdmin, controller.addMovie)
   .put("/", requireUser, requireAdmin, controller.updateMovie)
   .delete("/:name", requireUser, requireAdmin, controller.deleteMovie);
