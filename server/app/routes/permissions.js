@@ -25,7 +25,7 @@ router
    *        application/json:
    *          schema:
    *            $ref: "#/components/schemas/UpdatePermissionInput"
-   *    summary: Update user permission
+   *    summary: Update user permission (requires admin privileges)
    *    responses:
    *      200:
    *        description: Success - User permission updated

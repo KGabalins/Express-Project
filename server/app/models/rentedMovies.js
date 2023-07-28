@@ -40,39 +40,48 @@ module.exports = {
  * @openapi
  * components:
  *  schemas:
- *    RegisterUserInput:
+ *    GetRentedMoviesResponse:
+ *      type: array
+ *      items:
+ *        type: object
+ *        properties:
+ *          id:
+ *            type: integer
+ *            description: Automatically generated id
+ *          name:
+ *            type: string
+ *            description: Rented movie's name
+ *          genre:
+ *            type: string
+ *            description: Rented movie's genre
+ *          time:
+ *            type: integer
+ *            description: Rented movie's time
+ *          price:
+ *            type: number
+ *            description: Rented movie's price
+ *          renter:
+ *            type: string
+ *            description: Rented movie's renter email
+ *    GetRentedMovieResponse:
  *      type: object
- *      required:
- *        - email
- *        - reemail
- *        - name
- *        - surname
- *        - password
- *        - repassword
  *      properties:
- *        email:
- *          type: string
- *          description: Email of the user
- *        reemail:
- *          type: string
- *          description: Retyped email for confirmation
+ *        id:
+ *          type: integer
+ *          description: Automatically generated id
  *        name:
  *          type: string
- *          description: Name of the user
- *        surname:
+ *          description: Rented movie's name
+ *        genre:
  *          type: string
- *          description: Surname of the user
- *        password:
+ *          description: Rented movie's genre
+ *        time:
+ *          type: integer
+ *          description: Rented movie's time
+ *        price:
+ *          type: number
+ *          description: Rented movie's price
+ *        renter:
  *          type: string
- *          description: Password of the user
- *        repassword:
- *          type: string
- *          description: Retyped password for confirmation
- *      example:
- *        email: test@example.com
- *        reemail: test@example.com
- *        name: Test
- *        surname: Mr
- *        password: test1234
- *        repassword: test1234
+ *          description: Rented movie's renter email
  */

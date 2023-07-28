@@ -31,9 +31,10 @@ const addMovie = async (req, res) => {
     !req.body.genre ||
     !req.body.price ||
     !req.body.stock ||
-    !Number.isInteger(req.body.stock)
+    !Number.isInteger(req.body.stock) ||
+    !Number.isFinite(req.body.price)
   ) {
-    return res.status(422).json({ message: "Invalid request body data!" });
+    return res.status(422).json({ message: "Invalid request body!" });
   }
 
   try {
@@ -55,18 +56,20 @@ const addMovie = async (req, res) => {
 };
 
 const updateMovie = async (req, res) => {
-  const { name, price, stock } = req.body;
+  const name = req.params.name;
+  const { price, stock } = req.body;
   // Validate request parameters
-  if (!name || !price || !stock || !Number.isInteger(stock)) {
-    return res.status(422).json({ message: "Invalid parameters!" });
+  if (!price || !stock || !Number.isInteger(stock) || !Number.isFinite(price)) {
+    return res.status(422).json({ message: "Invalid request body!" });
   }
-
   try {
+    // Check if movie exists
     const movieExists = await Movie.findOne({ where: { name } });
     if (!movieExists) {
       return res.status(404).json({ message: "Movie not found" });
     }
     try {
+      // Update movie price and stock
       await Movie.update({ price, stock }, { where: { name } });
       return res.status(200).json({ message: "Movie updated" });
     } catch (error) {
@@ -75,30 +78,6 @@ const updateMovie = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-
-  // // Validate request parameters
-  // if (!req.body.stock || !Number.isInteger(req.body.stock)) {
-  //   return res.status(422).json({ message: "Invalid request parameters!" });
-  // }
-  // try {
-  //   // Check if movie exists
-  //   const movie = await Movie.findOne({ where: { name: req.params.name } });
-  //   if (!movie) {
-  //     return res.status(404).json({ message: "Movie not found" });
-  //   }
-  //   try {
-  //     // Update movie stock
-  //     await Movie.update(
-  //       { stock: req.body.stock },
-  //       { where: { name: req.params.name } }
-  //     );
-  //     return res.status(200).json({ message: "Stock updated" });
-  //   } catch (error) {
-  //     return res.status(500).json({ message: error.message });
-  //   }
-  // } catch (error) {
-  //   return res.status(500).json({ message: error.message });
-  // }
 };
 
 const deleteMovie = async (req, res) => {

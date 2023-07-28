@@ -94,5 +94,17 @@ module.exports = {
  *        stock:
  *          type: integer
  *          description: Stock of the movie
+ *    UpdateMovieInput:
+ *      type: object
+ *      required:
+ *        - price
+ *        - stock
+ *      properties:
+ *        price:
+ *          type: number
+ *          description: Price of the movie
+ *        stock:
+ *          type: integer
+ *          description: Stock of the movie
  * 
  */
