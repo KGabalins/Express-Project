@@ -124,29 +124,27 @@ const updateTime = async (req, res) => {
     if (method === "+" && currTime < 168) {
       try {
         // Update rented movie time
-        await RentedMovie.update(
-          { time: currTime + 12 },
-          { where: { id } }
-        );
+        await RentedMovie.update({ time: currTime + 12 }, { where: { id } });
         return res.status(200).json({ message: "Movie time updated" });
       } catch (error) {
         return res.status(500).send({ message: error.message });
       }
-    // If the method is "-" and the rented movie's time is more than 0
+      // If the method is "-" and the rented movie's time is more than 0
     } else if (method === "-" && currTime > 0) {
       try {
         // Update rented movie time
-        await RentedMovie.update(
-          { time: currTime - 12 },
-          { where: { id } }
-        );
+        await RentedMovie.update({ time: currTime - 12 }, { where: { id } });
         return res.status(200).json({ message: "Movie time updated" });
       } catch (error) {
         return res.status(500).send({ message: error.message });
       }
-    // If the rented movie's time is either at its maximum or minimum
+      // If the rented movie's time is either at its maximum or minimum
     } else {
-      return res.status(409).json({ message: "Rented movie's time has reached its maximum or minimum!" });
+      return res
+        .status(409)
+        .json({
+          message: "Rented movie's time has reached its maximum or minimum!",
+        });
     }
   } catch (error) {
     return res.status(500).send({ message: error.message });
@@ -154,30 +152,37 @@ const updateTime = async (req, res) => {
 };
 
 const deleteMovie = async (req, res) => {
+  const { email } = req.user;
+  const id = parseFloat(req.params.id);
+  // Validate parameter
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ message: "Invalid id!" });
+  }
   try {
     // Check if rented movie exists
     const rentedMovie = await RentedMovie.findOne({
-      where: { id: req.params.id },
+      where: { id },
     });
     if (!rentedMovie) {
-      return res.status(404).json({ message: "No movie found" });
-    } else if (rentedMovie.renter !== req.user.email && req.user.role) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res.status(404).json({ message: "Movie does not exist!" });
+    }
+    // Check if rented movie's renter is the current user
+    if (rentedMovie.renter !== email) {
+      return res.status(403).json({ message: "You do not rent this movie!" });
     }
     try {
       // Delete rented movie
-      await RentedMovie.destroy({ where: { id: req.params.id } });
+      await RentedMovie.destroy({ where: { id } });
       try {
-        // Get movie by rented movie name
+        // Check if the rented movie still exists in movies
         const movie = await Movie.findOne({
           where: { name: rentedMovie.name },
         });
-        console.log(movie);
         if (!movie) {
           return res.status(200).json({ message: "Movie deleted" });
         }
         try {
-          // Update movie stock
+          // If the movie still exists in movies, update its stock
           await Movie.update(
             { stock: movie.stock + 1 },
             { where: { name: movie.name } }

@@ -10,26 +10,30 @@ require("dotenv").config();
 
 // Get loged in user data
 const getMyUser = (req, res) => {
-  return res.status(200).json(req.user);
+  const { email, name, surname, role } = req.user;
+  return res.status(200).json({ email, name, surname, role });
 };
 
 // Get user data by email
 const getUser = async (req, res) => {
+  const email = req.params.email;
+  console.log(email);
   try {
     // Get user data
-    const user = await User.get(req.params.email);
+    const user = await User.get(email);
     // Check if user exists
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    // Validate user
-    if (req.user.email !== req.params.email && req.user.role !== "admin") {
-      return res.status(403).json({ message: "Forbidden" });
+      return res.status(404).json({ message: "User does not exist!" });
     }
     try {
       // Get user permissions
-      const userPerm = await UserPerm.get(req.params.email);
-      return res.status(200).json({ user, userPerm });
+      const userPerm = await UserPerm.get(email);
+      return res.status(200).json({
+        email: user.email,
+        name: user.name,
+        surname: user.surname,
+        role: userPerm.role,
+      });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -41,6 +45,7 @@ const getUser = async (req, res) => {
 const addUser = async (req, res) => {
   // Get data from request body
   const { email, reemail, password, repassword, name, surname } = req.body;
+  const role = "user";
   // Validate body data
   if (!email || !password || !name)
     return res.status(422).json({ message: "Missing required fields!" });
@@ -62,7 +67,6 @@ const addUser = async (req, res) => {
     return res.status(422).json({ message: "Emails must match!" });
   if (password !== repassword)
     return res.status(422).json({ message: "Password must match!" });
-
   try {
     // Check if user with this email already exists
     const userExists = await User.get(req.body.email);
@@ -70,15 +74,15 @@ const addUser = async (req, res) => {
       return res.status(409).json({ message: "User already exists" });
     }
     // Hash incoming password
-    const hash = await bcrypt.hash(req.body.password, 11);
+    const hash = await bcrypt.hash(password, 11);
     req.body.password = hash;
     try {
       // Add new user to database
       const user = await User.create(req.body);
       try {
         // Add user permissions
-        await UserPerm.create({ email: user.email, role: "user" });
-        return res.status(201).json(user);
+        await UserPerm.create({ email, role });
+        return res.status(201).json({ email, name, surname, role });
       } catch (error) {
         return res.status(500).json({ message: error.message });
       }

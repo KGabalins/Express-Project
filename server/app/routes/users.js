@@ -28,7 +28,14 @@ router
    *  get:
    *    tags:
    *    - Users
-   *    summary: Get specific user data (requires admin privileges)
+   *    summary: Get specific user data
+   *    parameters:
+   *      - in: path
+   *        name: email
+   *        required: true
+   *        schema:
+   *          type: string
+   *        description: Email of the user
    *    responses:
    *      200:
    *        description: Success
@@ -38,8 +45,8 @@ router
    *              $ref: "#/components/schemas/GetUserResponse"
    *      401:
    *        description: Unauthorized - User is not logged in
-   *      403:
-   *        description: Unauthorized - User is not logged in
+   *      404:
+   *        description: Not found - User does not exist
    */
   .get("/:email", requireUser, controller.getUser)
   /**
@@ -61,11 +68,11 @@ router
    *        content:
    *          application/json:
    *            schema:
-   *              $ref: "#/components/schemas/RegisterUserResponse"
+   *              $ref: "#/components/schemas/GetUserResponse"
    *      409:
-   *        description: Conflict
+   *        description: Conflict - User already exists
    *      422:
-   *        description: Unprocessable Entity
+   *        description: Unprocessable Entity - Invalid request body
    */
   .post("/", controller.addUser)
   /**

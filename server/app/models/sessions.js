@@ -41,39 +41,37 @@ module.exports = {
  * @openapi
  * components:
  *  schemas:
- *    RegisterUserInput:
+ *    LoginUserInput:
  *      type: object
  *      required:
  *        - email
- *        - reemail
- *        - name
- *        - surname
  *        - password
- *        - repassword
  *      properties:
  *        email:
  *          type: string
  *          description: Email of the user
- *        reemail:
+ *        password:
  *          type: string
- *          description: Retyped email for confirmation
+ *          description: Password of the user
+ *    LoginUserResponse:
+ *      type: object
+ *      properties:
+ *        valid:
+ *          type: boolean
+ *          description: Shows if user session is valid
+ *        sessionId:
+ *          type: integer
+ *          description: Session id of the user
+ *        email:
+ *          type: string
+ *          description: Email of the user
  *        name:
  *          type: string
  *          description: Name of the user
  *        surname:
  *          type: string
  *          description: Surname of the user
- *        password:
+ *        role:
  *          type: string
- *          description: Password of the user
- *        repassword:
- *          type: string
- *          description: Retyped password for confirmation
- *      example:
- *        email: test@example.com
- *        reemail: test@example.com
- *        name: Test
- *        surname: Mr
- *        password: test1234
- *        repassword: test1234
+ *          description: Role / permissions of the user
  */

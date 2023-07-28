@@ -112,7 +112,7 @@ router
    *        description: Conflict - Movie is out of stock
    */
   .post("/:name", requireUser, controller.addMovie)
-    /**
+  /**
    * @openapi
    * /rentedMovies/id/{id}:
    *  put:
@@ -150,7 +150,32 @@ router
    *        description: Unprocessable Entity - Invalid request body
    */
   .put("/id/:id", requireUser, controller.updateTime)
-  
+  /**
+   * @openapi
+   * /rentedMovies/id/{id}:
+   *  delete:
+   *    tags:
+   *    - Rented Movies
+   *    summary: Delete rented movie by id
+   *    parameters:
+   *      - in: path
+   *        required: true
+   *        schema:
+   *          type: integer
+   *        name: id
+   *        description: Rented movie's id
+   *    responses:
+   *      200:
+   *        description: Success - Rented movie succesfully deleted
+   *      400:
+   *        description: Bad Request - Invalid parameters
+   *      401:
+   *        description: Unauthorized - User is not logged in
+   *      403:
+   *        description: Forbiden - User isn't this movie's renter
+   *      404:
+   *        description: Not Found - Rented movie does not exist
+   */
   .delete("/id/:id", requireUser, controller.deleteMovie);
 
 module.exports = router;

@@ -70,54 +70,6 @@ module.exports = {
  *        surname: Mr
  *        password: test1234
  *        repassword: test1234
- *    RegisterUserResponse:
- *      type: object
- *      properties:
- *        email:
- *          type: string
- *          description: Email of the user
- *        name:
- *          type: string
- *          description: Name of the user
- *        surname:
- *          type: string
- *          description: Surname of the user
- *        password:
- *          type: string
- *          description: Hashed password of the user
- *    LoginUserInput:
- *      type: object
- *      required:
- *        - email
- *        - password
- *      properties:
- *        email:
- *          type: string
- *          description: Email of the user
- *        password:
- *          type: string
- *          description: Password of the user
- *    LoginUserResponse:
- *      type: object
- *      properties:
- *        valid:
- *          type: boolean
- *          description: Shows if user session is valid
- *        sessionId:
- *          type: integer
- *          description: Session id of the user
- *        email:
- *          type: string
- *          description: Email of the user
- *        name:
- *          type: string
- *          description: Name of the user
- *        surname:
- *          type: string
- *          description: Surname of the user
- *        role:
- *          type: string
- *          description: Role / permissions of the user
  *    UpdateUserPasswordInput:
  *      type: object
  *      required:
@@ -138,5 +90,8 @@ module.exports = {
  *        surname:
  *          type: string
  *          description: Surname of the user
+ *        role:
+ *          type: string
+ *          description: Role of the user
  * 
  */
