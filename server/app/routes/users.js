@@ -111,7 +111,11 @@ router
    *    summary: Update user email
    *    requestBody:
    *      required: true
-   *      description: A JSON object containing the the new password.
+   *      description: A JSON object containing the new email.
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: "#/components/schemas/UpdateEmailInput"
    *    responses:
    *      200:
    *        description: Password successfully updated
@@ -119,7 +123,7 @@ router
    *        description: Unauthorized - User is not logged in
    *      403:
    *        description: Forbiden - Not the same user or not an admin
-   *      404:
+   *      409:
    *        description: Not found - User with this email doesn't exist
    *      422:
    *        description: Unprocessable Entity - Request body isn't valid
@@ -132,16 +136,23 @@ router
    *    tags:
    *    - Users
    *    summary: Update user password
+   *    parameters:
+   *      - in: path
+   *        required: true
+   *        name: email
+   *        schema:
+   *          type: string
+   *        description: Email of the user
    *    requestBody:
    *      required: true
    *      description: A JSON object containing the the new password.
    *      content:
    *        application/json:
    *          schema:
-   *            $ref: "#/components/schemas/UpdateUserPasswordInput"
+   *            $ref: "#/components/schemas/UpdatePasswordInput"
    *    responses:
    *      200:
-   *        description: Password successfully updated
+   *        description: Success - Password successfully updated
    *      401:
    *        description: Unauthorized - User is not logged in
    *      403:
@@ -173,9 +184,16 @@ router
    *    tags:
    *    - Users
    *    summary: Delete user by email (requires admin privileges)
+   *    parameters:
+   *      - in: path
+   *        required: true
+   *        name: email
+   *        schema:
+   *          type: string
+   *        description: Email of the user
    *    responses:
    *      200:
-   *        description: User successfully deleted
+   *        description: Success - User successfully deleted
    *      401:
    *        description: Unauthorized - User is not logged in
    *      403:

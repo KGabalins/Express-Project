@@ -70,14 +70,30 @@ module.exports = {
  *        surname: Mr
  *        password: test1234
  *        repassword: test1234
- *    UpdateUserPasswordInput:
+ *    UpdatePasswordInput:
  *      type: object
  *      required:
  *        - password
+ *        - repassword
  *      properties:
  *        password:
  *          type: string
  *          description: New password for the user
+ *        repassword:
+ *          type: string
+ *          description: Retyped new password for the user
+ *    UpdateEmailInput:
+ *      type: object
+ *      required:
+ *        - email
+ *        - reemail
+ *      properties:
+ *        email:
+ *          type: string
+ *          description: New email for the user
+ *        reemail:
+ *          type: string
+ *          description: Retyped new email for the user
  *    GetUserResponse:
  *      type: object
  *      properties:

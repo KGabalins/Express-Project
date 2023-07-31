@@ -47,7 +47,7 @@ const addUser = async (req, res) => {
   const { email, reemail, password, repassword, name, surname } = req.body;
   const role = "user";
   // Validate body data
-  if (!email || !password || !name)
+  if (!email || !reemail || !password || !repassword || !name)
     return res.status(422).json({ message: "Missing required fields!" });
   if (!validateEmail(email))
     return res.status(422).json({ message: "Invalid email!" });
@@ -112,37 +112,82 @@ const loginUser = async (req, res) => {
       try {
         const userPerm = await UserPerm.get(email);
         try {
-          const session = await Session.create({
-            email: user.email,
-            name: user.name,
-            surname: user.surname,
-            role: userPerm.role,
+          const sessionExists = await Session.findOne({
+            where: { email },
           });
-          // Create access token
-          const accessToken = signJWT(
-            {
-              email: user.email,
-              name: user.name,
-              surname: user.surname,
-              role: userPerm.role,
-              sessionId: session.sessionId,
-            },
-            "15m"
-          );
-          // Create refresh token
-          const refreshToken = signJWT({ sessionId: session.sessionId }, "1y");
-          // Set access token in cookie
-          res.cookie("accessToken", accessToken, {
-            maxAge: 1.8e6, // 30 minutes
-            httpOnly: true,
-          });
-          // Set refresh token cookie
-          res.cookie("refreshToken", refreshToken, {
-            maxAge: 3.154e10, //1 Year
-            httpOnly: true,
-          });
-          // Send user back
-          return res.send(session);
+          if (!sessionExists) {
+            try {
+              const session = await Session.create({
+                email: user.email,
+                name: user.name,
+                surname: user.surname,
+                role: userPerm.role,
+              });
+
+              // Create access token
+              const accessToken = signJWT(
+                {
+                  email: user.email,
+                  name: user.name,
+                  surname: user.surname,
+                  role: userPerm.role,
+                  sessionId: session.sessionId,
+                },
+                "15m"
+              );
+              // Create refresh token
+              const refreshToken = signJWT(
+                { sessionId: session.sessionId },
+                "1y"
+              );
+              // Set access token in cookie
+              res.cookie("accessToken", accessToken, {
+                maxAge: 1.8e6, // 30 minutes
+                httpOnly: true,
+              });
+              // Set refresh token cookie
+              res.cookie("refreshToken", refreshToken, {
+                maxAge: 3.154e10, //1 Year
+                httpOnly: true,
+              });
+              // Send user back
+              return res.send(session);
+            } catch (error) {
+              return res.status(500).json({ message: error.message });
+            }
+          } else {
+            if(!sessionExists.valid) {
+              await Session.update({ valid: true }, { where: { sessionId: sessionExists.sessionId } });
+              sessionExists.valid = true;
+            }
+            // Create access token
+            const accessToken = signJWT(
+              {
+                email: user.email,
+                name: user.name,
+                surname: user.surname,
+                role: userPerm.role,
+                sessionId: sessionExists.sessionId,
+              },
+              "15m"
+            );
+            // Create refresh token
+            const refreshToken = signJWT(
+              { sessionId: sessionExists.sessionId },
+              "1y"
+            );
+            // Set access token in cookie
+            res.cookie("accessToken", accessToken, {
+              maxAge: 1.8e6, // 30 minutes
+              httpOnly: true,
+            });
+            // Set refresh token cookie
+            res.cookie("refreshToken", refreshToken, {
+              maxAge: 3.154e10, //1 Year
+              httpOnly: true,
+            });
+            return res.send(sessionExists);
+          }
         } catch (error) {
           return res.status(500).json({ message: error.message });
         }
@@ -158,19 +203,22 @@ const loginUser = async (req, res) => {
 };
 
 const updateUserEmail = async (req, res) => {
-  // Validate body data
-  if (Object.keys(req.body)[0] !== "email") {
-    return res.sendStatus(422);
-  }
-
   const oldEmail = req.user.email;
   const newEmail = req.body.email;
-
+  const newReEmail = req.body.reemail;
+  // Validate body data
+  if (!newEmail || !newReEmail) {
+    return res.status(422).json({ message: "Missing required fields!" });
+  } else if (!validateEmail(newEmail)) {
+    return res.status(422).json({ message: "Invalid email!" });
+  } else if (newEmail !== newReEmail) {
+    return res.status(422).json({ message: "Emails must match!" });
+  }
   try {
     // Check if email already exists
     const emailExists = await User.get(newEmail);
     if (emailExists) {
-      return res.status(400).json({ message: "Email already exists" });
+      return res.status(409).json({ message: "Email already exists" });
     }
     try {
       // Get old user data and change email
@@ -182,10 +230,10 @@ const updateUserEmail = async (req, res) => {
         userPerm.email = newEmail;
         try {
           // Create new user
-          await User.create(userData);
+          const newUser = await User.create(userData);
           try {
             // Create new permissions
-            await UserPerm.create(userPerm);
+            const newUserPerm = await UserPerm.create(userPerm);
             try {
               // Delete old user
               User.delete(oldEmail);
@@ -198,7 +246,32 @@ const updateUserEmail = async (req, res) => {
                     { renter: newEmail },
                     { where: { renter: oldEmail } }
                   );
-                  return res.status(200).json({ message: "Email updated" });
+                  try {
+                    // Update all sessions email
+                    await Session.update(
+                      { email: newEmail },
+                      { where: { email: oldEmail } }
+                    );
+                    // Create updated access token
+                    const accessToken = signJWT(
+                      {
+                        email: newUser.email,
+                        name: newUser.name,
+                        surname: newUser.surname,
+                        role: newUserPerm.role,
+                        sessionId: req.user.sessionId,
+                      },
+                      "15m"
+                    );
+                    // Set updated access token in cookie
+                    res.cookie("accessToken", accessToken, {
+                      maxAge: 1.8e6, // 30 minutes
+                      httpOnly: true,
+                    });
+                    return res.status(200).json({ message: "Email updated" });
+                  } catch (error) {
+                    return res.status(500).json({ message: error.message });
+                  }
                 } catch (error) {
                   return res.status(500).json({ message: error.message });
                 }
@@ -226,19 +299,22 @@ const updateUserEmail = async (req, res) => {
 };
 
 const updateUserPassword = async (req, res) => {
+  const currUserRole = req.user.role;
+  const currUserEmail = req.user.email;
+  const email = req.params.email;
+  const { password, repassword } = req.body;
   // Validate body data
-  if (Object.keys(req.body)[0] !== "password") {
-    return res.sendStatus(422);
+  if (!password && !repassword) {
+    return res.status(422).json({ message: "Missing required fields!" });
+  } else if (password !== repassword) {
+    return res.status(422).json({ message: "Passwords must match!" });
   }
   try {
     // Check if user exists and validate user
-    const user = User.get(req.params.email);
+    const user = await User.get(email);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
-    } else if (
-      req.user.email !== req.params.email &&
-      req.user.role !== "admin"
-    ) {
+    } else if (currUserEmail !== email && currUserRole !== "admin") {
       return res.status(403).json({ message: "Forbidden" });
     }
     // Hash entered password
@@ -246,7 +322,7 @@ const updateUserPassword = async (req, res) => {
     try {
       // Update password in db
       await User.update({
-        email: req.params.email,
+        email,
         password: hash,
       });
       return res.status(200).json({ message: "Password updated" });
@@ -302,14 +378,16 @@ const deleteUser = async (req, res) => {
 
     try {
       // Delete all rented movies with this user
-      RentedMovie.destroy({ where: { renter: user.email } });
+      await RentedMovie.destroy({ where: { renter: user.email } });
       try {
         // Delete user
-        User.delete(user.email);
+        await User.delete(user.email);
         try {
           // Delete user permissions
-          UserPerm.delete(user.email);
-          return res.status(200).json({ deletedUser: user });
+          await UserPerm.delete(user.email);
+          return res
+            .status(200)
+            .json({ message: "User deleted successfully!" });
         } catch (error) {
           return res.status(500).json({ message: error.message });
         }
