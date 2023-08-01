@@ -46,6 +46,8 @@ router
    *              $ref: "#/components/schemas/GetMovieResponse"
    *      401:
    *        description: Unauthorized - User is not logged in
+   *      404:
+   *        description: Not Found - Movie does not exist
    */
   .get("/:name", requireUser, controller.getMovieByName)
   /**

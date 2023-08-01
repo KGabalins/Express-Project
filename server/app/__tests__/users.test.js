@@ -1,15 +1,11 @@
-const UserControler = require("../controllers/users")
-const app = require("../app");
 const request = require("supertest");
-const bcrypt = require("bcrypt")
+const { createServer } = require("../app");
 
+const app = createServer();
 const userPayload = {
-  name: "Test",
-  surname: "Mr",
-  email: "test@example.com",
+  email: "raivo.k.g@inbox.lv",
   password: "test1234",
 };
-
 
 const userInput = {
   name: "Test",
@@ -19,25 +15,33 @@ const userInput = {
   password: "test1234",
   repassword: "test1234",
 };
-describe("login", () => {});
 
-describe("register", () => {
-  it("returns status code 422 if request body is invalid", async () => {
-    const res = await request(app)
-      .post("/users")
-      .send({ email: "test@example.com" });
+// Users tests
+describe("Users", () => {
+  // POST tests
+  describe("POST /users/login", () => {
+    describe("Given a valid email and password in request body", () => {
+      it("Should return status code 200 set-cokies with access and refresh token in header and request body with session data", async () => {
+        const { header, body, statusCode } = await request(app)
+          .post("/users/login")
+          .send(userPayload);
 
-    expect(res.statusCode).toEqual(422);
-  });
-  it("returns status code 201 if request body is valid", async () => {
+        expect(body).toEqual(expect.objectContaining({
+          valid: true,
+          sessionId: expect.any(Number),
+          email: expect.any(String),
+          name: expect.any(String),
+          surname: expect.any(String),
+          role: expect.any(String),
+        }))
 
-    const createUserControllerMock = jest
-      .spyOn(UserControler, "addUser")
-      .mockReturnValueOnce(userPayload);
+        expect(header["set-cookie"]).toEqual(expect.arrayContaining([
+          expect.stringContaining("accessToken"),
+          expect.stringContaining("refreshToken"),
+        ]))
 
-    const { statusCode, body } = await request(app).post("/users").send(userInput);
-    expect(statusCode).toBe(201)
-    expect(await bcrypt.compare(userPayload.password, body.password)).toBe(true)
-    expect(createUserControllerMock).toHaveBeenCalledWith(userInput);
+        expect(statusCode).toBe(200);
+      });
+    });
   });
 });

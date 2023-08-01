@@ -9,30 +9,33 @@ const cookieParser = require("cookie-parser");
 const { deserializeUser } = require("./middleware/deserializeUser");
 require("dotenv").config();
 
+function createServer() {
+  const app = express();
 
-const app = express();
+  app.use(express.json());
+  app.use(cookieParser());
+  app.use(express.urlencoded({ extended: false }));
+  app.use(deserializeUser);
 
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: false }));
-app.use(deserializeUser);
+  // app.use(
+  //   expressWinston.logger({
+  //     transports: [new transports.Console()],
+  //     format: format.combine(
+  //       format.json(),
+  //       format.timestamp(),
+  //       format.prettyPrint()
+  //     ),
+  //     statusLevels: true,
+  //   })
+  // );
 
-app.use(
-  expressWinston.logger({
-    transports: [new transports.Console()],
-    format: format.combine(
-      format.json(),
-      format.timestamp(),
-      format.prettyPrint()
-    ),
-    statusLevels: true,
-  })
-);
+  app
+    .use("/movies", movieRoutes)
+    .use("/rentedMovies", rentedMoviesRoutes)
+    .use("/users", usersRoutes)
+    .use("/perm", permissionsRoutes);
 
-app
-  .use("/movies", movieRoutes)
-  .use("/rentedMovies", rentedMoviesRoutes)
-  .use("/users", usersRoutes)
-  .use("/perm", permissionsRoutes);
+  return app;
+}
 
-module.exports = app;
+module.exports = { createServer };
