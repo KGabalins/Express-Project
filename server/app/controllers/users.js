@@ -17,7 +17,6 @@ const getMyUser = (req, res) => {
 // Get user data by email
 const getUser = async (req, res) => {
   const email = req.params.email;
-  console.log(email);
   try {
     // Get user data
     const user = await User.get(email);

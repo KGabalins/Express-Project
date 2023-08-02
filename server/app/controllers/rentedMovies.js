@@ -102,7 +102,6 @@ const updateTime = async (req, res) => {
   if (!Number.isInteger(id)) {
     return res.status(400).json({ message: "Invalid id!" });
   }
-  console.log(method);
   // Validate request parameters
   if (!method || (method !== "+" && method !== "-")) {
     return res.status(422).json({ message: "Invalid request body!" });

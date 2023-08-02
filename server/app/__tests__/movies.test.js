@@ -28,12 +28,12 @@ const wrongMovieExample = {
 };
 const updateMovieExample = {
   price: 29.99,
-  stock: 20
-}
+  stock: 20,
+};
 const invalidUpdateMovieExample = {
   price: "Fifty five dollars",
-  name: 20
-}
+  name: 20,
+};
 
 // Movies tests
 describe("Movies", () => {
@@ -41,32 +41,32 @@ describe("Movies", () => {
   describe("POST /movies", () => {
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        const { statusCode } = await request(app)
-          .post(`/movies`)
-          .send(movieExample);
-        expect(statusCode).toBe(401);
+        request(app).post(`/movies`).send(movieExample).expect(401);
       });
     });
+
     describe("Given the user is logged in but not an admin", () => {
       it("Should return status code 403", async () => {
         const accessToken = signJWT(userPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .post(`/movies`)
           .send(movieExample)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(403);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(403);
       });
     });
+
     describe("Given an admin is logged in but request body is invalid", () => {
       it("Should return status code 403", async () => {
         const accessToken = signJWT(adminPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .post(`/movies`)
           .send(wrongMovieExample)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(422);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(422);
       });
     });
+
     describe("Given an admin is logged in and request body is valid", () => {
       it("Should return a movie object and status code 201", async () => {
         const accessToken = signJWT(adminPayload, "20m");
@@ -87,17 +87,19 @@ describe("Movies", () => {
         expect(statusCode).toBe(201);
       });
     });
+
     describe("Given an admin is logged in but a movie with that name already exists", () => {
       it("Should return status code 400", async () => {
         const accessToken = signJWT(adminPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .post(`/movies`)
           .send(movieExample)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(400);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(400);
       });
     });
   });
+
   // GET tests
   describe("GET /movies", () => {
     describe("Given the user is logged in", () => {
@@ -126,12 +128,14 @@ describe("Movies", () => {
         expect(statusCode).toBe(200);
       });
     });
+
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
         await request(app).get("/movies").expect(401);
       });
     });
   });
+
   describe("GET /movies/:name", () => {
     describe("Given the user is logged in and the movie exists", () => {
       it("Should return a movie object and status code 200", async () => {
@@ -154,103 +158,116 @@ describe("Movies", () => {
         expect(statusCode).toBe(200);
       });
     });
+
     describe("Given the user is logged but the movie doesn't exist", () => {
       it("Should return status code 404", async () => {
         const accessToken = signJWT(userPayload, "20m");
         const movieName = "ThisMovieProbablyDoesNotExist";
-        const { body, statusCode } = await request(app)
+        await request(app)
           .get(`/movies${movieName}`)
-          .set("Cookie", `accessToken=${accessToken}`);
-
-        expect(statusCode).toBe(404);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(404);
       });
     });
+
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
         await request(app).get("/movies").expect(401);
       });
     });
   });
+
   // PUT tests
   describe("PUT /movies/:name", () => {
     describe("Given an admin is logged in, movie exists and body is valid", () => {
       it("Should return status code 200", async () => {
         const accessToken = signJWT(adminPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .put(`/movies/${movieExample.name}`)
           .send(updateMovieExample)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(200);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(200);
       });
     });
+
     describe("Given an admin is logged in, movie exists but body is invalid", () => {
       it("Should return status code 422", async () => {
         const accessToken = signJWT(adminPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .put(`/movies/${movieExample.name}`)
           .send(invalidUpdateMovieExample)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(422);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(422);
       });
     });
+
     describe("Given a user is logged in", () => {
       it("Should return status code 403", async () => {
         const accessToken = signJWT(userPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .put(`/movies/${movieExample.name}`)
           .send(updateMovieExample)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(403);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(403);
       });
     });
+
     describe("Given an admin is logged in but movie doesn't exist", () => {
       it("Should return status code 404", async () => {
         const accessToken = signJWT(adminPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .put(`/movies/ThisMovieProbablyDoesNotExist`)
           .send(updateMovieExample)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(404);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(404);
       });
     });
+
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app).put(`/movies/${movieExample.name}`).send(updateMovieExample).expect(401);
+        await request(app)
+          .put(`/movies/${movieExample.name}`)
+          .send(updateMovieExample)
+          .expect(401);
       });
     });
   });
+
   // DELETE tests
   describe("DELETE /movies/:name", () => {
     describe("Given a user is logged in but not an admin", () => {
       it("Should return status code 403", async () => {
         const accessToken = signJWT(userPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .delete(`/movies/${movieExample.name}`)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(403);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(403);
       });
     });
+
     describe("Given no user is logged in", () => {
       it("Should return status code 401", async () => {
         await request(app).delete(`/movies/${movieExample.name}`).expect(401);
       });
     });
+
     describe("Given an admin is logged in and movie exists", () => {
       it("Should return status code 200", async () => {
         const accessToken = signJWT(adminPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .delete(`/movies/${movieExample.name}`)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(200);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(200);
       });
     });
+
     describe("Given an admin is logged in but movie does not exist", () => {
       it("Should return status code 404", async () => {
         const accessToken = signJWT(adminPayload, "20m");
-        const { statusCode } = await request(app)
+        await request(app)
           .delete(`/movies/${movieExample.name}`)
-          .set("Cookie", `accessToken=${accessToken}`);
-        expect(statusCode).toBe(404);
+          .set("Cookie", `accessToken=${accessToken}`)
+          .expect(404);
       });
     });
   });

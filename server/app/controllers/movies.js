@@ -30,7 +30,7 @@ const addMovie = async (req, res) => {
     !req.body.name ||
     !req.body.genre ||
     !req.body.price ||
-    !req.body.stock ||
+    (!req.body.stock && req.body.stock !== 0) ||
     !Number.isInteger(req.body.stock) ||
     !Number.isFinite(req.body.price)
   ) {
