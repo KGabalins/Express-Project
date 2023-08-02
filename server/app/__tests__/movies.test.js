@@ -21,20 +21,83 @@ const movieExample = {
   price: 99.99,
   stock: 99,
 };
-const movieExists = {
-  name: "Die Hard",
-  genre: "Action",
-  price: 99.99,
-  stock: 99,
-};
 const wrongMovieExample = {
   nams: "Test",
   age: 5,
   stock: "99.99s",
 };
+const updateMovieExample = {
+  price: 29.99,
+  stock: 20
+}
+const invalidUpdateMovieExample = {
+  price: "Fifty five dollars",
+  name: 20
+}
 
 // Movies tests
 describe("Movies", () => {
+  // POST tests
+  describe("POST /movies", () => {
+    describe("Given the user is not logged in", () => {
+      it("Should return status code 401", async () => {
+        const { statusCode } = await request(app)
+          .post(`/movies`)
+          .send(movieExample);
+        expect(statusCode).toBe(401);
+      });
+    });
+    describe("Given the user is logged in but not an admin", () => {
+      it("Should return status code 403", async () => {
+        const accessToken = signJWT(userPayload, "20m");
+        const { statusCode } = await request(app)
+          .post(`/movies`)
+          .send(movieExample)
+          .set("Cookie", `accessToken=${accessToken}`);
+        expect(statusCode).toBe(403);
+      });
+    });
+    describe("Given an admin is logged in but request body is invalid", () => {
+      it("Should return status code 403", async () => {
+        const accessToken = signJWT(adminPayload, "20m");
+        const { statusCode } = await request(app)
+          .post(`/movies`)
+          .send(wrongMovieExample)
+          .set("Cookie", `accessToken=${accessToken}`);
+        expect(statusCode).toBe(422);
+      });
+    });
+    describe("Given an admin is logged in and request body is valid", () => {
+      it("Should return a movie object and status code 201", async () => {
+        const accessToken = signJWT(adminPayload, "20m");
+        const { name, genre, price, stock } = movieExample;
+        const { body, statusCode } = await request(app)
+          .post(`/movies`)
+          .send(movieExample)
+          .set("Cookie", `accessToken=${accessToken}`);
+        expect(body).toEqual(
+          expect.objectContaining({
+            id: expect.any(Number),
+            name,
+            genre,
+            price,
+            stock,
+          })
+        );
+        expect(statusCode).toBe(201);
+      });
+    });
+    describe("Given an admin is logged in but a movie with that name already exists", () => {
+      it("Should return status code 400", async () => {
+        const accessToken = signJWT(adminPayload, "20m");
+        const { statusCode } = await request(app)
+          .post(`/movies`)
+          .send(movieExample)
+          .set("Cookie", `accessToken=${accessToken}`);
+        expect(statusCode).toBe(400);
+      });
+    });
+  });
   // GET tests
   describe("GET /movies", () => {
     describe("Given the user is logged in", () => {
@@ -108,217 +171,87 @@ describe("Movies", () => {
       });
     });
   });
-  // POST tests
-  describe("POST /movies", () => {
-    describe("Given the user is not logged in", () => {
-      it("Should return status code 401", async () => {
-        const { statusCode } = await request(app)
-          .post(`/movies`)
-          .send(movieExample);
-
-        expect(statusCode).toBe(401);
-      });
-    });
-    describe("Given the user is logged in but not an admin", () => {
-      it("Should return status code 403", async () => {
-        const accessToken = signJWT(userPayload, "20m");
-        const { statusCode } = await request(app)
-          .post(`/movies`)
-          .send(movieExample)
-          .set("Cookie", `accessToken=${accessToken}`);
-
-        expect(statusCode).toBe(403);
-      });
-    });
-    describe("Given an admin is logged in but request body is invalid", () => {
-      it("Should return status code 403", async () => {
+  // PUT tests
+  describe("PUT /movies/:name", () => {
+    describe("Given an admin is logged in, movie exists and body is valid", () => {
+      it("Should return status code 200", async () => {
         const accessToken = signJWT(adminPayload, "20m");
         const { statusCode } = await request(app)
-          .post(`/movies`)
-          .send(wrongMovieExample)
+          .put(`/movies/${movieExample.name}`)
+          .send(updateMovieExample)
           .set("Cookie", `accessToken=${accessToken}`);
-
+        expect(statusCode).toBe(200);
+      });
+    });
+    describe("Given an admin is logged in, movie exists but body is invalid", () => {
+      it("Should return status code 422", async () => {
+        const accessToken = signJWT(adminPayload, "20m");
+        const { statusCode } = await request(app)
+          .put(`/movies/${movieExample.name}`)
+          .send(invalidUpdateMovieExample)
+          .set("Cookie", `accessToken=${accessToken}`);
         expect(statusCode).toBe(422);
       });
     });
-    describe("Given an admin is logged in but a movie with that name already exists", () => {
+    describe("Given a user is logged in", () => {
       it("Should return status code 403", async () => {
-        const accessToken = signJWT(adminPayload, "20m");
+        const accessToken = signJWT(userPayload, "20m");
         const { statusCode } = await request(app)
-          .post(`/movies`)
-          .send(movieExists)
+          .put(`/movies/${movieExample.name}`)
+          .send(updateMovieExample)
           .set("Cookie", `accessToken=${accessToken}`);
-
-        expect(statusCode).toBe(400);
+        expect(statusCode).toBe(403);
       });
     });
-    describe("Given an admin is logged in and request body is valid", () => {
-      it("Should return a movie object and status code 201", async () => {
+    describe("Given an admin is logged in but movie doesn't exist", () => {
+      it("Should return status code 404", async () => {
         const accessToken = signJWT(adminPayload, "20m");
-        const { body, statusCode } = await request(app)
-          .post(`/movies`)
-          .send(movieExample)
+        const { statusCode } = await request(app)
+          .put(`/movies/ThisMovieProbablyDoesNotExist`)
+          .send(updateMovieExample)
           .set("Cookie", `accessToken=${accessToken}`);
-
-        expect(body).toEqual(
-          expect.objectContaining({
-            id: expect.any(Number),
-            name: expect.any(String),
-            genre: expect.any(String),
-            price: expect.any(Number),
-            stock: expect.any(Number),
-          })
-        );
-
-        expect(statusCode).toBe(201);
+        expect(statusCode).toBe(404);
+      });
+    });
+    describe("Given the user is not logged in", () => {
+      it("Should return status code 401", async () => {
+        await request(app).put(`/movies/${movieExample.name}`).send(updateMovieExample).expect(401);
+      });
+    });
+  });
+  // DELETE tests
+  describe("DELETE /movies/:name", () => {
+    describe("Given a user is logged in but not an admin", () => {
+      it("Should return status code 403", async () => {
+        const accessToken = signJWT(userPayload, "20m");
+        const { statusCode } = await request(app)
+          .delete(`/movies/${movieExample.name}`)
+          .set("Cookie", `accessToken=${accessToken}`);
+        expect(statusCode).toBe(403);
+      });
+    });
+    describe("Given no user is logged in", () => {
+      it("Should return status code 401", async () => {
+        await request(app).delete(`/movies/${movieExample.name}`).expect(401);
+      });
+    });
+    describe("Given an admin is logged in and movie exists", () => {
+      it("Should return status code 200", async () => {
+        const accessToken = signJWT(adminPayload, "20m");
+        const { statusCode } = await request(app)
+          .delete(`/movies/${movieExample.name}`)
+          .set("Cookie", `accessToken=${accessToken}`);
+        expect(statusCode).toBe(200);
+      });
+    });
+    describe("Given an admin is logged in but movie does not exist", () => {
+      it("Should return status code 404", async () => {
+        const accessToken = signJWT(adminPayload, "20m");
+        const { statusCode } = await request(app)
+          .delete(`/movies/${movieExample.name}`)
+          .set("Cookie", `accessToken=${accessToken}`);
+        expect(statusCode).toBe(404);
       });
     });
   });
 });
-
-// describe("Integration tests for the movies API", () => {
-//   it("GET /movies - success - get all the books", async () => {
-//     const { body, statusCode } = await request(app).get("/movies");
-
-//     expect(body).toEqual(
-//       expect.arrayContaining([
-//         expect.objectContaining({
-//           id: expect.any(Number),
-//           name: expect.any(String),
-//           genre: expect.any(String),
-//           price: expect.any(Number),
-//           stock: expect.any(Number),
-//         }),
-//       ])
-//     );
-
-//     expect(statusCode).toBe(200);
-//   });
-// });
-
-// describe("Movies API", () => {
-//   it("GET /movies ---> array of movies", () => {
-//     return supertest(app)
-//       .get("/movies")
-//       .expect("Content-type", /json/)
-//       .expect(200)
-//       .then((response) => {
-//         expect(response.body).toEqual(
-//           expect.arrayContaining([
-//             expect.objectContaining({
-//               id: expect.any(Number),
-//               name: expect.any(String),
-//               genre: expect.any(String),
-//               price: expect.any(String),
-//               stock: expect.any(Number),
-//             }),
-//           ])
-//         );
-//       });
-//   });
-
-// it("GET /movies/:name ---> specific movie by name", () => {
-//   return supertest(app)
-//     .get("/movies/Jaws")
-//     .expect("Content-type", /json/)
-//     .expect(200)
-//     .then((response) => {
-//       expect(response.body).toEqual(
-//         expect.objectContaining({
-//           id: expect.any(Number),
-//           name: expect.any(String),
-//           genre: expect.any(String),
-//           price: expect.any(String),
-//           stock: expect.any(Number),
-//         })
-//       );
-//     });
-// });
-
-// it("GET /movies/:name ---> 404 if not found", () => {
-//   return supertest(app)
-//     .get("/movies/ThereProbablyIsNoMovieWithThisName")
-//     .expect(404);
-// });
-
-// it("POST /movies ---> create movie", () => {
-//   return supertest(app)
-//     .post("/movies")
-//     .send({
-//       name: "Testing",
-//       genre: "Testing",
-//       price: "4.99$",
-//       stock: 2,
-//     })
-//     .expect("Content-type", /json/)
-//     .expect(201)
-//     .then((response) => {
-//       expect(response.body).toEqual(
-//         expect.objectContaining({
-//           name: "Testing",
-//           genre: "Testing",
-//           price: "4.99$",
-//           stock: 2,
-//         })
-//       );
-//     });
-// });
-
-// it("POST /movies ---> validate name", () => {
-//   return supertest(app)
-//     .post("/movies")
-//     .send({
-//       name: "Jaws",
-//       genre: "Action",
-//       price: "4.99$",
-//       stock: 2,
-//     })
-//     .expect(400);
-// });
-
-// it("POST /movies ---> validate request body", () => {
-//   return supertest(app)
-//     .post("/movies")
-//     .send({
-//       genre: "Testing",
-//     })
-//     .expect(422);
-// });
-
-// it("PUT /movies/:name ---> update movie stock by name", () => {
-//   return supertest(app)
-//     .put("/movies/Jaws")
-//     .send({
-//       stock: 10,
-//     })
-//     .expect(200);
-// });
-
-// it("PUT /movies/:name ---> validate request body", () => {
-//   return supertest(app)
-//     .put("/movies/Jaws")
-//     .send({
-//       name: "five",
-//     })
-//     .expect(422);
-// });
-
-// it("PUT /movies/:name ---> validate movie name", () => {
-//   return supertest(app)
-//     .put("/movies/ThisMovieProbablyDoesntExist")
-//     .send({
-//       stock: 10,
-//     })
-//     .expect(404);
-// });
-
-// it("DELETE /movies/:name ---> delete movie by name", () => {
-//   return supertest(app).delete("/movies/Die Hard").expect(200);
-// });
-
-// it("DELETE /movies/:name ---> validate movie name", () => {
-//   return supertest(app)
-//     .delete("/movies/ThisMovieProbablyDoesntExist")
-//     .expect(404);
-// });
-// });

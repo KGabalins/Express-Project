@@ -2,8 +2,6 @@ const { Sequelize } = require("sequelize");
 // require("dotenv").config({path: "../../.env"});
 require("dotenv").config();
 
-console.log(process.env.PGDATABASE, process.env.PGUSER, process.env.PGPASSWORD, process.env.PGHOST)
-
 const db = new Sequelize(
   process.env.PGDATABASE,
   process.env.PGUSER,
