@@ -121,8 +121,6 @@ router
    *        description: Password successfully updated
    *      401:
    *        description: Unauthorized - User is not logged in
-   *      403:
-   *        description: Forbiden - Not the same user or not an admin
    *      409:
    *        description: Not found - User with this email doesn't exist
    *      422:

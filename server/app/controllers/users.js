@@ -155,8 +155,11 @@ const loginUser = async (req, res) => {
               return res.status(500).json({ message: error.message });
             }
           } else {
-            if(!sessionExists.valid) {
-              await Session.update({ valid: true }, { where: { sessionId: sessionExists.sessionId } });
+            if (!sessionExists.valid) {
+              await Session.update(
+                { valid: true },
+                { where: { sessionId: sessionExists.sessionId } }
+              );
               sessionExists.valid = true;
             }
             // Create access token
@@ -350,15 +353,8 @@ const logoutUser = async (req, res) => {
       { valid: false },
       { where: { sessionId: req.user.sessionId } }
     );
-    try {
-      const session = await Session.findOne({
-        where: { sessionId: req.user.sessionId },
-      });
-      // Respond with success message
-      return res.status(200).json(session);
-    } catch (error) {
-      return res.status(500).send({ message: error.message });
-    }
+    // Respond with success message
+    return res.status(200).json({ message: "User logged out successfully!" });
   } catch (error) {
     return res.status(500).send({ message: error.message });
   }
@@ -384,9 +380,14 @@ const deleteUser = async (req, res) => {
         try {
           // Delete user permissions
           await UserPerm.delete(user.email);
-          return res
-            .status(200)
-            .json({ message: "User deleted successfully!" });
+          try {
+            await Session.destroy({where: {email: user.email}})
+            return res
+              .status(200)
+              .json({ message: "User deleted successfully!" });
+          } catch (error) {
+            return res.status(500).json({ message: error.message });
+          }
         } catch (error) {
           return res.status(500).json({ message: error.message });
         }
