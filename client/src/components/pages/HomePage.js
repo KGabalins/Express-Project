@@ -20,12 +20,7 @@ const HomePage = () => {
         });
         setAvailableMovies(response.data);
       })
-      .catch((error) => {
-        console.log(error)
-        // if (error.response.status === 404) {
-        //   setAvailableMovies([]);
-        // }
-      });
+      .catch(() => {});
   }
 
   function rentMovieHandler(rentedMovieData) {
@@ -44,17 +39,16 @@ const HomePage = () => {
   return (
     <div className={classes.main}>
       <h2 className={classes.title}>Available Movies</h2>
-      {availableMovies.length ? 
-            <AvailableMoviesList
-            movies={availableMovies}
-            onRentMovie={rentMovieHandler}
-          />
-          :
-          <div>
-            <p>No movies available</p>
-          </div>
-      }
-
+      {availableMovies.length ? (
+        <AvailableMoviesList
+          movies={availableMovies}
+          onRentMovie={rentMovieHandler}
+        />
+      ) : (
+        <div>
+          <p>No movies available</p>
+        </div>
+      )}
     </div>
   );
 };

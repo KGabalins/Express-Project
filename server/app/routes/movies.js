@@ -1,8 +1,9 @@
-const express = require("express");
+import express from "express";
+import * as controller from "../controllers/movies.js";
+import { requireUser } from "../middleware/requireUser.js";
+import { requireAdmin } from "../middleware/requireAdmin.js";
+
 const router = express.Router();
-const controller = require("../controllers/movies");
-const { requireUser } = require("../middleware/requireUser");
-const { requireAdmin } = require("../middleware/requireAdmin");
 
 router
   /**
@@ -141,4 +142,4 @@ router
    */
   .delete("/:name", requireUser, requireAdmin, controller.deleteMovie);
 
-module.exports = router;
+export default router;

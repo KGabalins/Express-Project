@@ -1,7 +1,7 @@
-const { DataTypes } = require("sequelize");
-const db = require("../config/postgres");
+import { DataTypes } from "sequelize";
+import db from "../config/postgres.js";
 
-const RentedMovie = db.define("rentedmovie", {
+export const RentedMovie = db.define("rentedmovie", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -29,11 +29,6 @@ const RentedMovie = db.define("rentedmovie", {
     allowNull: false,
   },
 });
-
-module.exports = {
-  RentedMovie,
-};
-
 // Swagger rented movie schemas
 
 /**

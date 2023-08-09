@@ -1,7 +1,7 @@
-const { Session } = require("../models/sessions");
-const { verifyJWT, signJWT } = require("../utils/jwt.utils");
+import { Session } from "../models/sessions.js";
+import { verifyJWT, signJWT } from "../utils/jwt.utils.js";
 
-async function deserializeUser(req, res, next) {
+export async function deserializeUser(req, res, next) {
   const { accessToken, refreshToken } = req.cookies;
 
   if (!accessToken) return next();
@@ -44,7 +44,7 @@ async function deserializeUser(req, res, next) {
       maxAge: 1.8e6, // 30 minutes
       httpOnly: true,
     });
-    
+
     req.user = verifyJWT(newAccessToken).payload;
   } catch (error) {
     return res.status(500).send({ message: error.message });
@@ -52,5 +52,3 @@ async function deserializeUser(req, res, next) {
 
   return next();
 }
-
-module.exports = { deserializeUser };

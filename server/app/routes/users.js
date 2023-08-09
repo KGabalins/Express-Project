@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import * as controller from "../controllers/users.js";
+import { requireUser } from "../middleware/requireUser.js";
+
 const router = express.Router();
-const controller = require("../controllers/users");
-const { requireUser } = require("../middleware/requireUser");
 
 router
   /**
@@ -22,6 +23,22 @@ router
    *        description: Unauthorized - User is not logged in
    */
   .get("/", requireUser, controller.getMyUser)
+    /**
+   * @openapi
+   * /users/isLoggedIn:
+   *  get:
+   *    tags:
+   *    - Users
+   *    summary: Get boolean is user logged in
+   *    responses:
+   *      200:
+   *        description: Success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              
+   */
+  .get("/isLoggedIn", controller.getIsLoggedIn)
   /**
    * @openapi
    * /users/{email}:
@@ -201,4 +218,4 @@ router
    */
   .delete("/:email", requireUser, controller.deleteUser);
 
-module.exports = router;
+export default router;

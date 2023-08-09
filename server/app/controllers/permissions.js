@@ -1,6 +1,6 @@
-const { UserPerm } = require("../models/userPerm");
+import { UserPerm } from "../models/userPerm.js";
 
-const updateUserPerm = async (req, res) => {
+export const updateUserPerm = async (req, res) => {
   const email = req.params.email;
   const role = req.body.role;
   // Validate body data
@@ -25,8 +25,4 @@ const updateUserPerm = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-};
-
-module.exports = {
-  updateUserPerm,
 };

@@ -20,9 +20,7 @@ const YourMoviesPage = () => {
         });
         setRentedMovies(response.data);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch(() => {});
   }
 
   async function removeMovieHandler(removedMovieData) {
@@ -55,18 +53,17 @@ const YourMoviesPage = () => {
   return (
     <div className={classes.main}>
       <h2 className={classes.title}>Your movies</h2>
-      {rentedMovies.length ? 
-            <YourMoviesList
-            movies={rentedMovies}
-            onRemoveMovie={removeMovieHandler}
-            onChangeTime={changeTimeHandler}
-          />
-          :
-          <div>
-            <p>You haven't rented any movie!</p>
-          </div>
-      }
-
+      {rentedMovies.length ? (
+        <YourMoviesList
+          movies={rentedMovies}
+          onRemoveMovie={removeMovieHandler}
+          onChangeTime={changeTimeHandler}
+        />
+      ) : (
+        <div>
+          <p>You haven't rented any movie!</p>
+        </div>
+      )}
     </div>
   );
 };

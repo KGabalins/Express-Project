@@ -7,8 +7,19 @@ import axios from "axios";
 const LoginPage = () => {
   const navigate = useNavigate();
 
-  // If currentUser state is trutsy then navigate to home screen
-  useEffect(() => {});
+  useEffect(() => {
+    axios
+      .get("/users/isLoggedIn")
+      .then((response) => {
+        const isLoggedIn = response.data.isLoggedIn;
+        if (isLoggedIn) {
+          navigate("/", { replace: true });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
 
   // Login form submition handler
   function loginHandler({ email, password }, error) {

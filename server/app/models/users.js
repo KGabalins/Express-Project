@@ -1,4 +1,4 @@
-const dynamoose = require("dynamoose");
+import dynamoose from "dynamoose";
 
 dynamoose.aws.ddb.local("http://localhost:4000");
 
@@ -15,7 +15,6 @@ const userSchema = new dynamoose.Schema({
   surname: {
     type: String,
     required: false,
-    default: "",
   },
   password: {
     type: String,
@@ -23,11 +22,7 @@ const userSchema = new dynamoose.Schema({
   },
 });
 
-const User = dynamoose.model("users", userSchema);
-
-module.exports = {
-  User
-};
+export const User = dynamoose.model("users", userSchema);
 
 // Swagger user schemas
 

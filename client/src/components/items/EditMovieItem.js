@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import classes from "./EditMovieItem.module.css";
-import axios from "axios";
 
 const EditMovieItem = (props) => {
   const [selectedMovie, setSelectedMovie] = useState({
@@ -13,7 +12,7 @@ const EditMovieItem = (props) => {
   useEffect(() => {
     nameInputRef.current.value = selectedMovie.name;
     genreInputRef.current.value = selectedMovie.genre;
-    priceInputRef.current.value = selectedMovie.price.replace("$", "");
+    priceInputRef.current.value = selectedMovie.price;
     stockInputRef.current.value = selectedMovie.stock;
   }, [selectedMovie]);
 
@@ -26,7 +25,7 @@ const EditMovieItem = (props) => {
     e.preventDefault();
 
     const enteredName = nameInputRef.current.value;
-    const enteredPrice = priceInputRef.current.value + "$";
+    const enteredPrice = Number.parseFloat(priceInputRef.current.value);
     const enteredStock = Number.parseInt(stockInputRef.current.value);
 
     const editedMovie = {
@@ -34,7 +33,6 @@ const EditMovieItem = (props) => {
       price: enteredPrice,
       stock: enteredStock,
     };
-
     props.onEditMovie(editedMovie);
   }
 
@@ -42,7 +40,6 @@ const EditMovieItem = (props) => {
     if (!selectedMovie.name) {
       alert("No movie selected");
     } else {
-      // console.log(selectedMovie);
       props.onDeleteMovie(selectedMovie);
       setSelectedMovie({name: "", genre: "", price: "", stock: ""});
     }
@@ -95,7 +92,7 @@ const EditMovieItem = (props) => {
             ref={priceInputRef}
             name="priceInput"
             step="0.01"
-            defaultValue={selectedMovie.price.replace("$", "")}
+            defaultValue={selectedMovie.price}
           ></input>
         </div>
         <div className={classes.input}>

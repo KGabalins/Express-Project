@@ -1,6 +1,9 @@
-const { Sequelize } = require("sequelize");
+import { Sequelize } from "sequelize";
+// require("dotenv").config();
+import dotenv from "dotenv"
+dotenv.config()
 // require("dotenv").config({path: "../../.env"});
-require("dotenv").config();
+
 
 const db = new Sequelize(
   process.env.PGDATABASE,
@@ -22,4 +25,5 @@ const db = new Sequelize(
   }
 );
 
-module.exports = db;
+// module.exports = db;
+export default db;

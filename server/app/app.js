@@ -1,20 +1,21 @@
-const express = require("express");
-const movieRoutes = require("./routes/movies");
-const rentedMoviesRoutes = require("./routes/rentedMovies");
-const usersRoutes = require("./routes/users");
-const permissionsRoutes = require("./routes/permissions");
-const expressWinston = require("express-winston");
-const { transports, format } = require("winston");
-const cookieParser = require("cookie-parser");
-const { deserializeUser } = require("./middleware/deserializeUser");
-require("dotenv").config();
+import express, { json, urlencoded } from "express";
+import movieRoutes from "./routes/movies.js";
+import rentedMoviesRoutes from "./routes/rentedMovies.js";
+import usersRoutes from "./routes/users.js";
+import permissionsRoutes from "./routes/permissions.js";
+import expressWinston from "express-winston";
+import { transports, format } from "winston";
+import cookieParser from "cookie-parser";
+import { deserializeUser } from "./middleware/deserializeUser.js";
+import dotenv from "dotenv"
+dotenv.config()
 
-function createServer() {
+export function createServer() {
   const app = express();
 
-  app.use(express.json());
+  app.use(json());
   app.use(cookieParser());
-  app.use(express.urlencoded({ extended: false }));
+  app.use(urlencoded({ extended: false }));
   app.use(deserializeUser);
 
   // app.use(
@@ -37,5 +38,3 @@ function createServer() {
 
   return app;
 }
-
-module.exports = { createServer };

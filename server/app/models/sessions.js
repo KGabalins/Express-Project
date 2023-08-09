@@ -1,7 +1,7 @@
-const { DataTypes } = require("sequelize");
-const db = require("../config/postgres");
+import { DataTypes } from "sequelize";
+import db from "../config/postgres.js";
 
-const Session = db.define("session", {
+export const Session = db.define("session", {
   sessionId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -31,9 +31,6 @@ const Session = db.define("session", {
   },
 });
 
-module.exports = {
-  Session,
-};
 
 // Swagger session schemas
 

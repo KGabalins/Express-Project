@@ -1,9 +1,9 @@
-const { RentedMovie } = require("../models/rentedMovies");
-const { Movie } = require("../models/movies");
-const { User } = require("../models/users");
-const moviesController = require("../controllers/movies");
+import { RentedMovie } from "../models/rentedMovies.js";
+import { Movie } from "../models/movies.js";
+import { User } from "../models/users.js";
+// import moviesController from "../controllers/movies.js";
 
-const getMyMovies = async (req, res) => {
+export const getMyMovies = async (req, res) => {
   const { email } = req.user;
   try {
     // Get all rented movies by renter email
@@ -14,7 +14,7 @@ const getMyMovies = async (req, res) => {
   }
 };
 
-const getMoviesByEmail = async (req, res) => {
+export const getMoviesByEmail = async (req, res) => {
   const email = req.params.email;
   try {
     // Check if user exists
@@ -36,7 +36,7 @@ const getMoviesByEmail = async (req, res) => {
   }
 };
 
-const getMovieById = async (req, res) => {
+export const getMovieById = async (req, res) => {
   const id = parseFloat(req.params.id);
   // Validate parameter
   if (!Number.isInteger(id)) {
@@ -57,7 +57,7 @@ const getMovieById = async (req, res) => {
   }
 };
 
-const addMovie = async (req, res) => {
+export const addMovie = async (req, res) => {
   const name = req.params.name;
   try {
     // Check if movie exists and if stock is available
@@ -94,7 +94,7 @@ const addMovie = async (req, res) => {
   }
 };
 
-const updateTime = async (req, res) => {
+export const updateTime = async (req, res) => {
   const { email } = req.user;
   const id = parseFloat(req.params.id);
   const method = req.body.method;
@@ -150,7 +150,7 @@ const updateTime = async (req, res) => {
   }
 };
 
-const deleteMovie = async (req, res) => {
+export const deleteMovie = async (req, res) => {
   const { email } = req.user;
   const id = parseFloat(req.params.id);
   // Validate parameter
@@ -201,11 +201,3 @@ const deleteMovie = async (req, res) => {
   }
 };
 
-module.exports = {
-  getMyMovies,
-  getMoviesByEmail,
-  getMovieById,
-  addMovie,
-  updateTime,
-  deleteMovie,
-};

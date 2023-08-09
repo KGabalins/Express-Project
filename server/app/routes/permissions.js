@@ -1,8 +1,9 @@
-const express = require("express");
+import express from "express";
+import * as controller from "../controllers/permissions.js";
+import { requireUser } from "../middleware/requireUser.js";
+import { requireAdmin } from "../middleware/requireAdmin.js";
+
 const router = express.Router();
-const controller = require("../controllers/permissions");
-const { requireUser } = require("../middleware/requireUser");
-const { requireAdmin } = require("../middleware/requireAdmin");
 
 router
   /**
@@ -40,4 +41,4 @@ router
    */
   .put("/:email", requireUser, requireAdmin, controller.updateUserPerm);
 
-module.exports = router;
+export default router;

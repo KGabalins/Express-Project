@@ -1,7 +1,7 @@
-const { Movie } = require("../models/movies");
+import { Movie } from "../models/movies.js";
 
 // Get all movies
-const getMovies = async (req, res) => {
+export const getMovies = async (req, res) => {
   try {
     // Get all movies from db
     const movies = await Movie.findAll();
@@ -11,7 +11,7 @@ const getMovies = async (req, res) => {
   }
 };
 
-const getMovieByName = async (req, res) => {
+export const getMovieByName = async (req, res) => {
   try {
     // Check if movie exists
     const movie = await Movie.findOne({ where: { name: req.params.name } });
@@ -24,7 +24,7 @@ const getMovieByName = async (req, res) => {
   }
 };
 
-const addMovie = async (req, res) => {
+export const addMovie = async (req, res) => {
   // Validate request parameters
   if (
     !req.body.name ||
@@ -55,7 +55,7 @@ const addMovie = async (req, res) => {
   }
 };
 
-const updateMovie = async (req, res) => {
+export const updateMovie = async (req, res) => {
   const name = req.params.name;
   const { price, stock } = req.body;
   // Validate request parameters
@@ -80,7 +80,7 @@ const updateMovie = async (req, res) => {
   }
 };
 
-const deleteMovie = async (req, res) => {
+export const deleteMovie = async (req, res) => {
   try {
     // Check if movie exists
     const movie = await Movie.findOne({ where: { name: req.params.name } });
@@ -97,12 +97,4 @@ const deleteMovie = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-};
-
-module.exports = {
-  getMovies,
-  getMovieByName,
-  addMovie,
-  updateMovie,
-  deleteMovie,
 };

@@ -18,28 +18,18 @@ const EditMoviePage = () => {
         });
         setAvailableMovies(response.data);
       })
-      .catch((error) => {
-        console.log(error.message);
-      });
+      .catch(() => {});
   }
 
   function deleteMovieHandler(selectedMovie) {
     axios.delete(`/movies/${selectedMovie.name}`).then(() => {
       renderMovies();
-    }).catch((error) => {
-      console.log(error.message);
-    })
+    });
   }
 
   function editMovieHandler(editedMovie) {
-    axios
-      .put("/movies/", editedMovie)
-      .then(
-        renderMovies()
-      )
-      .catch((err) => {
-        console.log(err);
-      });
+    const { name, price, stock } = editedMovie;
+    axios.put(`/movies/${name}`, { price, stock }).then(renderMovies());
   }
 
   return (

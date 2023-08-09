@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import classes from "./MainNavigation.module.css";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 // Main navigation bar
@@ -14,10 +14,7 @@ function MainNavigation() {
       .then((resp) => {
         setCurrUser(resp.data);
       })
-      .catch((err) => {
-        console.log(err);
-        navigate("/login", { replace: true });
-      });
+      .catch(() => {});
   }, []);
 
   function logoutHandler() {

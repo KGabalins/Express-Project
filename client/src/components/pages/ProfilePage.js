@@ -6,20 +6,41 @@ const ProfilePage = () => {
   const [currUser, setCurrUser] = useState({});
 
   useEffect(() => {
+    getUserData();
+  }, []);
+
+  function getUserData() {
     axios
       .get("/users/")
       .then((response) => {
         setCurrUser(response.data);
       })
-      .catch((error) => console.log(error));
-  }, []);
-
-  function changeEmail () {
-    const newEmail = prompt("Enter new email: ");
+      .catch(() => {});
   }
 
-  function changePassword () {
-    const newPassword = prompt("Enter new password: ");
+  function changeEmail() {
+    const newEmail = prompt("Enter your new email: ");
+    const reNewEmail = prompt("Re-enter your new email: ");
+    axios
+      .put(`/users`, { email: newEmail, reemail: reNewEmail })
+      .then(() => {
+        alert("Email changed successfully!");
+        getUserData();
+      })
+      .catch((error) => {
+        alert(error.response.data.message)
+      });
+  }
+
+  function changePassword() {
+    const newPassword = prompt("Enter your new password: ");
+    const reNewPassword = prompt("Re-enter your new password: ")
+
+    axios.put(`/users/${currUser.email}`, {password: newPassword, repassword: reNewPassword}).then(() => {
+      alert("Password changed successfully!");
+    }).catch(error => {
+      alert(error.response.data.message)
+    })
   }
 
   return (

@@ -1,21 +1,33 @@
-const { User } = require("../models/users");
-const { UserPerm } = require("../models/userPerm");
-const { RentedMovie } = require("../models/rentedMovies");
-const { Session } = require("../models/sessions");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { signJWT } = require("../utils/jwt.utils");
-const { validateEmail } = require("../utils/validateEmail");
-require("dotenv").config();
+import { User } from "../models/users.js";
+import { UserPerm } from "../models/userPerm.js";
+import { RentedMovie } from "../models/rentedMovies.js";
+import { Session } from "../models/sessions.js";
+import bcrypt from "bcrypt";
+import { signJWT } from "../utils/jwt.utils.js";
+import { validateEmail } from "../utils/validateEmail.js";
+import dotenv from "dotenv";
+import {
+  validateEmailUpdate,
+  validateRegistration,
+} from "../utils/userValidation.js";
+dotenv.config();
 
 // Get loged in user data
-const getMyUser = (req, res) => {
+export const getMyUser = (req, res) => {
   const { email, name, surname, role } = req.user;
   return res.status(200).json({ email, name, surname, role });
 };
 
+// Get information if user is logged in
+export const getIsLoggedIn = (req, res) => {
+  if (!req.user) {
+    return res.status(200).json({ isLoggedIn: false });
+  }
+  return res.status(200).json({ isLoggedIn: true });
+};
+
 // Get user data by email
-const getUser = async (req, res) => {
+export const getUser = async (req, res) => {
   const email = req.params.email;
   try {
     // Get user data
@@ -41,31 +53,16 @@ const getUser = async (req, res) => {
   }
 };
 
-const addUser = async (req, res) => {
+export const addUser = async (req, res) => {
   // Get data from request body
   const { email, reemail, password, repassword, name, surname } = req.body;
   const role = "user";
   // Validate body data
-  if (!email || !reemail || !password || !repassword || !name)
-    return res.status(422).json({ message: "Missing required fields!" });
-  if (!validateEmail(email))
-    return res.status(422).json({ message: "Invalid email!" });
-  if (name.length < 2)
-    return res
-      .status(422)
-      .json({ message: "Name must be atleast 2 characters long!" });
-  if (surname.length === 1)
-    return res.status(422).json({
-      message: "Surname must be empty or more than two characters long!",
-    });
-  if (password.length < 8)
-    return res
-      .status(422)
-      .json({ message: "Password must be at least 8 characters long!" });
-  if (email !== reemail)
-    return res.status(422).json({ message: "Emails must match!" });
-  if (password !== repassword)
-    return res.status(422).json({ message: "Password must match!" });
+  if (
+    !validateRegistration(email, reemail, name, surname, password, repassword)
+  ) {
+    return res.status(422).json({ message: "Invalid input parameters!" });
+  }
   try {
     // Check if user with this email already exists
     const userExists = await User.get(req.body.email);
@@ -93,7 +90,7 @@ const addUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   // Get email and password from request body
   const { email, password } = req.body;
   // Validate request body data
@@ -204,17 +201,13 @@ const loginUser = async (req, res) => {
   }
 };
 
-const updateUserEmail = async (req, res) => {
+export const updateUserEmail = async (req, res) => {
   const oldEmail = req.user.email;
   const newEmail = req.body.email;
   const newReEmail = req.body.reemail;
   // Validate body data
-  if (!newEmail || !newReEmail) {
-    return res.status(422).json({ message: "Missing required fields!" });
-  } else if (!validateEmail(newEmail)) {
-    return res.status(422).json({ message: "Invalid email!" });
-  } else if (newEmail !== newReEmail) {
-    return res.status(422).json({ message: "Emails must match!" });
+  if (!validateEmailUpdate(newEmail, newReEmail)) {
+    return res.status(422).json({ message: "Invalid input parameters!" });
   }
   try {
     // Check if email already exists
@@ -300,7 +293,7 @@ const updateUserEmail = async (req, res) => {
   }
 };
 
-const updateUserPassword = async (req, res) => {
+export const updateUserPassword = async (req, res) => {
   const currUserRole = req.user.role;
   const currUserEmail = req.user.email;
   const email = req.params.email;
@@ -308,6 +301,10 @@ const updateUserPassword = async (req, res) => {
   // Validate body data
   if (!password && !repassword) {
     return res.status(422).json({ message: "Missing required fields!" });
+  } else if (password.length < 8) {
+    return res
+      .status(422)
+      .json({ message: "Password must be atleast 8 characters long!" });
   } else if (password !== repassword) {
     return res.status(422).json({ message: "Passwords must match!" });
   }
@@ -336,7 +333,7 @@ const updateUserPassword = async (req, res) => {
   }
 };
 
-const logoutUser = async (req, res) => {
+export const logoutUser = async (req, res) => {
   // Delete access token cookie
   res.cookie("accessToken", "", {
     maxAge: 0,
@@ -360,7 +357,7 @@ const logoutUser = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   try {
     // Get user data
     const user = await User.get(req.params.email);
@@ -381,7 +378,7 @@ const deleteUser = async (req, res) => {
           // Delete user permissions
           await UserPerm.delete(user.email);
           try {
-            await Session.destroy({where: {email: user.email}})
+            await Session.destroy({ where: { email: user.email } });
             return res
               .status(200)
               .json({ message: "User deleted successfully!" });
@@ -400,15 +397,4 @@ const deleteUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-};
-
-module.exports = {
-  getMyUser,
-  getUser,
-  addUser,
-  loginUser,
-  logoutUser,
-  updateUserEmail,
-  updateUserPassword,
-  deleteUser,
 };

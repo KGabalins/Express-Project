@@ -64,3 +64,9 @@
   text-align: center;
   display: none;
 }
+
+.invalid {
+  color: red;
+  text-align: center;
+  display: none;
+}

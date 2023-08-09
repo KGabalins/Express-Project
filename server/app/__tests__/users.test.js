@@ -1,6 +1,6 @@
-const request = require("supertest");
-const { createServer } = require("../app");
-const { signJWT, verifyJWT } = require("../utils/jwt.utils");
+import supertest from "supertest";
+import { createServer } from "../app.js";
+import { signJWT, verifyJWT } from "../utils/jwt.utils.js";
 
 const app = createServer();
 
@@ -55,7 +55,7 @@ describe("Users", () => {
       it("Should return a user object and status code 201", async () => {
         const { email, name, surname } = userRegisterInput;
         const role = "user";
-        const { body, statusCode } = await request(app)
+        const { body, statusCode } = await supertest(app)
           .post(`/users`)
           .send(userRegisterInput);
 
@@ -78,7 +78,7 @@ describe("Users", () => {
       it("Should return status code 200, set-cokies with access and refresh token in header and request body with session data", async () => {
         const { email, name, surname } = userRegisterInput;
         const role = "user";
-        const { header, body, statusCode } = await request(app)
+        const { header, body, statusCode } = await supertest(app)
           .post("/users/login")
           .send(userLoginInput);
 
@@ -114,7 +114,7 @@ describe("Users", () => {
 
     describe("Given the email or password is invalid", () => {
       it("Should return status code 401", async () => {
-        await request(app)
+        await supertest(app)
           .post(`/users/login`)
           .send(invalidUserLoginInput)
           .expect(401);
@@ -123,7 +123,7 @@ describe("Users", () => {
 
     describe("Given the request body is invalid", () => {
       it("Should return status code 422", async () => {
-        await request(app)
+        await supertest(app)
           .post(`/users/login`)
           .send({ price: 5, tomato: true })
           .expect(422);
@@ -135,7 +135,7 @@ describe("Users", () => {
   describe("GET /users", () => {
     describe("Given the user is logged in", () => {
       it("Should return current user object and status code 200", async () => {
-        const { body, statusCode } = await request(app)
+        const { body, statusCode } = await supertest(app)
           .get("/users")
           .set("Cookie", `accessToken=${userAccessToken}`);
 
@@ -154,7 +154,7 @@ describe("Users", () => {
 
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app).get("/users").expect(401);
+        await supertest(app).get("/users").expect(401);
       });
     });
   });
@@ -162,7 +162,7 @@ describe("Users", () => {
   describe("GET /users/:email", () => {
     describe("Given current user is logged in and searched user exists", () => {
       it("Should return a user object and status code 200", async () => {
-        const { body, statusCode } = await request(app)
+        const { body, statusCode } = await supertest(app)
           .get(`/users/${userRegisterInput.email}`)
           .set("Cookie", `accessToken=${userAccessToken}`);
 
@@ -181,7 +181,7 @@ describe("Users", () => {
 
     describe("Given current user is logged in and searched user does not exist", () => {
       it("Should return status code 404", async () => {
-        await request(app)
+        await supertest(app)
           .get(`/users/ThereProbablyIsNoUserWithThisEmail`)
           .set("Cookie", `accessToken=${userAccessToken}`)
           .expect(404);
@@ -190,7 +190,7 @@ describe("Users", () => {
 
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app).get(`/users/${userRegisterInput.email}`).expect(401);
+        await supertest(app).get(`/users/${userRegisterInput.email}`).expect(401);
       });
     });
   });
@@ -199,7 +199,7 @@ describe("Users", () => {
   describe("PUT /users/:email --- updates user's password", () => {
     describe("Given the user is not logged", () => {
       it("Should return status code 401", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/users/${userLoginInput.email}`)
           .send(updateUserPasswordInput)
           .expect(401);
@@ -208,7 +208,7 @@ describe("Users", () => {
 
     describe("Given the current user is not an admin or is not the target user", () => {
       it("Should return status code 403", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/users/${userLoginInput.email}`)
           .send(updateUserPasswordInput)
           .set("Cookie", `accessToken=${mockUserAccessToken}`)
@@ -218,7 +218,7 @@ describe("Users", () => {
 
     describe("Given the current user is an admin but target user does not exist", () => {
       it("Should return status code 404", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/users/ThereProbablyIsNoUserWithThisEmail`)
           .send(updateUserPasswordInput)
           .set("Cookie", `accessToken=${mockAdminAccessToken}`)
@@ -228,7 +228,7 @@ describe("Users", () => {
 
     describe("Given the current user is the target user but request body is invalid", () => {
       it("Should return status code 422", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/users/${userRegisterInput.email}`)
           .send({ apple: 3, pineapple: false })
           .set("Cookie", `accessToken=${userAccessToken}`)
@@ -238,7 +238,7 @@ describe("Users", () => {
 
     describe("Given the current user is the target user and request body is valid", () => {
       it("Should return status code 200", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/users/${userRegisterInput.email}`)
           .send(updateUserPasswordInput)
           .set("Cookie", `accessToken=${userAccessToken}`)
@@ -250,13 +250,13 @@ describe("Users", () => {
   describe("PUT /users --- updates user's email", () => {
     describe("Given the user is not logged", () => {
       it("Should return status code 401", async () => {
-        await request(app).put(`/users`).send(updateUserEmailInput).expect(401);
+        await supertest(app).put(`/users`).send(updateUserEmailInput).expect(401);
       });
     });
 
     describe("Given the email already exists", () => {
       it("Should return status code 409", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/users`)
           .send({
             email: userRegisterInput.email,
@@ -269,7 +269,7 @@ describe("Users", () => {
 
     describe("Given the request body is invalid", () => {
       it("Should return status code 422", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/users`)
           .send({ apple: 3, pineapple: false })
           .set("Cookie", `accessToken=${userAccessToken}`)
@@ -279,7 +279,7 @@ describe("Users", () => {
 
     describe("Given the request body is valid", () => {
       it("Should return status code 200 and set new access token cookie", async () => {
-        const { header, statusCode } = await request(app)
+        const { header, statusCode } = await supertest(app)
           .put(`/users`)
           .send(updateUserEmailInput)
           .set("Cookie", `accessToken=${userAccessToken}`);
@@ -305,13 +305,13 @@ describe("Users", () => {
   describe("DELETE /users/logout", () => {
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app).delete(`/users/logout`).expect(401);
+        await supertest(app).delete(`/users/logout`).expect(401);
       });
     });
 
     describe("Given the user is logged in", () => {
       it("Should return status code 200", async () => {
-        await request(app)
+        await supertest(app)
           .delete(`/users/logout`)
           .set("Cookie", `accessToken=${updatedUserAccessToken}`)
           .expect(200);
@@ -322,13 +322,13 @@ describe("Users", () => {
   describe("DELETE /users/:email", () => {
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app).delete(`/users/${userLoginInput.email}`).expect(401);
+        await supertest(app).delete(`/users/${userLoginInput.email}`).expect(401);
       });
     });
 
     describe("Given the user is not an admin", () => {
       it("Should return status code 403", async () => {
-        await request(app)
+        await supertest(app)
           .delete(`/users/${updateUserEmailInput.email}`)
           .set("Cookie", `accessToken=${mockUserAccessToken}`)
           .expect(403);
@@ -337,7 +337,7 @@ describe("Users", () => {
 
     describe("Given current user is an admin and deleted user exists", () => {
       it("Should return status code 404", async () => {
-        await request(app)
+        await supertest(app)
           .delete(`/users/ThereShouldBeNoUserWithThisEmail`)
           .set("Cookie", `accessToken=${mockAdminAccessToken}`)
           .expect(404);
@@ -346,7 +346,7 @@ describe("Users", () => {
 
     describe("Given current user is an admin and deleted user exists", () => {
       it("Should return status code 200", async () => {
-        await request(app)
+        await supertest(app)
           .delete(`/users/${updateUserEmailInput.email}`)
           .set("Cookie", `accessToken=${mockAdminAccessToken}`)
           .expect(200);

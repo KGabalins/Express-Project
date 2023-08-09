@@ -13,7 +13,7 @@ const AddMovieItem = () => {
 
     const enteredName = nameInputRef.current.value;
     const enteredGenre = genreInputRef.current.value;
-    const enteredPrice = priceInputRef.current.value + "$";
+    const enteredPrice = Number.parseFloat(priceInputRef.current.value);
     const enteredStock = Number.parseInt(stockInputRef.current.value);
 
     const newMovie = {
@@ -25,13 +25,15 @@ const AddMovieItem = () => {
 
     axios
       .post("/movies/", newMovie)
-      .then(
-        e.target.reset(),
-        // e.target.children[0].children["success"].style.display = "inline-block"
-        (document.getElementById("success").style.display = "inline-block")
-      )
+      .then(() => {
+        e.target.reset();
+        document.getElementById("success").style.display = "inline-block";
+        document.getElementById("invalid").style.display = "none";
+      })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response.data);
+        document.getElementById("success").style.display = "none";
+        document.getElementById("invalid").style.display = "inline-block";
       });
   }
 
@@ -64,6 +66,9 @@ const AddMovieItem = () => {
         </div>
         <div id="success" className={classes.success}>
           <p>Movie has been successfully added!</p>
+        </div>
+        <div id="invalid" className={classes.invalid}>
+          <p>All input fields must be filled in!</p>
         </div>
         <div className={classes.buttonContainer}>
           <button>Submit</button>

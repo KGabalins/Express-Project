@@ -1,23 +1,22 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useLayoutEffect } from "react";
+import { useEffect } from "react";
 
 const AdminRoutes = () => {
   const navigate = useNavigate()
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     axios
-      .get("/perm/")
+      .get("/users")
       .then((res) => {
         if (res.data.role !== "admin") {
           navigate("/")
         }
       })
-      .catch((err) => {
-        console.log(err)
+      .catch(() => {
         navigate("/login")
       });
-  }, []);
+  }, [navigate]);
 
   return <Outlet />
 };

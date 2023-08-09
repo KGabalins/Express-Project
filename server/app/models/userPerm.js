@@ -1,4 +1,4 @@
-const dynamoose = require("dynamoose");
+import dynamoose from "dynamoose";
 
 dynamoose.aws.ddb.local("http://localhost:4000");
 
@@ -15,11 +15,7 @@ const userPermSchema = new dynamoose.Schema({
   },
 });
 
-const UserPerm = dynamoose.model("permissions", userPermSchema);
-
-module.exports = {
-  UserPerm,
-};
+export const UserPerm = dynamoose.model("permissions", userPermSchema);
 
 // Swagger user permission schemas
 

@@ -1,6 +1,6 @@
-const request = require("supertest");
-const { createServer } = require("../app");
-const { signJWT } = require("../utils/jwt.utils");
+import supertest from "supertest";
+import { createServer } from "../app.js";
+import { signJWT } from "../utils/jwt.utils.js";
 
 const app = createServer();
 const registerUserPayload = {
@@ -57,17 +57,17 @@ describe("Rented Movies", () => {
   // Before all rented movies tests begin
   beforeAll(async () => {
     // Create a dummy movie
-    await request(app)
+    await supertest(app)
       .post(`/movies`)
       .send(movieExample)
       .set("Cookie", `accessToken=${adminAccessToken}`);
     // Create a dummy movie with 0 stock
-    await request(app)
+    await supertest(app)
       .post(`/movies`)
       .send(movieOutOfStockExample)
       .set("Cookie", `accessToken=${adminAccessToken}`);
     // Create a dummy user
-    await request(app)
+    await supertest(app)
       .post(`/users`)
       .send(registerUserPayload)
       .set("Cookie", `accessToken=${adminAccessToken}`);
@@ -75,15 +75,15 @@ describe("Rented Movies", () => {
   // After rented movies tests have ended
   afterAll(async () => {
     // Delete the dummy movie
-    await request(app)
+    await supertest(app)
       .delete(`/movies/${movieExample.name}`)
       .set("Cookie", `accessToken=${adminAccessToken}`);
     // Delete the dummy movie with 0 stocks
-    await request(app)
+    await supertest(app)
       .delete(`/movies/${movieOutOfStockExample.name}`)
       .set("Cookie", `accessToken=${adminAccessToken}`);
     // Delete the dummy user
-    await request(app)
+    await supertest(app)
       .delete(`/users/${registerUserPayload.email}`)
       .set("Cookie", `accessToken=${adminAccessToken}`);
   });
@@ -92,7 +92,7 @@ describe("Rented Movies", () => {
     describe("Given a user is logged in and movie exists", () => {
       it("Should return a rented movie object and status code 201", async () => {
         const { name, genre, price } = movieExample;
-        const { body, statusCode } = await request(app)
+        const { body, statusCode } = await supertest(app)
           .post(`/rentedMovies/${movieExample.name}`)
           .set("Cookie", `accessToken=${userAccessToken}`);
         expect(body).toEqual(
@@ -112,7 +112,7 @@ describe("Rented Movies", () => {
 
     describe("Given a user is logged in but the movie does not exists", () => {
       it("Should return status code 404", async () => {
-        await request(app)
+        await supertest(app)
           .post(`/rentedMovies/ThisMovieProbablyDoesNotExist`)
           .set("Cookie", `accessToken=${userAccessToken}`)
           .expect(404);
@@ -121,7 +121,7 @@ describe("Rented Movies", () => {
 
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app)
+        await supertest(app)
           .post(`/rentedMovies/${movieExample.name}`)
           .expect(401);
       });
@@ -129,7 +129,7 @@ describe("Rented Movies", () => {
 
     describe("Given the movie exists, user is logged in but the movie is out of stock", () => {
       it("Should return status code 409", async () => {
-        await request(app)
+        await supertest(app)
           .post(`/rentedMovies/${movieOutOfStockExample.name}`)
           .set("Cookie", `accessToken=${userAccessToken}`)
           .expect(409);
@@ -141,7 +141,7 @@ describe("Rented Movies", () => {
   describe("GET /rentedMovies", () => {
     describe("Given the user is logged in", () => {
       it("Should return a list of user's rented movies and status code 200", async () => {
-        const { body, statusCode } = await request(app)
+        const { body, statusCode } = await supertest(app)
           .get("/rentedMovies")
           .set("Cookie", `accessToken=${userAccessToken}`);
         if (body.length > 0) {
@@ -166,7 +166,7 @@ describe("Rented Movies", () => {
 
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app).get("/rentedMovies").expect(401);
+        await supertest(app).get("/rentedMovies").expect(401);
       });
     });
   });
@@ -174,7 +174,7 @@ describe("Rented Movies", () => {
   describe("GET /rentedMovies/:email", () => {
     describe("Given the admin is logged in and the email exists", () => {
       it("Should return a list of user's rented movies and status code 200", async () => {
-        const { body, statusCode } = await request(app)
+        const { body, statusCode } = await supertest(app)
           .get(`/rentedMovies/${userPayload.email}`)
           .set("Cookie", `accessToken=${adminAccessToken}`);
         if (body.length > 0) {
@@ -199,7 +199,7 @@ describe("Rented Movies", () => {
 
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app)
+        await supertest(app)
           .get(`/rentedMovies/${userPayload.email}`)
           .expect(401);
       });
@@ -207,7 +207,7 @@ describe("Rented Movies", () => {
 
     describe("Given the user is not an admin", () => {
       it("Should return status code 403", async () => {
-        await request(app)
+        await supertest(app)
           .get(`/rentedMovies/${userPayload.email}`)
           .set("Cookie", `accessToken=${userAccessToken}`)
           .expect(403);
@@ -216,7 +216,7 @@ describe("Rented Movies", () => {
 
     describe("Given the user does not exist", () => {
       it("Should return status code 404", async () => {
-        await request(app)
+        await supertest(app)
           .get(`/rentedMovies/${differentUserPayload.email}`)
           .set("Cookie", `accessToken=${adminAccessToken}`)
           .expect(404);
@@ -227,7 +227,7 @@ describe("Rented Movies", () => {
   describe("GET /rentedMovies/id/:id", () => {
     describe("Given the admin is logged in and the id exists", () => {
       it("Should return the rented movie and status code 200", async () => {
-        const { body, statusCode } = await request(app)
+        const { body, statusCode } = await supertest(app)
           .get(`/rentedMovies/id/${rentedMovieId}`)
           .set("Cookie", `accessToken=${adminAccessToken}`);
 
@@ -248,7 +248,7 @@ describe("Rented Movies", () => {
 
     describe("Given the request parameters are not valid", () => {
       it("Should return status code 400", async () => {
-        await request(app)
+        await supertest(app)
           .get(`/rentedMovies/id/ThisIsNotAValidId`)
           .set("Cookie", `accessToken=${adminAccessToken}`)
           .expect(400);
@@ -257,13 +257,13 @@ describe("Rented Movies", () => {
 
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app).get(`/rentedMovies/id/${rentedMovieId}`).expect(401);
+        await supertest(app).get(`/rentedMovies/id/${rentedMovieId}`).expect(401);
       });
     });
 
     describe("Given the user is not an admin", () => {
       it("Should return status code 403", async () => {
-        await request(app)
+        await supertest(app)
           .get(`/rentedMovies/id/${rentedMovieId}`)
           .set("Cookie", `accessToken=${userAccessToken}`)
           .expect(403);
@@ -272,7 +272,7 @@ describe("Rented Movies", () => {
 
     describe("Given the rented movie does not exist", () => {
       it("Should return status code 404", async () => {
-        await request(app)
+        await supertest(app)
           .get(`/rentedMovies/id/0`)
           .set("Cookie", `accessToken=${adminAccessToken}`)
           .expect(404);
@@ -284,7 +284,7 @@ describe("Rented Movies", () => {
   describe("PUT /rentedMovies/id/:id", () => {
     describe("Given the rented movie exists, current user is the owner and request body is valid", () => {
       it("Should return status code 200", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/rentedMovies/id/${rentedMovieId}`)
           .send(updateMovieTimeExample)
           .set("Cookie", `accessToken=${userAccessToken}`)
@@ -294,7 +294,7 @@ describe("Rented Movies", () => {
 
     describe("Given the rented movie's time has reached it's limit", () => {
       it("Should return status code 409", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/rentedMovies/id/${rentedMovieId}`)
           .send(updateMovieTimeExample)
           .set("Cookie", `accessToken=${userAccessToken}`)
@@ -304,7 +304,7 @@ describe("Rented Movies", () => {
 
     describe("Given the user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/rentedMovies/id/${rentedMovieId}`)
           .send(updateMovieTimeExample)
           .expect(401);
@@ -313,7 +313,7 @@ describe("Rented Movies", () => {
 
     describe("Given the request parameters are not valid", () => {
       it("Should return status code 400", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/rentedMovies/id/ThisIsNotAValidId`)
           .send(updateMovieTimeExample)
           .set("Cookie", `accessToken=${userAccessToken}`)
@@ -323,7 +323,7 @@ describe("Rented Movies", () => {
 
     describe("Given the rented movies owner is not the current user", () => {
       it("Should return status code 403", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/rentedMovies/id/${rentedMovieId}`)
           .send(updateMovieTimeExample)
           .set("Cookie", `accessToken=${differentUserAccessToken}`)
@@ -333,7 +333,7 @@ describe("Rented Movies", () => {
 
     describe("Given the rented movie does not exist", () => {
       it("Should return status code 404", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/rentedMovies/id/0`)
           .send(updateMovieTimeExample)
           .set("Cookie", `accessToken=${differentUserAccessToken}`)
@@ -343,7 +343,7 @@ describe("Rented Movies", () => {
 
     describe("Given the request body is not valid", () => {
       it("Should return status code 422", async () => {
-        await request(app)
+        await supertest(app)
           .put(`/rentedMovies/id/${rentedMovieId}`)
           .send(wrongUpdateMovieTimeExample)
           .set("Cookie", `accessToken=${userAccessToken}`)
@@ -356,7 +356,7 @@ describe("Rented Movies", () => {
   describe("DELETE /rentedMovies/id/:id", () => {
     describe("Given the request parameters are not a valid id", () => {
       it("Should return status code 400", async () => {
-        await request(app)
+        await supertest(app)
           .delete(`/rentedMovies/id/ThisIsNotAValidId`)
           .set("Cookie", `accessToken=${userAccessToken}`)
           .expect(400);
@@ -365,7 +365,7 @@ describe("Rented Movies", () => {
 
     describe("Given a user is not logged in", () => {
       it("Should return status code 401", async () => {
-        await request(app)
+        await supertest(app)
           .delete(`/rentedMovies/id/${rentedMovieId}`)
           .expect(401);
       });
@@ -373,7 +373,7 @@ describe("Rented Movies", () => {
 
     describe("Given the rented movie exists but current user is not the owner", () => {
       it("Should return status code 403", async () => {
-        await request(app)
+        await supertest(app)
           .delete(`/rentedMovies/id/${rentedMovieId}`)
           .set("Cookie", `accessToken=${differentUserAccessToken}`)
           .expect(403);
@@ -382,7 +382,7 @@ describe("Rented Movies", () => {
 
     describe("Given the rented movie exists and its owner is the current user", () => {
       it("Should return status code 200", async () => {
-        await request(app)
+        await supertest(app)
           .delete(`/rentedMovies/id/${rentedMovieId}`)
           .set("Cookie", `accessToken=${userAccessToken}`)
           .expect(200);
@@ -391,7 +391,7 @@ describe("Rented Movies", () => {
 
     describe("Given a user is logged in but the rented movie does not exist", () => {
       it("Should return status code 404", async () => {
-        await request(app)
+        await supertest(app)
           .delete(`/rentedMovies/id/${rentedMovieId}`)
           .set("Cookie", `accessToken=${userAccessToken}`)
           .expect(404);

@@ -1,12 +1,11 @@
-require("dotenv").config();
+import db from "./config/postgres.js";
+import { swaggerDocs } from "./utils/swagger.js";
+import { createServer } from "./app.js";
+import dotenv from "dotenv";
+dotenv.config();
 // const app = require("./app");
-const postgresdb = require("./config/postgres");
-const { swaggerDocs } = require("./utils/swagger");
-const { createServer } = require("./app");
-
 // Test DB
-postgresdb
-  .authenticate()
+db.authenticate()
   .then(() => console.log("Database connected successfully"))
   .catch((err) => console.log("Error: " + err));
 
