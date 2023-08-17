@@ -34,26 +34,8 @@ const YourMoviesPage = () => {
 
     const timeMethod = movie.substr(movie.length - 1, movie.length);
     const rentedMovieId = movie.substr(0, movie.length - 1);
-    console.log(movie)
-    console.log(timeMethod)
-    console.log(rentedMovieId)
 
     axios.put(`/rentedMovies/id/${rentedMovieId}`, {method: timeMethod}).then(renderRentedMovies).catch((err) => console.log(err))
-
-    // axios.get(`/rentedMovies/id/${rentedMovieId}`).then((response) => {
-      // let currTime = Number.parseInt(response.data.time);
-      // if (currTime > 0 && timeMethod === "-") {
-      //   currTime -= 12;
-      //   axios
-      //     .put(`/rentedMovies/id/${rentedMovieId}`, { time: currTime })
-      //     .then(() => renderRentedMovies());
-      // } else if (currTime < 168 && timeMethod === "+") {
-      //   currTime += 12;
-      //   axios
-      //     .put(`/rentedMovies/id/${rentedMovieId}`, { time: currTime })
-      //     .then(() => renderRentedMovies());
-      // }
-    // });
   }
 
   return (
