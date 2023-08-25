@@ -1,6 +1,13 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import db from "../config/postgres.js";
-export const Movie = db.define("movie", {
+class Movie extends Model {
+    id;
+    name;
+    genre;
+    price;
+    stock;
+}
+Movie.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -23,7 +30,36 @@ export const Movie = db.define("movie", {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+}, {
+    sequelize: db,
+    modelName: "Movie",
+    tableName: "movies"
 });
+export default Movie;
+// export const Movie = db.define("movie", {
+//   id: {
+//     type: DataTypes.INTEGER,
+//     primaryKey: true,
+//     autoIncrement: true,
+//   },
+//   name: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//     unique: true,
+//   },
+//   genre: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   price: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   stock: {
+//     type: DataTypes.INTEGER,
+//     allowNull: false,
+//   },
+// });
 // Swagger movie schemas
 /**
  * @openapi

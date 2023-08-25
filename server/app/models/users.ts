@@ -2,6 +2,13 @@ import dynamoose from "dynamoose";
 
 dynamoose.aws.ddb.local("http://localhost:4000");
 
+interface UserAttributes {
+  email: string,
+  name: string,
+  surname?: string,
+  password: string
+}
+
 const userSchema = new dynamoose.Schema({
   email: {
     type: String,

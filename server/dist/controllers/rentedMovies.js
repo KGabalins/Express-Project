@@ -1,5 +1,5 @@
 import { RentedMovie } from "../models/rentedMovies.js";
-import { Movie } from "../models/movies.js";
+import Movie from "../models/movies.js";
 import { User } from "../models/users.js";
 // import moviesController from "../controllers/movies.js";
 export const getMyMovies = async (req, res) => {

@@ -1,9 +1,10 @@
 import { RentedMovie } from "../models/rentedMovies.js";
-import { Movie } from "../models/movies.js";
+import Movie from "../models/movies.js";
 import { User } from "../models/users.js";
+import { Request, Response } from "express";
 // import moviesController from "../controllers/movies.js";
 
-export const getMyMovies = async (req, res) => {
+export const getMyMovies = async (req: Request, res: Response) => {
   const { email } = req.user;
   try {
     // Get all rented movies by renter email
@@ -14,7 +15,7 @@ export const getMyMovies = async (req, res) => {
   }
 };
 
-export const getMoviesByEmail = async (req, res) => {
+export const getMoviesByEmail = async (req: Request, res: Response) => {
   const email = req.params.email;
   try {
     // Check if user exists
@@ -36,7 +37,7 @@ export const getMoviesByEmail = async (req, res) => {
   }
 };
 
-export const getMovieById = async (req, res) => {
+export const getMovieById = async (req: Request, res: Response) => {
   const id = parseFloat(req.params.id);
   // Validate parameter
   if (!Number.isInteger(id)) {
@@ -57,7 +58,7 @@ export const getMovieById = async (req, res) => {
   }
 };
 
-export const addMovie = async (req, res) => {
+export const addMovie = async (req: Request, res: Response) => {
   const name = req.params.name;
   try {
     // Check if movie exists and if stock is available
@@ -94,7 +95,7 @@ export const addMovie = async (req, res) => {
   }
 };
 
-export const updateTime = async (req, res) => {
+export const updateTime = async (req: Request, res: Response) => {
   const { email } = req.user;
   const id = parseFloat(req.params.id);
   const method = req.body.method;

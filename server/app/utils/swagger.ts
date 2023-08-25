@@ -1,7 +1,8 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import { Express } from "express"
 // import version from "../../package.json" assert { type: "json"};
-const version = 1;
+const version = "1";
 
 const options = {
   definition: {
@@ -16,7 +17,7 @@ const options = {
 
 const swaggerSpec = swaggerJsdoc(options);
 
-export function swaggerDocs(app, port) {
+export function swaggerDocs(app: Express, port: number) {
   // Swagger page
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

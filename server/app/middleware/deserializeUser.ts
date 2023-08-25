@@ -1,7 +1,8 @@
 import { Session } from "../models/sessions.js";
 import { verifyJWT, signJWT } from "../utils/jwt.utils.js";
+import { Request, Response, NextFunction } from "express";
 
-export async function deserializeUser(req, res, next) {
+export async function deserializeUser(req: Request, res: Response, next: NextFunction) {
   const { accessToken, refreshToken } = req.cookies;
 
   if (!accessToken) return next();

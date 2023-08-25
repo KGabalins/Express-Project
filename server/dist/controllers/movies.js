@@ -1,19 +1,20 @@
-import { Movie } from "../models/movies.js";
+import { createMovie, getAllMovies, getMovieByName, updateMovie, deleteMovie } from "../service/movie.service.js";
 // Get all movies
-export const getMovies = async (req, res) => {
+export const getAllMoviesHandler = async (req, res) => {
     try {
         // Get all movies from db
-        const movies = await Movie.findAll();
+        const movies = await getAllMovies();
         return res.status(200).json(movies);
     }
     catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
-export const getMovieByName = async (req, res) => {
+export const getMovieByNameHandler = async (req, res) => {
+    const movieName = req.params.name;
     try {
         // Check if movie exists
-        const movie = await Movie.findOne({ where: { name: req.params.name } });
+        const movie = await getMovieByName(movieName);
         if (!movie) {
             return res.status(404).json({ message: "Movie not found" });
         }
@@ -23,25 +24,17 @@ export const getMovieByName = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-export const addMovie = async (req, res) => {
-    // Validate request parameters
-    if (!req.body.name ||
-        !req.body.genre ||
-        !req.body.price ||
-        (!req.body.stock && req.body.stock !== 0) ||
-        !Number.isInteger(req.body.stock) ||
-        !Number.isFinite(req.body.price)) {
-        return res.status(422).json({ message: "Invalid request body!" });
-    }
+export const createMovieHandler = async (req, res) => {
+    const movieName = req.body.name;
     try {
         // Check if movie already exists
-        const movieExists = await Movie.findOne({ where: { name: req.body.name } });
+        const movieExists = await getMovieByName(movieName);
         if (movieExists) {
             return res.status(400).json({ message: "Movie already exists" });
         }
         try {
             // Create new movie
-            const movie = await Movie.create(req.body);
+            const movie = await createMovie(req.body);
             return res.status(201).json(movie);
         }
         catch (error) {
@@ -52,22 +45,22 @@ export const addMovie = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-export const updateMovie = async (req, res) => {
-    const name = req.params.name;
-    const { price, stock } = req.body;
+export const updateMovieHandler = async (req, res) => {
+    const movieName = req.params.name;
+    const { name, genre, price, stock } = req.body;
     // Validate request parameters
     if (!price || !stock || !Number.isInteger(stock) || !Number.isFinite(price)) {
         return res.status(422).json({ message: "Invalid request body!" });
     }
     try {
         // Check if movie exists
-        const movieExists = await Movie.findOne({ where: { name } });
+        const movieExists = await getMovieByName(movieName);
         if (!movieExists) {
             return res.status(404).json({ message: "Movie not found" });
         }
         try {
             // Update movie price and stock
-            await Movie.update({ price, stock }, { where: { name } });
+            await updateMovie(movieName, { name, genre, price, stock });
             return res.status(200).json({ message: "Movie updated" });
         }
         catch (error) {
@@ -78,16 +71,17 @@ export const updateMovie = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-export const deleteMovie = async (req, res) => {
+export const deleteMovieHandler = async (req, res) => {
+    const movieName = req.params.name;
     try {
         // Check if movie exists
-        const movie = await Movie.findOne({ where: { name: req.params.name } });
+        const movie = await getMovieByName(movieName);
         if (!movie) {
             return res.status(404).json({ message: "Movie not found" });
         }
         try {
             // Delete movie
-            await Movie.destroy({ where: { name: req.params.name } });
+            await deleteMovie(movieName);
             return res.status(200).json({ message: "Movie deleted" });
         }
         catch (error) {

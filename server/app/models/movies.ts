@@ -1,30 +1,83 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import db from "../config/postgres.js";
 
-export const Movie = db.define("movie", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
+interface MovieAtributes {
+  id: number,
+  name: string,
+  genre: string,
+  price: number,
+  stock: number
+}
+
+export interface MovieCreationAttributes extends Omit<MovieAtributes, "id"> { }
+export interface MovieUpdateAttributes extends Omit<MovieAtributes, "id"> {}
+
+class Movie extends Model<MovieAtributes, MovieCreationAttributes> implements MovieAtributes {
+  public id!: number;
+  public name!: string;
+  public genre!: string;
+  public price!: number;
+  public stock!: number;
+}
+
+Movie.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    genre: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    price: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    stock: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  genre: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  price: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  stock: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-});
+  {
+    sequelize: db,
+    modelName: "Movie",
+    tableName: "movies"
+  }
+)
+
+export default Movie
+
+// export const Movie = db.define("movie", {
+//   id: {
+//     type: DataTypes.INTEGER,
+//     primaryKey: true,
+//     autoIncrement: true,
+//   },
+//   name: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//     unique: true,
+//   },
+//   genre: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   price: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   stock: {
+//     type: DataTypes.INTEGER,
+//     allowNull: false,
+//   },
+// });
 
 // Swagger movie schemas
 

@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import { signJWT } from "../utils/jwt.utils.js";
 import { validateEmail } from "../utils/validateEmail.js";
 import dotenv from "dotenv";
+import { Request, Response } from "express";
 import {
   validateEmailUpdate,
   validateRegistration,
@@ -13,13 +14,13 @@ import {
 dotenv.config();
 
 // Get loged in user data
-export const getMyUser = (req, res) => {
+export const getMyUser = (req: Request, res: Response) => {
   const { email, name, surname, role } = req.user;
   return res.status(200).json({ email, name, surname, role });
 };
 
 // Get information if user is logged in
-export const getIsLoggedIn = (req, res) => {
+export const getIsLoggedIn = (req: Request, res: Response) => {
   if (!req.user) {
     return res.status(200).json({ isLoggedIn: false });
   }
@@ -27,7 +28,7 @@ export const getIsLoggedIn = (req, res) => {
 };
 
 // Get user data by email
-export const getUser = async (req, res) => {
+export const getUser = async (req: Request, res: Response) => {
   const email = req.params.email;
   try {
     // Get user data
@@ -53,7 +54,7 @@ export const getUser = async (req, res) => {
   }
 };
 
-export const addUser = async (req, res) => {
+export const addUser = async (req: Request, res: Response) => {
   // Get data from request body
   const { email, reemail, password, repassword, name, surname } = req.body;
   const role = "user";
@@ -90,7 +91,7 @@ export const addUser = async (req, res) => {
   }
 };
 
-export const loginUser = async (req, res) => {
+export const loginUser = async (req: Request, res: Response) => {
   // Get email and password from request body
   const { email, password } = req.body;
   // Validate request body data
@@ -201,7 +202,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-export const updateUserEmail = async (req, res) => {
+export const updateUserEmail = async (req: Request, res: Response) => {
   const oldEmail = req.user.email;
   const newEmail = req.body.email;
   const newReEmail = req.body.reemail;
@@ -293,7 +294,7 @@ export const updateUserEmail = async (req, res) => {
   }
 };
 
-export const updateUserPassword = async (req, res) => {
+export const updateUserPassword = async (req: Request, res: Response) => {
   const currUserRole = req.user.role;
   const currUserEmail = req.user.email;
   const email = req.params.email;
@@ -333,7 +334,7 @@ export const updateUserPassword = async (req, res) => {
   }
 };
 
-export const logoutUser = async (req, res) => {
+export const logoutUser = async (req: Request, res: Response) => {
   // Delete access token cookie
   res.cookie("accessToken", "", {
     maxAge: 0,
@@ -357,7 +358,7 @@ export const logoutUser = async (req, res) => {
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req: Request, res: Response) => {
   try {
     // Get user data
     const user = await User.get(req.params.email);

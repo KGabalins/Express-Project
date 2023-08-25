@@ -1,5 +1,8 @@
-export function requireAdmin(req, res, next) {
+import { Request, Response, NextFunction } from "express";
+
+export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   if(req.user.role !== "admin") {
+    console.log("What")
     return res.status(403).json({ message: "You're not an admin!" });
   }
 

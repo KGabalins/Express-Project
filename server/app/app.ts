@@ -18,17 +18,17 @@ export function createServer() {
   app.use(urlencoded({ extended: false }));
   app.use(deserializeUser);
 
-  // app.use(
-  //   expressWinston.logger({
-  //     transports: [new transports.Console()],
-  //     format: format.combine(
-  //       format.json(),
-  //       format.timestamp(),
-  //       format.prettyPrint()
-  //     ),
-  //     statusLevels: true,
-  //   })
-  // );
+  app.use(
+    expressWinston.logger({
+      transports: [new transports.Console()],
+      format: format.combine(
+        format.json(),
+        format.timestamp(),
+        format.prettyPrint()
+      ),
+      statusLevels: true,
+    })
+  );
 
   app
     .use("/movies", movieRoutes)

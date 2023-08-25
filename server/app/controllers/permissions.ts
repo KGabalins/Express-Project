@@ -1,6 +1,7 @@
 import { UserPerm } from "../models/userPerm.js";
+import { Request, Response } from "express";
 
-export const updateUserPerm = async (req, res) => {
+export const updateUserPerm = async (req: Request, res: Response) => {
   const email = req.params.email;
   const role = req.body.role;
   // Validate body data
