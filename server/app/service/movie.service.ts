@@ -1,4 +1,4 @@
-import Movie, { MovieCreationAttributes, MovieUpdateAttributes } from "../models/movies.js"
+import Movie, { MovieCreationAttributes, MovieUpdateAttributes } from "../models/movie.model.js"
 import db from "../config/postgres.js"
 
 export const getAllMovies = async () => {

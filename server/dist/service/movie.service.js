@@ -1,4 +1,4 @@
-import Movie from "../models/movies.js";
+import Movie from "../models/movie.model.js";
 import db from "../config/postgres.js";
 export const getAllMovies = async () => {
     await db.sync();

@@ -1,5 +1,5 @@
 import express, { json, urlencoded } from "express";
-import movieRoutes from "./routes/movies.js";
+import movieRoutes from "./routes/movie.routes.js";
 import rentedMoviesRoutes from "./routes/rentedMovies.js";
 import usersRoutes from "./routes/users.js";
 import permissionsRoutes from "./routes/permissions.js";

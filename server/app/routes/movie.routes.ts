@@ -1,5 +1,5 @@
 import express from "express";
-import * as controller from "../controllers/movies.js";
+import * as controller from "../controllers/movie.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 import { createMovieSchema, deleteMovieSchema, getMovieSchema, updateMovieSchema } from "../schema/movie.schema.js"

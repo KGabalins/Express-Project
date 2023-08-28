@@ -1,4 +1,4 @@
-import { RentedMovie } from "../models/rentedMovies.js";
+import { RentedMovie } from "../models/rentedMovie.model.js";
 import Movie from "../models/movie.model.js";
 import { User } from "../models/users.js";
 // import moviesController from "../controllers/movies.js";

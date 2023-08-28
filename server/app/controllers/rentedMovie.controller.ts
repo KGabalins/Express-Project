@@ -1,5 +1,5 @@
-import { RentedMovie } from "../models/rentedMovies.js";
-import Movie from "../models/movies.js";
+import { RentedMovie } from "../models/rentedMovie.model.js";
+import Movie from "../models/movie.model.js";
 import { User } from "../models/users.js";
 import { Request, Response } from "express";
 // import moviesController from "../controllers/movies.js";

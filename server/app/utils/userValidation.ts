@@ -1,13 +1,13 @@
 import { validateEmail } from "./validateEmail.js";
 
 export const validateRegistration = (
-  email,
-  reemail,
-  name,
-  surname,
-  password,
-  repassword
-) => {
+  email: string,
+  reemail: string,
+  name: string,
+  surname: string,
+  password: string,
+  repassword: string
+): boolean => {
   if (
     !validateEmail(email) ||
     email !== reemail ||
@@ -21,7 +21,7 @@ export const validateRegistration = (
   return true;
 };
 
-export const validateEmailUpdate = (email, reemail) => {
+export const validateEmailUpdate = (email: string, reemail: string): boolean => {
   if (!validateEmail(email) || !email || !reemail || email !== reemail) {
     return false;
   }
