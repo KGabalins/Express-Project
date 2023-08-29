@@ -1,6 +1,6 @@
 import { User } from "../models/users.js";
 import { UserPerm } from "../models/userPerm.js";
-import { RentedMovie } from "../models/rentedMovie.model.js";
+import RentedMovie from "../models/rentedMovie.model.js";
 import { Session } from "../models/sessions.js";
 import bcrypt from "bcrypt";
 import { signJWT } from "../utils/jwt.utils.js";

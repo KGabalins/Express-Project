@@ -13,11 +13,11 @@ export interface MovieCreationAttributes extends Omit<MovieAtributes, "id"> { }
 export interface MovieUpdateAttributes extends Omit<MovieAtributes, "id"> {}
 
 class Movie extends Model<MovieAtributes, MovieCreationAttributes> implements MovieAtributes {
-  public id!: number;
-  public name!: string;
-  public genre!: string;
-  public price!: number;
-  public stock!: number;
+  declare id: number;
+  declare name: string;
+  declare genre: string;
+  declare price: number;
+  declare stock: number;
 }
 
 Movie.init(
@@ -37,7 +37,7 @@ Movie.init(
       allowNull: false,
     },
     price: {
-      type: DataTypes.STRING,
+      type: DataTypes.NUMBER,
       allowNull: false,
     },
     stock: {

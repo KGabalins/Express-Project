@@ -2,6 +2,9 @@ import express from "express";
 import * as controller from "../controllers/rentedMovie.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
+import validate from "../middleware/validateResource.js";
+import { removeRentedMovieSchema, updateRentedMovieTimeSchema } from "../schema/rentedMovie.schema.js";
+import { getMovieSchema } from "../schema/movie.schema.js";
 const router = express.Router();
 router
     /**
@@ -21,7 +24,7 @@ router
      *      401:
      *        description: Unauthorized - User is not logged in
      */
-    .get("/", requireUser, controller.getMyMovies)
+    .get("/", requireUser, controller.getCurrentUserRentedMoviesHandler)
     /**
      * @openapi
      * /rentedMovies/{email}:
@@ -50,7 +53,7 @@ router
      *      404:
      *        description: Not Found - User does not exist
      */
-    .get("/:email", requireUser, requireAdmin, controller.getMoviesByEmail)
+    .get("/:email", requireUser, requireAdmin, controller.getRentedMoviesByEmailHandler)
     /**
      * @openapi
      * /rentedMovies/id/{id}:
@@ -81,7 +84,7 @@ router
      *      404:
      *        description: Not Found - Movie does not exist
      */
-    .get("/id/:id", requireUser, requireAdmin, controller.getMovieById)
+    .get("/id/:id", requireUser, requireAdmin, controller.getRentedMovieByIdHandler)
     /**
      * @openapi
      * /rentedMovies/{name}:
@@ -110,7 +113,7 @@ router
      *      409:
      *        description: Conflict - Movie is out of stock
      */
-    .post("/:name", requireUser, controller.addMovie)
+    .post("/:name", requireUser, validate(getMovieSchema), controller.addRentedMovieHandler)
     /**
      * @openapi
      * /rentedMovies/id/{id}:
@@ -148,7 +151,7 @@ router
      *      422:
      *        description: Unprocessable Entity - Invalid request body
      */
-    .put("/id/:id", requireUser, controller.updateTime)
+    .put("/id/:id", requireUser, validate(updateRentedMovieTimeSchema), controller.updateRentedMovieTimeHandler)
     /**
      * @openapi
      * /rentedMovies/id/{id}:
@@ -175,5 +178,5 @@ router
      *      404:
      *        description: Not Found - Rented movie does not exist
      */
-    .delete("/id/:id", requireUser, controller.deleteMovie);
+    .delete("/id/:id", requireUser, validate(removeRentedMovieSchema), controller.removeRentedMovieHandler);
 export default router;

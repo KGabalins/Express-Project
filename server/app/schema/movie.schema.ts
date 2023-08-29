@@ -1,4 +1,4 @@
-import { object, number, strictObject, TypeOf, string } from "zod"
+import { object, number, TypeOf, string } from "zod"
 
 const payload = {
   body: object({

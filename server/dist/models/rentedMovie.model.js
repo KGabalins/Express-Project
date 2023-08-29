@@ -1,6 +1,8 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import db from "../config/postgres.js";
-export const RentedMovie = db.define("rentedmovie", {
+class RentedMovie extends Model {
+}
+RentedMovie.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -9,25 +11,59 @@ export const RentedMovie = db.define("rentedmovie", {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     genre: {
         type: DataTypes.STRING,
         allowNull: false,
     },
     time: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 12,
     },
     price: {
-        type: DataTypes.STRING,
+        type: DataTypes.NUMBER,
         allowNull: false,
     },
     renter: {
         type: DataTypes.STRING,
         allowNull: false,
     },
+}, {
+    sequelize: db,
+    modelName: "RentedMovie",
+    tableName: "rentedmovies"
 });
+export default RentedMovie;
+// export const RentedMovie = db.define("rentedmovie", {
+//   id: {
+//     type: DataTypes.INTEGER,
+//     primaryKey: true,
+//     autoIncrement: true,
+//   },
+//   name: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   genre: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   time: {
+//     type: DataTypes.NUMBER,
+//     allowNull: false,
+//     defaultValue: 12,
+//   },
+//   price: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   renter: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+// });
 // Swagger rented movie schemas
 /**
  * @openapi

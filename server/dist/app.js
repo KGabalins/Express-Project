@@ -1,6 +1,6 @@
 import express, { json, urlencoded } from "express";
 import movieRoutes from "./routes/movie.routes.js";
-import rentedMoviesRoutes from "./routes/rentedMovies.js";
+import rentedMoviesRoutes from "./routes/rentedMovie.routes.js";
 import usersRoutes from "./routes/users.js";
 import permissionsRoutes from "./routes/permissions.js";
 import expressWinston from "express-winston";

@@ -20,8 +20,6 @@ export const getMovieByName = async (movieName: string) => {
 export const createMovie = async (movieData: MovieCreationAttributes) => {
   await db.sync()
 
-  console.log(movieData)
-
   const newMovie = await Movie.create(movieData)
 
   return newMovie

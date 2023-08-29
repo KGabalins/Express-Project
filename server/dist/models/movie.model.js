@@ -1,11 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../config/postgres.js";
 class Movie extends Model {
-    id;
-    name;
-    genre;
-    price;
-    stock;
 }
 Movie.init({
     id: {
@@ -23,7 +18,7 @@ Movie.init({
         allowNull: false,
     },
     price: {
-        type: DataTypes.STRING,
+        type: DataTypes.NUMBER,
         allowNull: false,
     },
     stock: {
