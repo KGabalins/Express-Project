@@ -1,4 +1,4 @@
-import { User } from "../models/users.js";
+import User from "../models/user.model.js";
 import { addRentedMovie, getRentedMovieById, getRentedMoviesByEmail, removeRentedMovie, updateRentedMovie } from "../service/rentedMovie.service.js";
 import { getMovieByName, updateMovie } from "../service/movie.service.js";
 export const getCurrentUserRentedMoviesHandler = async (req, res) => {

@@ -1,55 +1,46 @@
-import { User } from "../models/users.js";
-import { UserPerm } from "../models/userPerm.js";
+import User from "../models/user.model.js";
+import UserPerm from "../models/userPerm.model.js";
 import RentedMovie from "../models/rentedMovie.model.js";
-import { Session } from "../models/sessions.js";
+import Session from "../models/session.model.js";
 import bcrypt from "bcrypt";
 import { signJWT } from "../utils/jwt.utils.js";
 import dotenv from "dotenv";
 import { validateEmailUpdate, validateRegistration, } from "../utils/userValidation.js";
+import { deleteUser, getUserData, registerUser } from "../service/user.service.js";
+import { removeRentedMoviesByEmail } from "../service/rentedMovie.service.js";
 dotenv.config();
 // Get loged in user data
-export const getMyUser = (req, res) => {
+export const getMyUserHandler = (req, res) => {
     const { email, name, surname, role } = req.user;
     return res.status(200).json({ email, name, surname, role });
 };
 // Get information if user is logged in
-export const getIsLoggedIn = (req, res) => {
+export const getIsLoggedInHandler = (req, res) => {
     if (!req.user) {
         return res.status(200).json({ isLoggedIn: false });
     }
     return res.status(200).json({ isLoggedIn: true });
 };
 // Get user data by email
-export const getUser = async (req, res) => {
+export const getUserDataHandler = async (req, res) => {
     const email = req.params.email;
     try {
         // Get user data
-        const user = await User.get(email);
+        const user = await getUserData(email);
         // Check if user exists
         if (!user) {
             return res.status(404).json({ message: "User does not exist!" });
         }
-        try {
-            // Get user permissions
-            const userPerm = await UserPerm.get(email);
-            return res.status(200).json({
-                email: user.email,
-                name: user.name,
-                surname: user.surname,
-                role: userPerm.role,
-            });
-        }
-        catch (error) {
-            return res.status(500).json({ message: error.message });
-        }
+        return res.status(200).json(user);
     }
     catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
-export const addUser = async (req, res) => {
+export const registerUserHandler = async (req, res) => {
     // Get data from request body
     const { email, reemail, password, repassword, name, surname } = req.body;
+    const userData = req.body;
     const role = "user";
     // Validate body data
     if (!validateRegistration(email, reemail, name, surname, password, repassword)) {
@@ -57,24 +48,17 @@ export const addUser = async (req, res) => {
     }
     try {
         // Check if user with this email already exists
-        const userExists = await User.get(req.body.email);
+        const userExists = await getUserData(email);
         if (userExists) {
             return res.status(409).json({ message: "User already exists" });
         }
         // Hash incoming password
         const hash = await bcrypt.hash(password, 11);
-        req.body.password = hash;
+        userData.password = hash;
         try {
-            // Add new user to database
-            const user = await User.create(req.body);
-            try {
-                // Add user permissions
-                await UserPerm.create({ email, role });
-                return res.status(201).json({ email, name, surname, role });
-            }
-            catch (error) {
-                return res.status(500).json({ message: error.message });
-            }
+            // Register a new user
+            await registerUser(userData, role);
+            return res.status(201).json({ email, name, surname, role });
         }
         catch (error) {
             return res.status(500).json({ message: error.message });
@@ -84,15 +68,15 @@ export const addUser = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-export const loginUser = async (req, res) => {
+export const loginUserHandler = async (req, res) => {
     // Get email and password from request body
     const { email, password } = req.body;
     // Validate request body data
     if (!email || !password)
         return res.status(422).json({ message: "Missing required fields!" });
-    // Check if email and password are valid
     try {
-        const user = await User.get(email);
+        // Check if email and password are valid
+        const user = await getUserData(email);
         if (!user)
             return res.status(401).json({ message: "Invalid email or password" });
         try {
@@ -100,61 +84,27 @@ export const loginUser = async (req, res) => {
             if (!validPassword)
                 return res.status(401).json({ message: "Invalid email or password" });
             try {
-                const userPerm = await UserPerm.get(email);
-                try {
-                    const sessionExists = await Session.findOne({
-                        where: { email },
-                    });
-                    if (!sessionExists) {
-                        try {
-                            const session = await Session.create({
-                                email: user.email,
-                                name: user.name,
-                                surname: user.surname,
-                                role: userPerm.role,
-                            });
-                            // Create access token
-                            const accessToken = signJWT({
-                                email: user.email,
-                                name: user.name,
-                                surname: user.surname,
-                                role: userPerm.role,
-                                sessionId: session.sessionId,
-                            }, "15m");
-                            // Create refresh token
-                            const refreshToken = signJWT({ sessionId: session.sessionId }, "1y");
-                            // Set access token in cookie
-                            res.cookie("accessToken", accessToken, {
-                                maxAge: 1.8e6,
-                                httpOnly: true,
-                            });
-                            // Set refresh token cookie
-                            res.cookie("refreshToken", refreshToken, {
-                                maxAge: 3.154e10,
-                                httpOnly: true,
-                            });
-                            // Send user back
-                            return res.send(session);
-                        }
-                        catch (error) {
-                            return res.status(500).json({ message: error.message });
-                        }
-                    }
-                    else {
-                        if (!sessionExists.valid) {
-                            await Session.update({ valid: true }, { where: { sessionId: sessionExists.sessionId } });
-                            sessionExists.valid = true;
-                        }
+                const sessionExists = await Session.findOne({
+                    where: { email },
+                });
+                if (!sessionExists) {
+                    try {
+                        const session = await Session.create({
+                            email: user.email,
+                            name: user.name,
+                            surname: user.surname,
+                            role: user.role,
+                        });
                         // Create access token
                         const accessToken = signJWT({
                             email: user.email,
                             name: user.name,
                             surname: user.surname,
-                            role: userPerm.role,
-                            sessionId: sessionExists.sessionId,
+                            role: user.role,
+                            sessionId: session.sessionId,
                         }, "15m");
                         // Create refresh token
-                        const refreshToken = signJWT({ sessionId: sessionExists.sessionId }, "1y");
+                        const refreshToken = signJWT({ sessionId: session.sessionId }, "1y");
                         // Set access token in cookie
                         res.cookie("accessToken", accessToken, {
                             maxAge: 1.8e6,
@@ -165,11 +115,39 @@ export const loginUser = async (req, res) => {
                             maxAge: 3.154e10,
                             httpOnly: true,
                         });
-                        return res.send(sessionExists);
+                        // Send user back
+                        return res.send(session);
+                    }
+                    catch (error) {
+                        return res.status(500).json({ message: error.message });
                     }
                 }
-                catch (error) {
-                    return res.status(500).json({ message: error.message });
+                else {
+                    if (!sessionExists.valid) {
+                        await Session.update({ valid: true }, { where: { sessionId: sessionExists.sessionId } });
+                        sessionExists.valid = true;
+                    }
+                    // Create access token
+                    const accessToken = signJWT({
+                        email: user.email,
+                        name: user.name,
+                        surname: user.surname,
+                        role: user.role,
+                        sessionId: sessionExists.sessionId,
+                    }, "15m");
+                    // Create refresh token
+                    const refreshToken = signJWT({ sessionId: sessionExists.sessionId }, "1y");
+                    // Set access token in cookie
+                    res.cookie("accessToken", accessToken, {
+                        maxAge: 1.8e6,
+                        httpOnly: true,
+                    });
+                    // Set refresh token cookie
+                    res.cookie("refreshToken", refreshToken, {
+                        maxAge: 3.154e10,
+                        httpOnly: true,
+                    });
+                    return res.send(sessionExists);
                 }
             }
             catch (error) {
@@ -184,7 +162,7 @@ export const loginUser = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-export const updateUserEmail = async (req, res) => {
+export const updateUserEmailHandler = async (req, res) => {
     const oldEmail = req.user.email;
     const newEmail = req.body.email;
     const newReEmail = req.body.reemail;
@@ -275,7 +253,7 @@ export const updateUserEmail = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-export const updateUserPassword = async (req, res) => {
+export const updateUserPasswordHandler = async (req, res) => {
     const currUserRole = req.user.role;
     const currUserEmail = req.user.email;
     const email = req.params.email;
@@ -319,7 +297,7 @@ export const updateUserPassword = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-export const logoutUser = async (req, res) => {
+export const logoutUserHandler = async (req, res) => {
     // Delete access token cookie
     res.cookie("accessToken", "", {
         maxAge: 0,
@@ -340,10 +318,11 @@ export const logoutUser = async (req, res) => {
         return res.status(500).send({ message: error.message });
     }
 };
-export const deleteUser = async (req, res) => {
+export const deleteUserHandler = async (req, res) => {
+    const email = req.params.email;
     try {
         // Get user data
-        const user = await User.get(req.params.email);
+        const user = await getUserData(email);
         // Check if user exists and validate user
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -353,22 +332,15 @@ export const deleteUser = async (req, res) => {
         }
         try {
             // Delete all rented movies with this user
-            await RentedMovie.destroy({ where: { renter: user.email } });
+            await removeRentedMoviesByEmail(email);
             try {
                 // Delete user
-                await User.delete(user.email);
+                await deleteUser(email);
                 try {
-                    // Delete user permissions
-                    await UserPerm.delete(user.email);
-                    try {
-                        await Session.destroy({ where: { email: user.email } });
-                        return res
-                            .status(200)
-                            .json({ message: "User deleted successfully!" });
-                    }
-                    catch (error) {
-                        return res.status(500).json({ message: error.message });
-                    }
+                    await Session.destroy({ where: { email: user.email } });
+                    return res
+                        .status(200)
+                        .json({ message: "User deleted successfully!" });
                 }
                 catch (error) {
                     return res.status(500).json({ message: error.message });

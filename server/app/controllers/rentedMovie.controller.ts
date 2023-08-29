@@ -1,6 +1,4 @@
-import RentedMovie from "../models/rentedMovie.model.js";
-import Movie from "../models/movie.model.js";
-import { User } from "../models/users.js";
+import User from "../models/user.model.js";
 import { Request, Response } from "express";
 import { addRentedMovie, getRentedMovieById, getRentedMoviesByEmail, removeRentedMovie, updateRentedMovie } from "../service/rentedMovie.service.js";
 import { getMovieByName, updateMovie } from "../service/movie.service.js";

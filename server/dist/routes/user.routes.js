@@ -1,5 +1,5 @@
 import express from "express";
-import * as controller from "../controllers/users.js";
+import * as controller from "../controllers/user.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 const router = express.Router();
 router
@@ -20,7 +20,7 @@ router
      *      401:
      *        description: Unauthorized - User is not logged in
      */
-    .get("/", requireUser, controller.getMyUser)
+    .get("/", requireUser, controller.getMyUserHandler)
     /**
    * @openapi
    * /users/isLoggedIn:
@@ -36,7 +36,7 @@ router
    *            schema:
    *
    */
-    .get("/isLoggedIn", controller.getIsLoggedIn)
+    .get("/isLoggedIn", controller.getIsLoggedInHandler)
     /**
      * @openapi
      * /users/{email}:
@@ -63,7 +63,7 @@ router
      *      404:
      *        description: Not found - User does not exist
      */
-    .get("/:email", requireUser, controller.getUser)
+    .get("/:email", requireUser, controller.getUserDataHandler)
     /**
      * @openapi
      * /users:
@@ -89,7 +89,7 @@ router
      *      422:
      *        description: Unprocessable Entity - Invalid request body
      */
-    .post("/", controller.addUser)
+    .post("/", controller.registerUserHandler)
     /**
      * @openapi
      * /users/login:
@@ -116,7 +116,7 @@ router
      *      422:
      *        description: Unprocessable Entity - haven't filled all the fields
      */
-    .post("/login", controller.loginUser)
+    .post("/login", controller.loginUserHandler)
     /**
      * @openapi
      * /users:
@@ -141,7 +141,7 @@ router
      *      422:
      *        description: Unprocessable Entity - Request body isn't valid
      */
-    .put("/", requireUser, controller.updateUserEmail)
+    .put("/", requireUser, controller.updateUserEmailHandler)
     /**
      * @openapi
      * /users/{email}:
@@ -175,7 +175,7 @@ router
      *      422:
      *        description: Unprocessable Entity - Request body isn't valid
      */
-    .put("/:email", requireUser, controller.updateUserPassword)
+    .put("/:email", requireUser, controller.updateUserPasswordHandler)
     /**
      * @openapi
      * /users/logout:
@@ -189,7 +189,7 @@ router
      *      401:
      *        description: Unauthorized - User is not logged in
      */
-    .delete("/logout", requireUser, controller.logoutUser)
+    .delete("/logout", requireUser, controller.logoutUserHandler)
     /**
      * @openapi
      * /users/{email}:
@@ -214,5 +214,5 @@ router
      *      404:
      *        description: Not found - User with this email doesn't exist
      */
-    .delete("/:email", requireUser, controller.deleteUser);
+    .delete("/:email", requireUser, controller.deleteUserHandler);
 export default router;

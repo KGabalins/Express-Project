@@ -1,8 +1,8 @@
 import express, { json, urlencoded } from "express";
 import movieRoutes from "./routes/movie.routes.js";
 import rentedMoviesRoutes from "./routes/rentedMovie.routes.js";
-import usersRoutes from "./routes/users.js";
-import permissionsRoutes from "./routes/permissions.js";
+import usersRoutes from "./routes/user.routes.js";
+import permissionsRoutes from "./routes/permission.routes.js";
 import expressWinston from "express-winston";
 import { transports, format } from "winston";
 import cookieParser from "cookie-parser";

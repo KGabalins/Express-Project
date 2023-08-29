@@ -19,7 +19,8 @@ const userSchema = new dynamoose.Schema({
         required: true,
     },
 });
-export const User = dynamoose.model("users", userSchema);
+const User = dynamoose.model("users", userSchema);
+export default User;
 // Swagger user schemas
 /**
  * @openapi

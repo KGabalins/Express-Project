@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --detectOpenHandles --watchAll",
-    "dev": "nodemon ./dist/index.js"
+    "dev": "nodemon ./dist/index.js",
+    "build": "rimraf ./dist && tsc -w"
   },
   "author": "",
   "license": "ISC",
@@ -29,6 +30,7 @@
     "jsonwebtoken": "^9.0.1",
     "knex": "^2.5.1",
     "pg": "^8.11.1",
+    "rimraf": "^5.0.1",
     "sequelize": "^6.32.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",

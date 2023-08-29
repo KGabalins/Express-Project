@@ -15,7 +15,9 @@ const userPermSchema = new dynamoose.Schema({
   },
 });
 
-export const UserPerm = dynamoose.model("permissions", userPermSchema);
+const UserPerm = dynamoose.model("permissions", userPermSchema);
+
+export default UserPerm
 
 // Swagger user permission schemas
 

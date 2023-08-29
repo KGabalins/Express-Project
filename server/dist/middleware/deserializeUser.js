@@ -1,4 +1,4 @@
-import { Session } from "../models/sessions.js";
+import Session from "../models/session.model.js";
 import { verifyJWT, signJWT } from "../utils/jwt.utils.js";
 export async function deserializeUser(req, res, next) {
     const { accessToken, refreshToken } = req.cookies;

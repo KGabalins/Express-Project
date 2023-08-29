@@ -1,4 +1,4 @@
-import { UserPerm } from "../models/userPerm.js";
+import UserPerm from "../models/userPerm.model.js";
 export const updateUserPerm = async (req, res) => {
     const email = req.params.email;
     const role = req.body.role;

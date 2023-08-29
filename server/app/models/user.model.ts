@@ -1,12 +1,21 @@
-import dynamoose from "dynamoose";
+import dynamoose, { model } from "dynamoose";
+import { Item } from "dynamoose/dist/Item.js";
 
 dynamoose.aws.ddb.local("http://localhost:4000");
 
-interface UserAttributes {
+export interface UserAttributes extends Item {
   email: string,
   name: string,
   surname?: string,
-  password: string
+  password: string,
+}
+
+export interface UserData {
+  email: string,
+  name: string,
+  surname?: string,
+  password: string,
+  role: string,
 }
 
 const userSchema = new dynamoose.Schema({
@@ -29,7 +38,9 @@ const userSchema = new dynamoose.Schema({
   },
 });
 
-export const User = dynamoose.model("users", userSchema);
+const User = dynamoose.model<UserAttributes>("users", userSchema);
+
+export default User
 
 // Swagger user schemas
 

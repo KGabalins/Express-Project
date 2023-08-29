@@ -1,6 +1,8 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import db from "../config/postgres.js";
-export const Session = db.define("session", {
+class Session extends Model {
+}
+Session.init({
     sessionId: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -28,7 +30,41 @@ export const Session = db.define("session", {
         allowNull: false,
         defaultValue: true,
     },
+}, {
+    sequelize: db,
+    modelName: "Session",
+    tableName: "sessions"
 });
+// const Session = db.define("session", {
+//   sessionId: {
+//     type: DataTypes.INTEGER,
+//     primaryKey: true,
+//     autoIncrement: true,
+//   },
+//   email: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//     unique: true,
+//   },
+//   name: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   surname: {
+//     type: DataTypes.STRING,
+//     allowNull: true,
+//   },
+//   role: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   valid: {
+//     type: DataTypes.BOOLEAN,
+//     allowNull: false,
+//     defaultValue: true,
+//   },
+// });
+export default Session;
 // Swagger session schemas
 /**
  * @openapi

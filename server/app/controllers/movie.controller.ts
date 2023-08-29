@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import Movie from "../models/movie.model.js";
 import { createMovie, getAllMovies, getMovieByName, updateMovie, deleteMovie } from "../service/movie.service.js";
 import { CreateMovieInput } from "../schema/movie.schema.js";
 

@@ -37,3 +37,9 @@ export const removeRentedMovie = async (movieId: number) => {
 
   await RentedMovie.destroy({ where: { id: movieId } })
 }
+
+export const removeRentedMoviesByEmail = async (userEmail: string) => {
+  await db.sync()
+
+  await RentedMovie.destroy({ where: { renter: userEmail } });
+}

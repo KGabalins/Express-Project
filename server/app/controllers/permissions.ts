@@ -1,4 +1,4 @@
-import { UserPerm } from "../models/userPerm.js";
+import UserPerm from "../models/userPerm.model.js";
 import { Request, Response } from "express";
 
 export const updateUserPerm = async (req: Request, res: Response) => {
