@@ -17,13 +17,32 @@ const payload = {
         repassword: string({
             required_error: "Re-typed password is required"
         }).min(8, "The password should be atleast 8 characters long!"),
+    }).strict().superRefine(({ email, reemail, password, repassword }, ctx) => {
+        if (email !== reemail && password !== repassword) {
+            ctx.addIssue({
+                code: "custom",
+                message: "Email and password do not match",
+            });
+        }
+        else if (email !== reemail) {
+            ctx.addIssue({
+                code: "custom",
+                message: "Emails do not match"
+            });
+        }
+        else if (password !== repassword) {
+            ctx.addIssue({
+                code: "custom",
+                message: "Passwords do not match"
+            });
+        }
     })
 };
 const params = {
     params: object({
         email: string({
             required_error: "User email is required"
-        })
+        }).email()
     })
 };
 export const getUserDataSchema = object({

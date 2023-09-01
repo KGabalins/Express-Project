@@ -13,7 +13,7 @@ const payload = {
         stock: number({
             required_error: "Stock is required"
         })
-    })
+    }).strict()
 };
 const params = {
     params: object({

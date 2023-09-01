@@ -1,4 +1,4 @@
-import express, { json, urlencoded } from "express";
+import express, { json, urlencoded, Express } from "express";
 import movieRoutes from "./routes/movie.routes.js";
 import rentedMoviesRoutes from "./routes/rentedMovie.routes.js";
 import usersRoutes from "./routes/user.routes.js";
@@ -10,7 +10,7 @@ import { deserializeUser } from "./middleware/deserializeUser.js";
 import dotenv from "dotenv"
 dotenv.config()
 
-export function createServer() {
+export function createServer(): Express {
   const app = express();
 
   app.use(json());

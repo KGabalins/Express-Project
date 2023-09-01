@@ -15,8 +15,8 @@ const payload = {
         }),
         renter: string({
             required_error: "Renter is required"
-        })
-    })
+        }).email("Not a valid email address!")
+    }).strict()
 };
 const params = {
     params: object({

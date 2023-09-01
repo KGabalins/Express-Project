@@ -1,6 +1,9 @@
 import express from "express";
 import * as controller from "../controllers/user.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
+import validate from "../middleware/validateResource.js";
+import { getUserDataSchema, registerUserSchema } from "../schema/user.schema.js";
+import { loginUserSchema } from "../schema/session.schema.js";
 const router = express.Router();
 router
     /**
@@ -63,7 +66,7 @@ router
      *      404:
      *        description: Not found - User does not exist
      */
-    .get("/:email", requireUser, controller.getUserDataHandler)
+    .get("/:email", requireUser, validate(getUserDataSchema), controller.getUserDataHandler)
     /**
      * @openapi
      * /users:
@@ -89,7 +92,7 @@ router
      *      422:
      *        description: Unprocessable Entity - Invalid request body
      */
-    .post("/", controller.registerUserHandler)
+    .post("/", validate(registerUserSchema), controller.registerUserHandler)
     /**
      * @openapi
      * /users/login:
@@ -116,7 +119,7 @@ router
      *      422:
      *        description: Unprocessable Entity - haven't filled all the fields
      */
-    .post("/login", controller.loginUserHandler)
+    .post("/login", validate(loginUserSchema), controller.loginUserHandler)
     /**
      * @openapi
      * /users:

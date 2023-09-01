@@ -11,8 +11,10 @@ import {
   validateEmailUpdate,
   validateRegistration,
 } from "../utils/userValidation.js";
-import { deleteUser, getUserData, registerUser } from "../service/user.service.js";
+import { comparePassword, deleteUser, getUserData, registerUser } from "../service/user.service.js";
 import { removeRentedMoviesByEmail } from "../service/rentedMovie.service.js";
+import { GetUserDataInput, RegisterUserInput } from "../schema/user.schema.js";
+import { LoginUserInput } from "../schema/session.schema.js";
 dotenv.config();
 
 // Get loged in user data
@@ -32,53 +34,51 @@ export const getIsLoggedInHandler = (req: Request, res: Response) => {
 };
 
 // Get user data by email
-export const getUserDataHandler = async (req: Request, res: Response) => {
+export const getUserDataHandler = async (req: Request<GetUserDataInput["params"]>, res: Response) => {
   const email = req.params.email;
 
   try {
     // Get user data
-    const user = await getUserData(email);
+    const userData = await getUserData(email);
 
     // Check if user exists
-    if (!user) {
+    if (!userData) {
       return res.status(404).json({ message: "User does not exist!" });
     }
 
-    return res.status(200).json(user);
+    return res.status(200).json(userData);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-export const registerUserHandler = async (req: Request, res: Response) => {
+export const registerUserHandler = async (req: Request<{}, {}, RegisterUserInput["body"]>, res: Response) => {
   // Get data from request body
-  const { email, reemail, password, repassword, name, surname } = req.body;
-  const userData = req.body
-  const role = "user";
-
-  // Validate body data
-  if (
-    !validateRegistration(email, reemail, name, surname, password, repassword)
-  ) {
-    return res.status(422).json({ message: "Invalid input parameters!" });
+  const { email, name, surname, password } = req.body
+  const newUserData = {
+    email,
+    name,
+    surname,
+    password
   }
+
   try {
     // Check if user with this email already exists
     const userExists = await getUserData(email);
 
     if (userExists) {
-      return res.status(409).json({ message: "User already exists" });
+      return res.status(409).json({ message: "User with this email already exists!" });
     }
 
     // Hash incoming password
     const hash = await bcrypt.hash(password, 11);
-    userData.password = hash;
+    newUserData.password = hash;
 
     try {
       // Register a new user
-      await registerUser(userData, role);
+      await registerUser(newUserData);
 
-      return res.status(201).json({ email, name, surname, role });
+      return res.status(201).json({ message: "User registration successful!" });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -87,26 +87,24 @@ export const registerUserHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const loginUserHandler = async (req: Request, res: Response) => {
+export const loginUserHandler = async (req: Request<{}, {}, LoginUserInput["body"]>, res: Response) => {
   // Get email and password from request body
   const { email, password } = req.body;
 
-  // Validate request body data
-  if (!email || !password)
-    return res.status(422).json({ message: "Missing required fields!" });
-
-
   try {
-    // Check if email and password are valid
+    // Check if user with this email exists
     const user = await getUserData(email);
 
     if (!user)
       return res.status(401).json({ message: "Invalid email or password" });
 
     try {
-      const validPassword = await bcrypt.compare(password, user.password);
+      // Check if entered password is correct
+      const validPassword = await comparePassword(password, email);
+
       if (!validPassword)
         return res.status(401).json({ message: "Invalid email or password" });
+      
       try {
         const sessionExists = await Session.findOne({
           where: { email },

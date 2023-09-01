@@ -14,9 +14,10 @@ export interface UserData {
   email: string,
   name: string,
   surname?: string,
-  password: string,
   role: string,
 }
+
+export interface CreateUserData extends Omit<UserData, "role"> { }
 
 const userSchema = new dynamoose.Schema({
   email: {
