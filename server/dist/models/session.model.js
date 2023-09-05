@@ -12,24 +12,7 @@ Session.init({
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-    },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    surname: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    role: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    valid: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true,
-    },
+    }
 }, {
     sequelize: db,
     modelName: "Session",

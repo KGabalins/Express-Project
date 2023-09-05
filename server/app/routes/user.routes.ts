@@ -2,7 +2,7 @@ import express from "express";
 import * as controller from "../controllers/user.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 import validate from "../middleware/validateResource.js";
-import { getUserDataSchema, registerUserSchema } from "../schema/user.schema.js";
+import { getUserDataSchema, registerUserSchema, updateUserEmailSchema, updateUserPasswordSchema } from "../schema/user.schema.js";
 import { loginUserSchema } from "../schema/session.schema.js";
 
 const router = express.Router();
@@ -124,7 +124,7 @@ router
   .post("/login", validate(loginUserSchema), controller.loginUserHandler)
   /**
    * @openapi
-   * /users:
+   * /users/changeEmail:
    *  put:
    *    tags:
    *    - Users
@@ -141,26 +141,21 @@ router
    *        description: Password successfully updated
    *      401:
    *        description: Unauthorized - User is not logged in
+   *      403:
+   *        description: Forbidden - Entered password is incorrect
    *      409:
    *        description: Not found - User with this email doesn't exist
    *      422:
    *        description: Unprocessable Entity - Request body isn't valid
    */
-  .put("/", requireUser, controller.updateUserEmailHandler)
+  .put("/changeEmail", requireUser, validate(updateUserEmailSchema), controller.updateUserEmailHandler)
   /**
    * @openapi
-   * /users/{email}:
+   * /users/changePassword:
    *  put:
    *    tags:
    *    - Users
    *    summary: Update user password
-   *    parameters:
-   *      - in: path
-   *        required: true
-   *        name: email
-   *        schema:
-   *          type: string
-   *        description: Email of the user
    *    requestBody:
    *      required: true
    *      description: A JSON object containing the the new password.
@@ -170,7 +165,7 @@ router
    *            $ref: "#/components/schemas/UpdatePasswordInput"
    *    responses:
    *      200:
-   *        description: Success - Password successfully updated
+   *        description: Success - Email successfully updated
    *      401:
    *        description: Unauthorized - User is not logged in
    *      403:
@@ -180,7 +175,7 @@ router
    *      422:
    *        description: Unprocessable Entity - Request body isn't valid
    */
-  .put("/:email", requireUser, controller.updateUserPasswordHandler)
+  .put("/changePassword", requireUser, validate(updateUserPasswordSchema), controller.updateUserPasswordHandler)
   /**
    * @openapi
    * /users/logout:

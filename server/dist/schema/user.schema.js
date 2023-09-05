@@ -17,7 +17,9 @@ const payload = {
         repassword: string({
             required_error: "Re-typed password is required"
         }).min(8, "The password should be atleast 8 characters long!"),
-    }).strict().superRefine(({ email, reemail, password, repassword }, ctx) => {
+    })
+        .strict()
+        .superRefine(({ email, reemail, password, repassword }, ctx) => {
         if (email !== reemail && password !== repassword) {
             ctx.addIssue({
                 code: "custom",
@@ -51,10 +53,50 @@ export const getUserDataSchema = object({
 export const registerUserSchema = object({
     ...payload
 });
-// export const updateMovieSchema = object({
-//   ...payload,
-//   ...params
-// })
+export const updateUserPasswordSchema = object({
+    body: object({
+        oldPassword: string({
+            required_error: "Current password is required"
+        }),
+        newPassword: string({
+            required_error: "Password is required"
+        }).min(8, "The password should be atleast 8 characters long!"),
+        confirmNewPassword: string({
+            required_error: "Re-typed password is required"
+        }).min(8, "The password should be atleast 8 characters long!"),
+    })
+        .strict()
+        .superRefine(({ newPassword, confirmNewPassword }, ctx) => {
+        if (newPassword !== confirmNewPassword) {
+            ctx.addIssue({
+                code: "custom",
+                message: "Passwords do not match",
+            });
+        }
+    })
+});
+export const updateUserEmailSchema = object({
+    body: object({
+        newEmail: string({
+            required_error: "New email is required"
+        }).email("Not a valid email address!"),
+        confirmNewEmail: string({
+            required_error: "New email confirmation is required"
+        }).email("Not a valid email address!"),
+        password: string({
+            required_error: "Current password is required"
+        })
+    })
+        .strict()
+        .superRefine(({ newEmail, confirmNewEmail }, ctx) => {
+        if (newEmail !== confirmNewEmail) {
+            ctx.addIssue({
+                code: "custom",
+                message: "Emails do not match",
+            });
+        }
+    })
+});
 export const delteUserSchema = object({
     ...params
 });

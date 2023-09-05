@@ -4,7 +4,7 @@ import { Knex } from "knex";
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function (knex: Knex) {
+export const up = function (knex: Knex) {
   return knex.schema
     .createTable("movies", (table) => {
       table.increments("id").primary();
@@ -46,6 +46,11 @@ exports.up = function (knex: Knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function (knex: Knex) {
+// exports.down = function (knex: Knex) {
+//   return knex.schema.dropTable("movies");
+// };
+
+
+export const down = function (knex: Knex) {
   return knex.schema.dropTable("movies");
 };

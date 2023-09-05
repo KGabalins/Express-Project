@@ -4,10 +4,6 @@ import db from "../config/postgres.js";
 interface SessionAttributes {
   sessionId: number,
   email: string,
-  name: string,
-  surname?: string,
-  role: string,
-  valid?: boolean
 }
 
 export interface SessionCreationAttributes extends Omit<SessionAttributes, "sessionId"> { }
@@ -15,10 +11,6 @@ export interface SessionCreationAttributes extends Omit<SessionAttributes, "sess
 class Session extends Model<SessionAttributes, SessionCreationAttributes> implements SessionAttributes {
   declare sessionId: number;
   declare email: string;
-  declare name: string;
-  declare surname: string;
-  declare role: string;
-  declare valid: boolean;
 }
 
 Session.init(
@@ -32,24 +24,7 @@ Session.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    surname: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    role: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    valid: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
+    }
   },
   {
     sequelize: db,

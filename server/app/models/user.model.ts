@@ -16,7 +16,7 @@ export interface UserData {
   surname?: string,
   role: string,
 }
-
+ 
 export interface CreateUserData extends Omit<UserData, "role"> { }
 
 const userSchema = new dynamoose.Schema({
@@ -99,15 +99,19 @@ export default User
  *    UpdateEmailInput:
  *      type: object
  *      required:
- *        - email
- *        - reemail
+ *        - newEmail
+ *        - confirmNewEmail
+ *        - password
  *      properties:
- *        email:
+ *        newEmail:
  *          type: string
  *          description: New email for the user
- *        reemail:
+ *        confirmNewEmail:
  *          type: string
  *          description: Retyped new email for the user
+ *        password:
+ *          type: string
+ *          description: Password of the user
  *    GetUserResponse:
  *      type: object
  *      properties:

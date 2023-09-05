@@ -6,6 +6,7 @@ import { RemoveRentedMovieInput, UpdateRentedMovieTimeInput } from "../schema/re
 import { GetMovieInput } from "../schema/movie.schema.js";
 
 export const getCurrentUserRentedMoviesHandler = async (req: Request, res: Response) => {
+  // @ts-ignore
   const { email } = req.user;
   try {
     // Get all rented movies by renter email
@@ -85,6 +86,7 @@ export const addRentedMovieHandler = async (req: Request<GetMovieInput["params"]
           genre: movie.genre,
           time: 12,
           price: movie.price,
+          // @ts-ignore
           renter: req.user.email,
         });
         
@@ -101,6 +103,7 @@ export const addRentedMovieHandler = async (req: Request<GetMovieInput["params"]
 };
 
 export const updateRentedMovieTimeHandler = async (req: Request<UpdateRentedMovieTimeInput["params"], {}, UpdateRentedMovieTimeInput["body"]>, res: Response) => {
+  // @ts-ignore
   const { email } = req.user;
   const id = Number.parseInt(req.params.id);
   const method = req.body.method
@@ -146,6 +149,7 @@ export const updateRentedMovieTimeHandler = async (req: Request<UpdateRentedMovi
 };
 
 export const removeRentedMovieHandler = async (req: Request<RemoveRentedMovieInput["params"]>, res: Response) => {
+  // @ts-ignore
   const { email } = req.user;
   const id = Number.parseInt(req.params.id)
 

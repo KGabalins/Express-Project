@@ -11,11 +11,3 @@ db.authenticate()
 const app = createServer();
 app.listen(process.env.PORT || 5000, () => console.log(`Server running on port ${process.env.PORT || 5000}`));
 swaggerDocs(app, process.env.PORT || 5000);
-// try {
-//   app.listen(process.env.PORT || 5000, () =>
-//     console.log(`Server running on port ${process.env.PORT || 5000}`)
-//   );
-//   swaggerDocs(app, process.env.PORT || 5000);
-// } catch (error) {
-//   console.error(error);
-// }

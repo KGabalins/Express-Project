@@ -1,3 +1,5 @@
+import RentedMovie from "../models/rentedMovie.model.js";
+import Session from "../models/session.model.js";
 import User from "../models/user.model.js";
 import UserPerm from "../models/userPerm.model.js";
 import bcrypt from "bcrypt";
@@ -16,16 +18,28 @@ export const getUserData = async (userEmail) => {
     };
     return fullUserData;
 };
-export const comparePassword = async (enteredPassword, userEmail) => {
-    const { password } = await User.get(userEmail);
-    const validPassword = await bcrypt.compare(enteredPassword, password);
-    return validPassword;
-};
-export const registerUser = async (userData) => {
+export const registerUser = async (userData, role = "user") => {
     await User.create(userData);
-    await UserPerm.create({ email: userData.email, role: "user" });
+    await UserPerm.create({ email: userData.email, role });
+};
+export const updateUserPassword = async (newPasswordHashed, userEmail) => {
+    await User.update({ email: userEmail, password: newPasswordHashed });
+};
+export const updateUserEmail = async (oldEmail, newEmail) => {
+    const oldUserData = await getUserData(oldEmail);
+    const { password } = await User.get(oldEmail);
+    // @ts-ignore
+    await registerUser({ email: newEmail, name: oldUserData.name, surname: oldUserData.surname, password }, oldUserData?.role);
+    await deleteUser(oldEmail);
+    await RentedMovie.update({ renter: newEmail }, { where: { renter: oldEmail } });
+    await Session.update({ email: newEmail }, { where: { email: oldEmail } });
 };
 export const deleteUser = async (userEmail) => {
     await User.delete(userEmail);
     await UserPerm.delete(userEmail);
+};
+export const comparePassword = async (enteredPassword, userEmail) => {
+    const { password } = await User.get(userEmail);
+    const isValidPassword = await bcrypt.compare(enteredPassword, password);
+    return isValidPassword;
 };

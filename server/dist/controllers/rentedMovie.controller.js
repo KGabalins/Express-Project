@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import { addRentedMovie, getRentedMovieById, getRentedMoviesByEmail, removeRentedMovie, updateRentedMovie } from "../service/rentedMovie.service.js";
 import { getMovieByName, updateMovie } from "../service/movie.service.js";
 export const getCurrentUserRentedMoviesHandler = async (req, res) => {
+    // @ts-ignore
     const { email } = req.user;
     try {
         // Get all rented movies by renter email
@@ -74,6 +75,7 @@ export const addRentedMovieHandler = async (req, res) => {
                     genre: movie.genre,
                     time: 12,
                     price: movie.price,
+                    // @ts-ignore
                     renter: req.user.email,
                 });
                 return res.status(201).json(rentedMovie);
@@ -91,6 +93,7 @@ export const addRentedMovieHandler = async (req, res) => {
     }
 };
 export const updateRentedMovieTimeHandler = async (req, res) => {
+    // @ts-ignore
     const { email } = req.user;
     const id = Number.parseInt(req.params.id);
     const method = req.body.method;
@@ -132,6 +135,7 @@ export const updateRentedMovieTimeHandler = async (req, res) => {
     }
 };
 export const removeRentedMovieHandler = async (req, res) => {
+    // @ts-ignore
     const { email } = req.user;
     const id = Number.parseInt(req.params.id);
     // Validate parameter

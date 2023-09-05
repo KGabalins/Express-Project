@@ -1,12 +1,30 @@
 import jwt from "jsonwebtoken";
-// Sign JWT
-export const signJWT = (payload, expiresIn) => {
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn });
+import { getUserData } from "../service/user.service.js";
+import dotenv from "dotenv";
+dotenv.config();
+// Sign Access JWT
+export const signAccessJWT = async (email, sessionId, expiresIn) => {
+    const userData = await getUserData(email);
+    return jwt.sign({ sessionId, ...userData }, process.env.ACCESS_TOKEN_SECRET, { expiresIn });
 };
-// Verify JWT
-export const verifyJWT = (token) => {
+// Sign Refresh JWT
+export const signRefreshJWT = (sessionId, expiresIn) => {
+    return jwt.sign({ sessionId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn });
+};
+// Verify Access JWT
+export const verifyAccessJWT = (token) => {
     try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        return { payload: decoded, expired: false };
+    }
+    catch (error) {
+        return { payload: null, expired: error.message };
+    }
+};
+// Verify Refresh JWT
+export const verifyRefreshJWT = (token) => {
+    try {
+        const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
         return { payload: decoded, expired: false };
     }
     catch (error) {

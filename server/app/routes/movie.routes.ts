@@ -64,7 +64,7 @@ router
    *      required: true
    *      description: A JSON object containing name, genre, price and stock
    *      content:
-   *        application/json:validate(createMovieSchema)
+   *        application/json:
    *          schema:
    *            $ref: "#/components/schemas/CreateMovieInput"
    *    responses:

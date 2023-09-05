@@ -1,5 +1,5 @@
-import Session from "../models/session.model.js";
-import { verifyJWT, signJWT } from "../utils/jwt.utils.js";
+import { getSessionById } from "../service/session.service.js";
+import { signAccessJWT, verifyAccessJWT, verifyRefreshJWT } from "../utils/jwt.utils.js";
 import { Request, Response, NextFunction } from "express";
 
 export async function deserializeUser(req: Request, res: Response, next: NextFunction) {
@@ -7,45 +7,44 @@ export async function deserializeUser(req: Request, res: Response, next: NextFun
 
   if (!accessToken) return next();
 
-  const { payload, expired } = verifyJWT(accessToken);
+  const { payload, expired } = verifyAccessJWT(accessToken);
 
   // For a valid access token
   if (payload) {
+    // @ts-ignore
+    const sessionExists = await getSessionById(payload.sessionId)
+
+    if(!sessionExists) {
+      return next();
+    }
+
+    // @ts-ignore
     req.user = payload;
     return next();
   }
 
   // Expired but valid access token
   const { payload: refresh } =
-    expired && refreshToken ? verifyJWT(refreshToken) : { payload: null };
+    expired && refreshToken ? verifyRefreshJWT(refreshToken) : { payload: null };
 
   if (!refresh) {
     return next();
   }
 
   try {
-    const session = await Session.findOne({
-      where: { sessionId: refresh.sessionId },
-    });
+    // @ts-ignore
+    const session = await getSessionById(refresh.sessionId)
 
     if (!session) return next();
 
-    const newAccessToken = signJWT(
-      {
-        email: session.email,
-        name: session.name,
-        surname: session.surname,
-        role: session.role,
-        sessionId: session.sessionId,
-      },
-      "15m"
-    );
+    const newAccessToken = signAccessJWT(session.email, session.sessionId, "15m");
 
     res.cookie("accessToken", newAccessToken, {
       maxAge: 1.8e6, // 30 minutes
       httpOnly: true,
     });
 
+    // @ts-ignore
     req.user = verifyJWT(newAccessToken).payload;
   } catch (error) {
     return res.status(500).send({ message: error.message });
