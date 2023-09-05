@@ -68,21 +68,15 @@ export default Session;
  *    LoginUserResponse:
  *      type: object
  *      properties:
- *        valid:
- *          type: boolean
- *          description: Shows if user session is valid
- *        sessionId:
- *          type: integer
- *          description: Session id of the user
- *        email:
- *          type: string
- *          description: Email of the user
  *        name:
  *          type: string
  *          description: Name of the user
  *        surname:
  *          type: string
  *          description: Surname of the user
+ *        email:
+ *          type: string
+ *          description: Email of the user
  *        role:
  *          type: string
  *          description: Role / permissions of the user

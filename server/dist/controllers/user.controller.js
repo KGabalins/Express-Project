@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 import { signAccessJWT, signRefreshJWT } from "../utils/jwt.utils.js";
 import dotenv from "dotenv";
 import { comparePassword, deleteUser, getUserData, registerUser, updateUserEmail, updateUserPassword } from "../service/user.service.js";
-import { removeRentedMoviesByEmail } from "../service/rentedMovie.service.js";
 import { createSession, removeSession } from "../service/session.service.js";
 dotenv.config();
 // Get loged in user data
@@ -82,7 +81,7 @@ export const loginUserHandler = async (req, res) => {
             try {
                 const session = await createSession(email);
                 // Create access token
-                const accessToken = await signAccessJWT(user.email, session.sessionId, "15m");
+                const accessToken = await signAccessJWT(user.email, session.sessionId, "5m");
                 // Create refresh token
                 const refreshToken = signRefreshJWT(session.sessionId, "1y");
                 // Set access token in cookie
@@ -125,7 +124,12 @@ export const updateUserEmailHandler = async (req, res) => {
             if (emailExists) {
                 return res.status(409).json({ message: "Email already exists" });
             }
-            await updateUserEmail(oldEmail, newEmail);
+            try {
+                await updateUserEmail(oldEmail, newEmail);
+            }
+            catch (error) {
+                return res.status(500).json({ message: error.message });
+            }
             // Create updated access token
             // @ts-ignore
             const accessToken = await signAccessJWT(newEmail, req.user.sessionId, "15m");
@@ -152,7 +156,7 @@ export const updateUserPasswordHandler = async (req, res) => {
         // Check if old password is correct
         const validPassword = await comparePassword(oldPassword, email);
         if (!validPassword) {
-            return res.status(401).json({ message: "Incorrect old password!" });
+            return res.status(403).json({ message: "Incorrect old password!" });
         }
         // Hash entered password
         const hash = await bcrypt.hash(newPassword, 11);
@@ -206,24 +210,11 @@ export const deleteUserHandler = async (req, res) => {
             return res.status(403).json({ message: "Forbidden" });
         }
         try {
-            // Delete all rented movies with this user
-            await removeRentedMoviesByEmail(email);
-            try {
-                // Delete user
-                await deleteUser(email);
-                try {
-                    await removeSession(email);
-                    return res
-                        .status(200)
-                        .json({ message: "User deleted successfully!" });
-                }
-                catch (error) {
-                    return res.status(500).json({ message: error.message });
-                }
-            }
-            catch (error) {
-                return res.status(500).json({ message: error.message });
-            }
+            // Delete user
+            await deleteUser(email);
+            return res
+                .status(200)
+                .json({ message: "User deleted successfully!" });
         }
         catch (error) {
             return res.status(500).json({ message: error.message });

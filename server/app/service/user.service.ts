@@ -3,6 +3,8 @@ import Session from "../models/session.model.js";
 import User, { CreateUserData, UserAttributes, UserData } from "../models/user.model.js";
 import UserPerm from "../models/userPerm.model.js";
 import bcrypt from "bcrypt";
+import { removeSession } from "./session.service.js";
+import { removeRentedMoviesByEmail } from "./rentedMovie.service.js";
 
 export const getUserData = async (userEmail: string): Promise<UserData | null> => {
   const userData = await User.get(userEmail)
@@ -51,6 +53,8 @@ export const updateUserEmail = async (oldEmail: string, newEmail: string) => {
 export const deleteUser = async (userEmail: string) => {
   await User.delete(userEmail)
   await UserPerm.delete(userEmail)
+  await removeSession(userEmail)
+  await removeRentedMoviesByEmail(userEmail)
 }
 
 export const comparePassword = async (enteredPassword: string, userEmail: string): Promise<boolean> => {

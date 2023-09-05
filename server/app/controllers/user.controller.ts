@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 import { Request, Response } from "express";
 import { comparePassword, deleteUser, getUserData, registerUser, updateUserEmail, updateUserPassword } from "../service/user.service.js";
 import { removeRentedMoviesByEmail } from "../service/rentedMovie.service.js";
-import { GetUserDataInput, RegisterUserInput, UpdateUserEmailInput, UpdateUserPasswordInput } from "../schema/user.schema.js";
+import { DeleteUserInput, GetUserDataInput, RegisterUserInput, UpdateUserEmailInput, UpdateUserPasswordInput } from "../schema/user.schema.js";
 import { LoginUserInput } from "../schema/session.schema.js";
 import { createSession, removeSession } from "../service/session.service.js";
 dotenv.config();
@@ -107,7 +107,7 @@ export const loginUserHandler = async (req: Request<{}, {}, LoginUserInput["body
         const session = await createSession(email)
 
         // Create access token
-        const accessToken = await signAccessJWT(user.email, session.sessionId, "15m");
+        const accessToken = await signAccessJWT(user.email, session.sessionId, "5m");
 
         // Create refresh token
         const refreshToken = signRefreshJWT(session.sessionId, "1y");
@@ -157,7 +157,11 @@ export const updateUserEmailHandler = async (req: Request<{}, {}, UpdateUserEmai
         return res.status(409).json({ message: "Email already exists" });
       }
 
-      await updateUserEmail(oldEmail, newEmail)
+      try {
+        await updateUserEmail(oldEmail, newEmail)
+      } catch (error) {
+        return res.status(500).json({ message: error.message });
+      }
 
       // Create updated access token
       // @ts-ignore
@@ -188,7 +192,7 @@ export const updateUserPasswordHandler = async (req: Request<{}, {}, UpdateUserP
     const validPassword = await comparePassword(oldPassword, email)
 
     if (!validPassword) {
-      return res.status(401).json({ message: "Incorrect old password!" });
+      return res.status(403).json({ message: "Incorrect old password!" });
     }
 
     // Hash entered password
@@ -236,7 +240,7 @@ export const logoutUserHandler = async (req: Request, res: Response) => {
 };
 
 
-export const deleteUserHandler = async (req: Request, res: Response) => {
+export const deleteUserHandler = async (req: Request<DeleteUserInput["params"]>, res: Response) => {
   const email = req.params.email
 
   try {
@@ -252,25 +256,12 @@ export const deleteUserHandler = async (req: Request, res: Response) => {
     }
 
     try {
-      // Delete all rented movies with this user
-      await removeRentedMoviesByEmail(email)
+      // Delete user
+      await deleteUser(email)
 
-      try {
-        // Delete user
-        await deleteUser(email)
-
-        try {
-          await removeSession(email)
-
-          return res
-            .status(200)
-            .json({ message: "User deleted successfully!" });
-        } catch (error) {
-          return res.status(500).json({ message: error.message });
-        }
-      } catch (error) {
-        return res.status(500).json({ message: error.message });
-      }
+      return res
+        .status(200)
+        .json({ message: "User deleted successfully!" });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }

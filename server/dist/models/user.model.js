@@ -30,16 +30,16 @@ export default User;
  *      type: object
  *      required:
  *        - email
- *        - reemail
+ *        - confirmEmail
  *        - name
  *        - surname
  *        - password
- *        - repassword
+ *        - confirmPassword
  *      properties:
  *        email:
  *          type: string
  *          description: Email of the user
- *        reemail:
+ *        confirmEmail:
  *          type: string
  *          description: Retyped email for confirmation
  *        name:
@@ -51,26 +51,30 @@ export default User;
  *        password:
  *          type: string
  *          description: Password of the user
- *        repassword:
+ *        confirmPassword:
  *          type: string
  *          description: Retyped password for confirmation
  *      example:
  *        email: test@example.com
- *        reemail: test@example.com
+ *        confirmEmail: test@example.com
  *        name: Test
  *        surname: Mr
  *        password: test1234
- *        repassword: test1234
+ *        confirmPassword: test1234
  *    UpdatePasswordInput:
  *      type: object
  *      required:
- *        - password
- *        - repassword
+ *        - oldPassword
+ *        - newPassword
+ *        - confirmNewPassword
  *      properties:
- *        password:
+ *        oldPassword:
+ *          type: string
+ *          description: Old password for the user
+ *        newPassword:
  *          type: string
  *          description: New password for the user
- *        repassword:
+ *        confirmNewPassword:
  *          type: string
  *          description: Retyped new password for the user
  *    UpdateEmailInput:

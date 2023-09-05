@@ -2,7 +2,7 @@ import express from "express";
 import * as controller from "../controllers/user.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 import validate from "../middleware/validateResource.js";
-import { getUserDataSchema, registerUserSchema, updateUserEmailSchema, updateUserPasswordSchema } from "../schema/user.schema.js";
+import { getUserDataSchema, registerUserSchema, updateUserEmailSchema, updateUserPasswordSchema, deleteUserSchema } from "../schema/user.schema.js";
 import { loginUserSchema } from "../schema/session.schema.js";
 
 const router = express.Router();
@@ -14,10 +14,10 @@ router
    *  get:
    *    tags:
    *    - Users
-   *    summary: Get current user data
+   *    summary: Get current user's data
    *    responses:
    *      200:
-   *        description: Success
+   *        description: Success - Shows data of the current user
    *        content:
    *          application/json:
    *            schema:
@@ -32,10 +32,10 @@ router
  *  get:
  *    tags:
  *    - Users
- *    summary: Get boolean is user logged in
+ *    summary: Get data if the current user is logged in
  *    responses:
  *      200:
- *        description: Success
+ *        description: Success - Shows if a user is logged in
  *        content:
  *          application/json:
  *            schema:
@@ -48,7 +48,7 @@ router
    *  get:
    *    tags:
    *    - Users
-   *    summary: Get specific user data
+   *    summary: Get data of a user by its email
    *    parameters:
    *      - in: path
    *        name: email
@@ -58,7 +58,7 @@ router
    *        description: Email of the user
    *    responses:
    *      200:
-   *        description: Success
+   *        description: Success - Shows data of a specific user
    *        content:
    *          application/json:
    *            schema:
@@ -67,6 +67,8 @@ router
    *        description: Unauthorized - User is not logged in
    *      404:
    *        description: Not found - User does not exist
+   *      422:
+   *        description: Unprocessable Entity - Invalid request body or params
    */
   .get("/:email", requireUser, validate(getUserDataSchema), controller.getUserDataHandler)
   /**
@@ -84,7 +86,7 @@ router
    *            $ref: "#/components/schemas/RegisterUserInput"
    *    responses:
    *      201:
-   *        description: Success
+   *        description: Success - User successfully registered
    *        content:
    *          application/json:
    *            schema:
@@ -92,7 +94,7 @@ router
    *      409:
    *        description: Conflict - User already exists
    *      422:
-   *        description: Unprocessable Entity - Invalid request body
+   *        description: Unprocessable Entity - Invalid request body or params
    */
   .post("/", validate(registerUserSchema), controller.registerUserHandler)
   /**
@@ -101,7 +103,7 @@ router
    *  post:
    *    tags:
    *    - Users
-   *    summary: Log in user (access token and refresh token are added to cookies)
+   *    summary: Log in a user
    *    requestBody:
    *      required: true
    *      description: A JSON object containing the email and password.
@@ -111,15 +113,15 @@ router
    *            $ref: "#/components/schemas/LoginUserInput"
    *    responses:
    *      200:
-   *        description: Successfully logged in
+   *        description: Seuccess - Successfully logged in
    *        content:
    *          application/json:
    *            schema:
    *              $ref: "#/components/schemas/LoginUserResponse"
    *      401:
-   *        description: Unauthorized - invalid email or password
+   *        description: Unauthorized - Invalid email or password
    *      422:
-   *        description: Unprocessable Entity - haven't filled all the fields
+   *        description: Unprocessable Entity - Invalid request body or params
    */
   .post("/login", validate(loginUserSchema), controller.loginUserHandler)
   /**
@@ -128,7 +130,7 @@ router
    *  put:
    *    tags:
    *    - Users
-   *    summary: Update user email
+   *    summary: Update current user's email
    *    requestBody:
    *      required: true
    *      description: A JSON object containing the new email.
@@ -138,15 +140,15 @@ router
    *            $ref: "#/components/schemas/UpdateEmailInput"
    *    responses:
    *      200:
-   *        description: Password successfully updated
+   *        description: Success - Email successfully updated
    *      401:
    *        description: Unauthorized - User is not logged in
    *      403:
    *        description: Forbidden - Entered password is incorrect
    *      409:
-   *        description: Not found - User with this email doesn't exist
+   *        description: Conflict - User with this email already exist
    *      422:
-   *        description: Unprocessable Entity - Request body isn't valid
+   *        description: Unprocessable Entity - Invalid request body or params
    */
   .put("/changeEmail", requireUser, validate(updateUserEmailSchema), controller.updateUserEmailHandler)
   /**
@@ -155,7 +157,7 @@ router
    *  put:
    *    tags:
    *    - Users
-   *    summary: Update user password
+   *    summary: Update current user's password
    *    requestBody:
    *      required: true
    *      description: A JSON object containing the the new password.
@@ -165,15 +167,13 @@ router
    *            $ref: "#/components/schemas/UpdatePasswordInput"
    *    responses:
    *      200:
-   *        description: Success - Email successfully updated
+   *        description: Success - Password successfully updated
    *      401:
    *        description: Unauthorized - User is not logged in
    *      403:
-   *        description: Forbiden - Not the same user or not an admin
-   *      404:
-   *        description: Not found - User with this email doesn't exist
+   *        description: Forbidden - Old password is incorrect
    *      422:
-   *        description: Unprocessable Entity - Request body isn't valid
+   *        description: Unprocessable Entity - Invalid request body or params
    */
   .put("/changePassword", requireUser, validate(updateUserPasswordSchema), controller.updateUserPasswordHandler)
   /**
@@ -182,10 +182,10 @@ router
    *  delete:
    *    tags:
    *    - Users
-   *    summary: Log out user
+   *    summary: Log out the current user
    *    responses:
    *      200:
-   *        description: Successfully logged out
+   *        description: Success - Successfully logged out
    *      401:
    *        description: Unauthorized - User is not logged in
    */
@@ -196,7 +196,7 @@ router
    *  delete:
    *    tags:
    *    - Users
-   *    summary: Delete user by email (requires admin privileges)
+   *    summary: Delete a user by its email
    *    parameters:
    *      - in: path
    *        required: true
@@ -210,10 +210,12 @@ router
    *      401:
    *        description: Unauthorized - User is not logged in
    *      403:
-   *        description: Forbiden - User is not an admin
+   *        description: Forbiden - User is not an admin or the selected user
    *      404:
    *        description: Not found - User with this email doesn't exist
+   *      422:
+   *        description: Unprocessable Entity - Invalid request body or params
    */
-  .delete("/:email", requireUser, controller.deleteUserHandler);
+  .delete("/:email", validate(deleteUserSchema), requireUser, controller.deleteUserHandler);
 
 export default router;

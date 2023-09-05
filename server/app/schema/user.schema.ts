@@ -5,7 +5,7 @@ const payload = {
     email: string({
       required_error: "Email is required"
     }).email("Not a valid email address!"),
-    reemail: string({
+    confirmEmail: string({
       required_error: "Re-typed email is required"
     }).email("Not a valid email address!"),
     name: string({
@@ -15,23 +15,23 @@ const payload = {
     password: string({
       required_error: "Password is required"
     }).min(8, "The password should be atleast 8 characters long!"),
-    repassword: string({
+    confirmPassword: string({
       required_error: "Re-typed password is required"
     }).min(8, "The password should be atleast 8 characters long!"),
   })
     .strict()
-    .superRefine(({ email, reemail, password, repassword }, ctx) => {
-      if (email !== reemail && password !== repassword) {
+    .superRefine(({ email, confirmEmail, password, confirmPassword }, ctx) => {
+      if (email !== confirmEmail && password !== confirmPassword) {
         ctx.addIssue({
           code: "custom",
           message: "Email and password do not match",
         })
-      } else if (email !== reemail) {
+      } else if (email !== confirmEmail) {
         ctx.addIssue({
           code: "custom",
           message: "Emails do not match"
         })
-      } else if (password !== repassword) {
+      } else if (password !== confirmPassword) {
         ctx.addIssue({
           code: "custom",
           message: "Passwords do not match"
@@ -44,7 +44,7 @@ const params = {
   params: object({
     email: string({
       required_error: "User email is required"
-    }).email()
+    }).email("Not a valid email address!")
   })
 }
 
@@ -102,7 +102,7 @@ export const updateUserEmailSchema = object({
   })
 })
 
-export const delteUserSchema = object({
+export const deleteUserSchema = object({
   ...params
 })
 
@@ -110,4 +110,4 @@ export type GetUserDataInput = TypeOf<typeof getUserDataSchema>
 export type RegisterUserInput = TypeOf<typeof registerUserSchema>
 export type UpdateUserPasswordInput = TypeOf<typeof updateUserPasswordSchema>
 export type UpdateUserEmailInput = TypeOf<typeof updateUserEmailSchema>
-export type DeleteUserInput = TypeOf<typeof delteUserSchema>
+export type DeleteUserInput = TypeOf<typeof deleteUserSchema>

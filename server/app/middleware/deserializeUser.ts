@@ -37,7 +37,7 @@ export async function deserializeUser(req: Request, res: Response, next: NextFun
 
     if (!session) return next();
 
-    const newAccessToken = signAccessJWT(session.email, session.sessionId, "15m");
+    const newAccessToken = await signAccessJWT(session.email, session.sessionId, "5m");
 
     res.cookie("accessToken", newAccessToken, {
       maxAge: 1.8e6, // 30 minutes
@@ -45,7 +45,7 @@ export async function deserializeUser(req: Request, res: Response, next: NextFun
     });
 
     // @ts-ignore
-    req.user = verifyJWT(newAccessToken).payload;
+    req.user = verifyAccessJWT(newAccessToken).payload;
   } catch (error) {
     return res.status(500).send({ message: error.message });
   }

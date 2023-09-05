@@ -26,13 +26,13 @@ export async function deserializeUser(req, res, next) {
         const session = await getSessionById(refresh.sessionId);
         if (!session)
             return next();
-        const newAccessToken = signAccessJWT(session.email, session.sessionId, "15m");
+        const newAccessToken = await signAccessJWT(session.email, session.sessionId, "5m");
         res.cookie("accessToken", newAccessToken, {
             maxAge: 1.8e6,
             httpOnly: true,
         });
         // @ts-ignore
-        req.user = verifyJWT(newAccessToken).payload;
+        req.user = verifyAccessJWT(newAccessToken).payload;
     }
     catch (error) {
         return res.status(500).send({ message: error.message });
