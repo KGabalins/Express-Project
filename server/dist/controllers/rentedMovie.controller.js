@@ -37,8 +37,8 @@ export const getRentedMoviesByEmailHandler = async (req, res) => {
 export const getRentedMovieByIdHandler = async (req, res) => {
     const id = parseFloat(req.params.id);
     // Validate parameter
-    if (!Number.isInteger(id)) {
-        return res.status(400).json({ message: "Invalid id!" });
+    if (isNaN(id)) {
+        return res.status(422).json({ message: "Invalid id in parameters!" });
     }
     try {
         // Get rented movie by id
@@ -97,9 +97,8 @@ export const updateRentedMovieTimeHandler = async (req, res) => {
     const { email } = req.user;
     const id = Number.parseInt(req.params.id);
     const method = req.body.method;
-    // Validate parameter
-    if (!Number.isInteger(id)) {
-        return res.status(400).json({ message: "Invalid id!" });
+    if (isNaN(id)) {
+        return res.status(422).send({ message: "Invalid id in parameters!" });
     }
     try {
         // Check if rented movie exists

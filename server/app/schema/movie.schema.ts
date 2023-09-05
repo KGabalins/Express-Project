@@ -10,10 +10,10 @@ const payload = {
     }),
     price: number({
       required_error: "Price is required"
-    }),
+    }).min(0.01),
     stock: number({
       required_error: "Stock is required"
-    })
+    }).min(1)
   }).strict()
 }
 
@@ -34,7 +34,17 @@ export const createMovieSchema = object({
 })
 
 export const updateMovieSchema = object({
-  ...payload,
+  body: object({
+    genre: string({
+      required_error: "Genres is required"
+    }),
+    price: number({
+      required_error: "Price is required"
+    }).min(0.01),
+    stock: number({
+      required_error: "Stock is required"
+    }).min(1)
+  }),
   ...params
 })
 

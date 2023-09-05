@@ -30,7 +30,7 @@ export const createMovieHandler = async (req, res) => {
         // Check if movie already exists
         const movieExists = await getMovieByName(movieName);
         if (movieExists) {
-            return res.status(400).json({ message: "Movie already exists" });
+            return res.status(409).json({ message: "Movie already exists" });
         }
         try {
             // Create new movie
@@ -47,11 +47,7 @@ export const createMovieHandler = async (req, res) => {
 };
 export const updateMovieHandler = async (req, res) => {
     const movieName = req.params.name;
-    const { name, genre, price, stock } = req.body;
-    // Validate request parameters
-    if (!price || !stock || !Number.isInteger(stock) || !Number.isFinite(price)) {
-        return res.status(422).json({ message: "Invalid request body!" });
-    }
+    const movieData = req.body;
     try {
         // Check if movie exists
         const movieExists = await getMovieByName(movieName);
@@ -60,7 +56,7 @@ export const updateMovieHandler = async (req, res) => {
         }
         try {
             // Update movie price and stock
-            await updateMovie(movieName, { name, genre, price, stock });
+            await updateMovie(movieName, movieData);
             return res.status(200).json({ message: "Movie updated" });
         }
         catch (error) {

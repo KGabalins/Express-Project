@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { createMovie, getAllMovies, getMovieByName, updateMovie, deleteMovie } from "../service/movie.service.js";
-import { CreateMovieInput } from "../schema/movie.schema.js";
+import { CreateMovieInput, UpdateMovieInput } from "../schema/movie.schema.js";
 
 // Get all movies
 export const getAllMoviesHandler = async (req: Request, res: Response) => {
   try {
     // Get all movies from db
     const movies = await getAllMovies();
-    
+
     return res.status(200).json(movies);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -35,7 +35,7 @@ export const createMovieHandler = async (req: Request<{}, {}, CreateMovieInput["
     // Check if movie already exists
     const movieExists = await getMovieByName(movieName);
     if (movieExists) {
-      return res.status(400).json({ message: "Movie already exists" });
+      return res.status(409).json({ message: "Movie already exists" });
     }
     try {
       // Create new movie
@@ -49,30 +49,29 @@ export const createMovieHandler = async (req: Request<{}, {}, CreateMovieInput["
   }
 };
 
-export const updateMovieHandler = async (req: Request, res: Response) => {
+export const updateMovieHandler = async (req: Request<UpdateMovieInput["params"], {}, UpdateMovieInput["body"]>, res: Response) => {
   const movieName = req.params.name;
-  const { name, genre, price, stock } = req.body;
+  const movieData = req.body;
 
-  // Validate request parameters
-  if (!price || !stock || !Number.isInteger(stock) || !Number.isFinite(price)) {
-    return res.status(422).json({ message: "Invalid request body!" });
-  }
   try {
     // Check if movie exists
     const movieExists = await getMovieByName(movieName);
+
     if (!movieExists) {
       return res.status(404).json({ message: "Movie not found" });
     }
-    try {
-      // Update movie price and stock
-      await updateMovie(movieName, { name, genre, price, stock });
-      return res.status(200).json({ message: "Movie updated" });
+    
+      try {
+        // Update movie price and stock
+        await updateMovie(movieName, movieData);
+
+        return res.status(200).json({ message: "Movie updated" });
+      } catch (error) {
+        return res.status(500).json({ message: error.message });
+      }
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
 };
 
 export const deleteMovieHandler = async (req: Request, res: Response) => {

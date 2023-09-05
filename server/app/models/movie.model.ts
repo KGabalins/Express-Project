@@ -10,7 +10,7 @@ interface MovieAtributes {
 }
 
 export interface MovieCreationAttributes extends Omit<MovieAtributes, "id"> { }
-export interface MovieUpdateAttributes extends Omit<MovieAtributes, "id"> {}
+export interface MovieUpdateAttributes extends Omit<MovieAtributes, "id" | "name"> {}
 
 class Movie extends Model<MovieAtributes, MovieCreationAttributes> implements MovieAtributes {
   declare id: number;
@@ -146,9 +146,13 @@ export default Movie
  *    UpdateMovieInput:
  *      type: object
  *      required:
+ *        - genre
  *        - price
  *        - stock
  *      properties:
+ *        genre:
+ *          type: string
+ *          description: Genre of the movie
  *        price:
  *          type: number
  *          description: Price of the movie

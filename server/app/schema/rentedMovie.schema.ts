@@ -38,6 +38,14 @@ export const getRentedMovieSchema = object({
   ...params
 })
 
+export const getRentedMoviesByEmailSchema = object({
+  params: object({
+    email: string({
+      required_error: "Rented movie id is required"
+    }).email("Not a valid email address!")
+  })
+})
+
 export const addRentedMovieSchema = object({
   ...payload
 })
@@ -57,6 +65,7 @@ export const removeRentedMovieSchema = object({
 })
 
 export type GetRentedMovieInput = TypeOf<typeof getRentedMovieSchema>
+export type GetRentedMoviesByEmailInput = TypeOf<typeof getRentedMoviesByEmailSchema>
 export type AddRentedMovieInput = TypeOf<typeof addRentedMovieSchema>
 // export type UpdateRentedMovieInput = TypeOf<typeof updateRentedMovieSchema>
 export type UpdateRentedMovieTimeInput = TypeOf<typeof updateRentedMovieTimeSchema>

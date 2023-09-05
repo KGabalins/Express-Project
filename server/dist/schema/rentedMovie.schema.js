@@ -33,6 +33,13 @@ const updateTimeMethod = {
 export const getRentedMovieSchema = object({
     ...params
 });
+export const getRentedMoviesByEmailSchema = object({
+    params: object({
+        email: string({
+            required_error: "Rented movie id is required"
+        }).email("Not a valid email address!")
+    })
+});
 export const addRentedMovieSchema = object({
     ...payload
 });

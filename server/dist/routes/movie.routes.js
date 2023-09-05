@@ -72,12 +72,12 @@ router
      *          application/json:
      *            schema:
      *              $ref: "#/components/schemas/GetMovieResponse"
-     *      400:
-     *        description: Bad Request - Movie already exists
      *      401:
      *        description: Unauthorized - User is not logged in
      *      403:
      *        description: Forbiden - User is not an admin
+     *      409:
+     *        description: Conflict - Movie already exists
      *      422:
      *        description: Unprocessable Entity - Invalid request body
      */
@@ -88,7 +88,7 @@ router
      *  put:
      *    tags:
      *    - Movies
-     *    summary: Update movie's price and stock (requires admin privileges)
+     *    summary: Update a movie (requires admin privileges)
      *    parameters:
      *      - in: path
      *        name: name
@@ -105,7 +105,7 @@ router
      *            $ref: "#/components/schemas/UpdateMovieInput"
      *    responses:
      *      200:
-     *        description: Success - Price and stock of the movie have been updated
+     *        description: Success - Movie updated successfully
      *      401:
      *        description: Unauthorized - User is not logged in
      *      403:

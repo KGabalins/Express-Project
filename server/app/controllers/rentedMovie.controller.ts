@@ -2,33 +2,38 @@ import User from "../models/user.model.js";
 import { Request, Response } from "express";
 import { addRentedMovie, getRentedMovieById, getRentedMoviesByEmail, removeRentedMovie, updateRentedMovie } from "../service/rentedMovie.service.js";
 import { getMovieByName, updateMovie } from "../service/movie.service.js";
-import { RemoveRentedMovieInput, UpdateRentedMovieTimeInput } from "../schema/rentedMovie.schema.js";
+import { GetRentedMovieInput, GetRentedMoviesByEmailInput, RemoveRentedMovieInput, UpdateRentedMovieTimeInput } from "../schema/rentedMovie.schema.js";
 import { GetMovieInput } from "../schema/movie.schema.js";
 
 export const getCurrentUserRentedMoviesHandler = async (req: Request, res: Response) => {
   // @ts-ignore
   const { email } = req.user;
+
   try {
     // Get all rented movies by renter email
     const rentedMovies = await getRentedMoviesByEmail(email);
+
     return res.status(200).json(rentedMovies);
   } catch (error) {
     return res.status(500).send({ message: error.message });
   }
 };
 
-export const getRentedMoviesByEmailHandler = async (req: Request, res: Response) => {
+export const getRentedMoviesByEmailHandler = async (req: Request<GetRentedMoviesByEmailInput["params"]>, res: Response) => {
   const email = req.params.email;
 
   try {
     // Check if user exists
     const userExists = await User.get(email);
+
     if (!userExists) {
       return res.status(404).json({ message: "User doesn't exist!" });
     }
+
     try {
       // Get rented movies by email
       const movies = await getRentedMoviesByEmail(email);
+
       return res.status(200).json(movies);
     } catch (error) {
       return res.status(500).send({ message: error.message });
@@ -38,12 +43,12 @@ export const getRentedMoviesByEmailHandler = async (req: Request, res: Response)
   }
 };
 
-export const getRentedMovieByIdHandler = async (req: Request, res: Response) => {
+export const getRentedMovieByIdHandler = async (req: Request<GetRentedMovieInput["params"]>, res: Response) => {
   const id = parseFloat(req.params.id);
 
   // Validate parameter
-  if (!Number.isInteger(id)) {
-    return res.status(400).json({ message: "Invalid id!" });
+  if (isNaN(id)) {
+    return res.status(422).json({ message: "Invalid id in parameters!" });
   }
 
   try {
@@ -108,9 +113,8 @@ export const updateRentedMovieTimeHandler = async (req: Request<UpdateRentedMovi
   const id = Number.parseInt(req.params.id);
   const method = req.body.method
 
-  // Validate parameter
-  if (!Number.isInteger(id)) {
-    return res.status(400).json({ message: "Invalid id!" });
+  if(isNaN(id)) {
+    return res.status(422).send({ message: "Invalid id in parameters!"})
   }
 
   try {
