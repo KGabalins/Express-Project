@@ -9,7 +9,7 @@ import cookieParser from "cookie-parser";
 import { deserializeUser } from "./middleware/deserializeUser.js";
 import dotenv from "dotenv";
 dotenv.config();
-export function createServer() {
+export default function createServer() {
     const app = express();
     app.use(json());
     app.use(cookieParser());

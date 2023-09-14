@@ -25,11 +25,13 @@ const EditMovieItem = (props) => {
     e.preventDefault();
 
     const enteredName = nameInputRef.current.value;
+    const enteredGenre = genreInputRef.current.value;
     const enteredPrice = Number.parseFloat(priceInputRef.current.value);
     const enteredStock = Number.parseInt(stockInputRef.current.value);
 
     const editedMovie = {
       name: enteredName,
+      genre: enteredGenre,
       price: enteredPrice,
       stock: enteredStock,
     };
@@ -105,7 +107,7 @@ const EditMovieItem = (props) => {
           ></input>
         </div>
         <div id="success" className={classes.success}>
-          <p>Movie has been successfully added!</p>
+          <p></p>
         </div>
         <div className={classes.buttonContainer}>
           <button className={classes.edit}>Edit</button>

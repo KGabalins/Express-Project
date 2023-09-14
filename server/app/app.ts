@@ -10,7 +10,7 @@ import { deserializeUser } from "./middleware/deserializeUser.js";
 import dotenv from "dotenv"
 dotenv.config()
 
-export function createServer(): Express {
+export default function createServer(): Express {
   const app = express();
 
   app.use(json());

@@ -23,13 +23,21 @@ const EditMoviePage = () => {
 
   function deleteMovieHandler(selectedMovie) {
     axios.delete(`/movies/${selectedMovie.name}`).then(() => {
+      const successInfo = document.getElementById("success")
+      successInfo.innerHTML = "Movie successfully deleted!";
+      successInfo.style.display = "inline-block"
       renderMovies();
     });
   }
 
   function editMovieHandler(editedMovie) {
-    const { name, price, stock } = editedMovie;
-    axios.put(`/movies/${name}`, { price, stock }).then(renderMovies());
+    const { name, genre, price, stock } = editedMovie;
+    axios.put(`/movies/${name}`, { genre, price, stock }).then(() => {
+      const successInfo = document.getElementById("success")
+      successInfo.innerHTML = "Movie successfully edited!";
+      successInfo.style.display = "inline-block"
+      renderMovies();
+    });
   }
 
   return (

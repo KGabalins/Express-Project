@@ -3,6 +3,17 @@ import { signAccessJWT, verifyAccessJWT, verifyRefreshJWT } from "../utils/jwt.u
 import { Request, Response, NextFunction } from "express";
 
 export async function deserializeUser(req: Request, res: Response, next: NextFunction) {
+  // console.log(req.headers)
+  // if (req.headers.authorization === "testing-admin") {
+  //   // @ts-ignore
+  //   req.user = { name: "tester", surname: "tester", email: "tester@tester.com", role: "admin" }
+  //   return next()
+  // } else if (req.headers.authorization === "testing-user") {
+  //   // @ts-ignore
+  //   req.user = { name: "tester", surname: "tester", email: "tester@tester.com", role: "user" }
+  //   return next()
+  // }
+
   const { accessToken, refreshToken } = req.cookies;
 
   if (!accessToken) return next();
@@ -12,11 +23,11 @@ export async function deserializeUser(req: Request, res: Response, next: NextFun
   // For a valid access token
   if (payload) {
     // @ts-ignore
-    const sessionExists = await getSessionById(payload.sessionId)
+    // const sessionExists = await getSessionById(payload.sessionId)
 
-    if(!sessionExists) {
-      return next();
-    }
+    // if (!sessionExists) {
+    //   return next();
+    // }
 
     // @ts-ignore
     req.user = payload;

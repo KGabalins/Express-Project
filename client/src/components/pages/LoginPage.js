@@ -36,19 +36,17 @@ const LoginPage = () => {
 
   // Register form submition handler
   function registerHandler(
-    { name, surname, email, reemail, password, repassword },
-    error
+    { name, surname, email, confirmEmail, password, confirmPassword }
   ) {
     axios
-      .post("/users", { name, surname, email, reemail, password, repassword })
+      .post("/users", { name, surname, email, confirmEmail, password, confirmPassword })
       .then(() => {
         axios.post("/users/login", { email, password }).then(() => {
           navigate("/", { replace: true });
         });
       })
       .catch((err) => {
-        error.style.display = "inline-block";
-        error.innerText = err.response.data.message;
+        console.log(err.message)
       });
   }
 

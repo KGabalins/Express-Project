@@ -1,6 +1,6 @@
 import db from "./config/postgres.js";
 import { swaggerDocs } from "./utils/swagger.js";
-import { createServer } from "./app.js";
+import createServer from "./app.js";
 import dotenv from "dotenv";
 dotenv.config();
 // const app = require("./app");

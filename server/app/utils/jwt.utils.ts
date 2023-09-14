@@ -10,6 +10,11 @@ export const signAccessJWT = async (email: string, sessionId: number, expiresIn:
   return jwt.sign({ sessionId, ...userData }, process.env.ACCESS_TOKEN_SECRET, { expiresIn });
 }
 
+// Sign Access JWT
+export const signTestJWT = (payload: object, expiresIn: string | number) => {
+  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn });
+}
+
 // Sign Refresh JWT
 export const signRefreshJWT = (sessionId: number, expiresIn: string | number) => {
   return jwt.sign({ sessionId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn });
