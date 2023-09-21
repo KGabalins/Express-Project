@@ -20,26 +20,38 @@ const ProfilePage = () => {
 
   function changeEmail() {
     const newEmail = prompt("Enter your new email: ");
-    const reNewEmail = prompt("Re-enter your new email: ");
+    const confirmNewEmail = prompt("Re-enter your new email: ");
+    const password = prompt("Enter your current password: ");
     axios
-      .put(`/users`, { email: newEmail, reemail: reNewEmail })
+      .put(`/users/changeEmail`, { newEmail, confirmNewEmail, password })
       .then(() => {
         alert("Email changed successfully!");
         getUserData();
       })
       .catch((error) => {
-        alert(error.response.data.message)
+        const errorCode = error.response.status
+        if (errorCode === 403) {
+          alert("The current password you entered was incorrect!")
+        } else {
+          alert("Make sure that both emails are valid and they match!")
+        }
       });
   }
 
   function changePassword() {
+    const oldPassword = prompt("Enter your current password: ");
     const newPassword = prompt("Enter your new password: ");
-    const reNewPassword = prompt("Re-enter your new password: ")
+    const confirmNewPassword = prompt("Re-enter your new password: ")
 
-    axios.put(`/users/${currUser.email}`, {password: newPassword, repassword: reNewPassword}).then(() => {
+    axios.put(`/users/changePassword`, {oldPassword, newPassword, confirmNewPassword}).then(() => {
       alert("Password changed successfully!");
     }).catch(error => {
-      alert(error.response.data.message)
+      const errorCode = error.response.status
+      if (errorCode === 403) {
+        alert("The current password you entered was incorrect!")
+      } else {
+        alert("Make sure the new password is atleast 8 characters long!")
+      }
     })
   }
 

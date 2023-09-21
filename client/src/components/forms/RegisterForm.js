@@ -25,9 +25,9 @@ const RegisterForm = (props) => {
       name: enteredName,
       surname: enteredSurname,
       email: enteredEmail,
-      reemail: enteredReemail,
+      confirmEmail: enteredReemail,
       password: enteredPassword,
-      repassword: enteredRepassword,
+      confirmPassword: enteredRepassword,
       role: "user",
     };
 
