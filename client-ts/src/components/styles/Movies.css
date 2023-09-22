@@ -1,0 +1,25 @@
+.gridHeader {
+  display: grid;
+  grid-template-columns: repeat(3, 2fr) 1fr 100px;
+  border-radius: 30px;
+}
+
+.gridHeader span {
+  margin: 20px;
+}
+
+.movieItem {
+  display: grid;
+  grid-template-columns: repeat(3, 2fr) 1fr 100px;
+  background-color: #D9D9D9;
+  border-radius: 30px;
+  margin-bottom: 20px;
+}
+
+.movieItem span {
+  margin: 20px;
+}
+
+.movieItem button {
+  border: none;
+}
