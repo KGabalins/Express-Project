@@ -21,16 +21,7 @@ export const UserContextProvider = () => {
   const [currentUser, setCurrentUser] = useState<UserType | null>(null);
 
   useEffect(() => {
-    axiosInstance
-      .get(`/users`)
-      .then((response) => {
-        const userData: UserType = response.data;
-
-        setCurrentUser(userData);
-      })
-      .catch(() => {
-        setCurrentUser(null);
-      });
+    getCurrentUser()
   }, []);
 
   const logoutUser = () => {
@@ -44,9 +35,22 @@ export const UserContextProvider = () => {
       });
   };
 
+  const getCurrentUser = () => {
+    axiosInstance
+      .get(`/users`)
+      .then((response) => {
+        const userData: UserType = response.data;
+
+        setCurrentUser(userData);
+      })
+      .catch(() => {
+        setCurrentUser(null);
+      });
+  };
+
   return (
     <>
-      <UserContext.Provider value={{ currentUser, setCurrentUser, logoutUser }}>
+      <UserContext.Provider value={{ currentUser, setCurrentUser, logoutUser, getCurrentUser }}>
         <Outlet />
       </UserContext.Provider>
     </>

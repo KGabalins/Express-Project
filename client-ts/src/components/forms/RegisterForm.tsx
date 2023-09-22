@@ -53,7 +53,7 @@ export const RegisterForm = () => {
         <label htmlFor="registerName">
           Name
           {success && <span className="successText">{` - ${success}`}</span>}
-          {errorMessage && <span>{` - ${errorMessage}`}</span>}
+          {errorMessage && <span className="errorText">{` - ${errorMessage}`}</span>}
         </label>
         <input
           type="text"

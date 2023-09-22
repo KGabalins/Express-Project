@@ -23,3 +23,8 @@
 .movieItem button {
   border: none;
 }
+
+.emptyMovieText {
+  text-align: center;
+  text-decoration: underline;
+}

@@ -20,7 +20,6 @@ export const LoginForm = () => {
         setCurrentUser(response.data);
       })
       .catch((error: any) => {
-        console.log(error.response.data);
         if (Array.isArray(error.response.data)) {
           setErrorMessage(error.response.data[0].message);
         } else {

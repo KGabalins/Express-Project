@@ -14,7 +14,7 @@ export const RentedMoviesList = () => {
         <span>Price</span>
       </div>
       {rentedMovies.length === 0 ? (
-        <p>No available movie for now!</p>
+        <p className="emptyMovieText">You haven't rented any movie yet. Go to the home page to rent some!</p>
       ) : (
         rentedMovies.map((rentedMovie) => {
           return <RentedMovieItem rentedMovie={rentedMovie} />;

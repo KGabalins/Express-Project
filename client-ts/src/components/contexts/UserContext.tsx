@@ -16,6 +16,7 @@ type UserContextType = {
   currentUser: UserType | null;
   setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>;
   logoutUser: () => void;
+  getCurrentUser: () => void;
 };
 
 export const UserContext = createContext({} as UserContextType);

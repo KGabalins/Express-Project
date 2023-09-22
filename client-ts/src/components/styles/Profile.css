@@ -1,0 +1,30 @@
+.profileContainer {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  row-gap: 20px;
+  column-gap: 20px;
+  margin: 50px 80px;
+}
+
+.profilePicture {
+  width: 100%;
+}
+
+.profileDetails {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  row-gap: 10px;
+}
+
+#displayBtnDiv-updatePassword {
+  justify-self: center;
+}
+
+.detail {
+  font-weight: bold;
+}
+
+.detail span {
+  font-weight: normal;
+}
