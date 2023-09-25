@@ -42,7 +42,7 @@ export const UpdateEmailForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="popupForm">
       <label htmlFor="newEmail">
         New Email
         {successMessage && (
@@ -56,6 +56,7 @@ export const UpdateEmailForm = () => {
         type="text"
         id="newEmail"
         value={updateEmailForm.newEmail}
+        placeholder="email@example.com"
         onChange={(e) =>
           setUpdateEmailForm((prevState) => {
             return { ...prevState, newEmail: e.target.value };
@@ -67,6 +68,7 @@ export const UpdateEmailForm = () => {
         type="text"
         id="confirmNewEmail"
         value={updateEmailForm.confirmNewEmail}
+        placeholder="email@example.com"
         onChange={(e) =>
           setUpdateEmailForm((prevState) => {
             return { ...prevState, confirmNewEmail: e.target.value };
@@ -78,6 +80,7 @@ export const UpdateEmailForm = () => {
         type="password"
         id="password"
         value={updateEmailForm.password}
+        placeholder="password"
         onChange={(e) =>
           setUpdateEmailForm((prevState) => {
             return { ...prevState, password: e.target.value };

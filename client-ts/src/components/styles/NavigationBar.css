@@ -17,16 +17,14 @@ li a {
   color: #FFFFFF;
   text-align: center;
   padding: 20px 30px;
-
   text-decoration: none;
 }
 
-li a:hover:not(.active) {
+li a:hover {
   background-color: #111;
 }
-
-.active {
-  background-color: #04AA6D;
+li a:active {
+  background-color: #242424;
 }
 
 .logoutLink {

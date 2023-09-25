@@ -27,8 +27,15 @@ export const MovieItem = ({ movie }: MovieItemProps) => {
       <span>{movie.name}</span>
       <span>{movie.genre}</span>
       <span>{movie.price}</span>
-      <span>{movie.stock}</span>
-      <button type="submit">Rent</button>
+      <span className="stockSpan">
+        {movie.stock}{" "}
+        {movie.stock > 0 ? (
+          <img alt="check" src={require("../icons/check.png")} />
+        ) : (
+          <img alt="check" src={require("../icons/cross.png")} />
+        )}
+      </span>
+      <button type="submit" className="rentBtn">Rent</button>
     </form>
   );
 };

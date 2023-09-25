@@ -15,7 +15,7 @@ export const UpdatePasswordForm = () => {
       confirmNewPassword: "",
     });
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("")
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,12 +23,12 @@ export const UpdatePasswordForm = () => {
     axiosInstance
       .put(`/users/changePassword`, updatePasswordForm)
       .then(() => {
-        clearForm()
-        setSuccessMessage("Password updated successfully!")
-        setErrorMessage("")
+        clearForm();
+        setSuccessMessage("Password updated successfully!");
+        setErrorMessage("");
       })
       .catch((error: any) => {
-        setSuccessMessage("")
+        setSuccessMessage("");
         if (Array.isArray(error.response.data)) {
           setErrorMessage(error.response.data[0].message);
         } else {
@@ -46,7 +46,7 @@ export const UpdatePasswordForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="popupForm">
       <label htmlFor="password">
         Current Password
         {successMessage && (
@@ -60,6 +60,7 @@ export const UpdatePasswordForm = () => {
         type="password"
         id="password"
         value={updatePasswordForm.oldPassword}
+        placeholder="password"
         onChange={(e) =>
           setUpdatePasswordForm((prevState) => {
             return { ...prevState, oldPassword: e.target.value };
@@ -71,6 +72,7 @@ export const UpdatePasswordForm = () => {
         type="password"
         id="newPassword"
         value={updatePasswordForm.newPassword}
+        placeholder="new password"
         onChange={(e) =>
           setUpdatePasswordForm((prevState) => {
             return { ...prevState, newPassword: e.target.value };
@@ -82,6 +84,7 @@ export const UpdatePasswordForm = () => {
         type="password"
         id="confirmNewPassword"
         value={updatePasswordForm.confirmNewPassword}
+        placeholder="new password"
         onChange={(e) =>
           setUpdatePasswordForm((prevState) => {
             return { ...prevState, confirmNewPassword: e.target.value };
