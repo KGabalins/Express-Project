@@ -1,0 +1,80 @@
+.popup {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  padding: 10px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+  background-color: #d9d9d9;
+  visibility: hidden;
+  opacity: 0;
+  transition: 0.5s;
+  border-radius: 10px;
+}
+
+.popup input {
+  border: none;
+  height: 20px;
+  padding: 3px 5px;
+  border-radius: 2px;
+}
+
+.popup.active {
+  top: 50%;
+  visibility: visible;
+  opacity: 1;
+  transform: 0.5s;
+}
+
+.popupTitle {
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.cancelBtnDiv {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.displayBtnDiv.active {
+  pointer-events: none;
+  user-select: none;
+  background-color: rgba(255, 255, 255, 0);
+}
+
+.buttonDiv {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.buttonDiv button {
+  margin-top: 20px;
+  width: 100px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+}
+
+.cancelBtnDiv button {
+  border: none;
+  background-color: #d9d9d900;
+  font-weight: bold;
+  font-size: 14px;
+  color: black;
+}
+
+.cancelBtnDiv button:hover {
+  color: rgb(113, 113, 113);
+}
+
+.cancelBtnDiv button:active {
+  color: rgb(36, 36, 36)
+}
+
+.acceptButton {
+  margin-bottom: 10px;
+  align-self: center;
+}

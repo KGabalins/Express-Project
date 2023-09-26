@@ -1,0 +1,76 @@
+.card {
+  background-color: white;
+  border-radius: 30px;
+  padding: 20px 40px;
+  width: 350px;
+  box-shadow: -10px 10px 10px rgba(0, 0, 0, 0.418);
+}
+
+.cardContainer {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0px;
+}
+
+.card .cardTitle {
+  text-align: center;
+}
+
+.card form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.card form label {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.card form input {
+  background-color: #d9d9d9;
+  border: none;
+  border-radius: 8px;
+  height: 35px;
+  margin-bottom: 20px;
+  padding: 0px 10px;
+}
+
+.card .buttonDiv {
+  display: flex;
+  column-gap: 10px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.card .buttonDiv button {
+  color: white;
+  height: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0px;
+}
+
+.card .okButton {
+  background-color: #363636;
+  width: 100%;
+}
+
+.card .okButton:hover {
+  background-color: #050505;
+}
+.card .okButton:active {
+  background-color: #222222;
+}
+
+.card .noButton {
+  background-color: #c93333;
+  width: 100%;
+}
+
+.card .noButton:hover {
+  background-color: #ff0000;
+}
+.card .noButton:active {
+  background-color: #d01c1c;
+}

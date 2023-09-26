@@ -8,11 +8,20 @@ import { transports, format } from "winston";
 import cookieParser from "cookie-parser";
 import { deserializeUser } from "./middleware/deserializeUser.js";
 import dotenv from "dotenv"
+import cors, { CorsOptions } from "cors"
 dotenv.config()
 
 export default function createServer(): Express {
+  const corsOptions: CorsOptions = {
+    origin: "http://localhost:3000",
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204,
+  }
+
   const app = express();
 
+  app.use(cors(corsOptions))
   app.use(json());
   app.use(cookieParser());
   app.use(urlencoded({ extended: false }));

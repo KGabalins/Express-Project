@@ -1,0 +1,96 @@
+.gridHeader {
+  display: grid;
+  grid-template-columns: repeat(3, 2fr) 1fr 100px;
+  border-radius: 30px;
+}
+
+.gridHeader span {
+  margin: 20px;
+}
+
+.movieItem {
+  display: grid;
+  grid-template-columns: repeat(3, 2fr) 1fr 100px;
+  background-color: #d9d9d9;
+  border-radius: 30px;
+  margin-bottom: 20px;
+}
+
+.movieItem span {
+  margin: 20px;
+}
+
+.movieItem button {
+  border: none;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.rentBtn {
+  background-color: #363636;
+}
+
+.rentBtn:hover {
+  background-color: #050505;
+}
+.rentBtn:active {
+  background-color: #222222;
+}
+
+.removeBtn {
+  background-color: #c93333;
+}
+.removeBtn:hover {
+  background-color: #ff0000;
+}
+.removeBtn:active {
+  background-color: #d01c1c;
+}
+
+.emptyMovieText {
+  text-align: center;
+  text-decoration: underline;
+}
+
+.stockSpan {
+  display: flex;
+  column-gap: 5px;
+  align-items: center;
+}
+
+.stockSpan img {
+  width: 20px;
+}
+
+.timeSpan {
+  display: flex;
+  align-items: center;
+}
+
+.timeSpan button {
+  border: none;
+  margin: 0px;
+  background-color: #363636;
+  font-size: 14px;
+  font-weight: normal;
+  width: 25px;
+  height: 100%;
+}
+
+.timeSpan button:hover {
+  background-color: #050505;
+}
+
+.timeSpan button:active {
+  background-color: #222222;
+}
+
+.timeSpan input {
+  border: none;
+  margin: 0px;
+  width: 50px;
+  text-align: center;
+  height: 100%;
+  font-weight: bold;
+}
