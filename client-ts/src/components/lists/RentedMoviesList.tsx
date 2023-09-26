@@ -17,7 +17,7 @@ export const RentedMoviesList = () => {
         <p className="emptyMovieText">You haven't rented any movie yet. Go to the home page to rent some!</p>
       ) : (
         rentedMovies.map((rentedMovie) => {
-          return <RentedMovieItem rentedMovie={rentedMovie} />;
+          return <RentedMovieItem rentedMovie={rentedMovie} key={rentedMovie.id} />;
         })
       )}
     </div>

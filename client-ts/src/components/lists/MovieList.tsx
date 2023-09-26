@@ -17,7 +17,7 @@ export const MovieList = () => {
         <p>No available movie for now!</p>
       ) : (
         movies.map((movie) => {
-          return <MovieItem movie={movie} />;
+          return <MovieItem movie={movie} key={movie.id} />;
         })
       )}
     </div>

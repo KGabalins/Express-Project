@@ -18,10 +18,10 @@ export type RegisterFormAttributes = {
 };
 
 export const UserContextProvider = () => {
-  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserType | null>({} as UserType);
 
   useEffect(() => {
-    getCurrentUser()
+    getCurrentUser();
   }, []);
 
   const logoutUser = () => {
@@ -48,9 +48,25 @@ export const UserContextProvider = () => {
       });
   };
 
+  const checkUserStatus = () => {
+    axiosInstance.get(`users/isLoggedIn`).then((response) => {
+      if (!response.data.isLoggedIn && currentUser) {
+        setCurrentUser(null);
+      }
+    });
+  };
+
   return (
     <>
-      <UserContext.Provider value={{ currentUser, setCurrentUser, logoutUser, getCurrentUser }}>
+      <UserContext.Provider
+        value={{
+          currentUser,
+          setCurrentUser,
+          logoutUser,
+          getCurrentUser,
+          checkUserStatus,
+        }}
+      >
         <Outlet />
       </UserContext.Provider>
     </>

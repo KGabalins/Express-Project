@@ -9,6 +9,9 @@ import { GuestRoutes } from "./components/routes/GuestRoutes";
 import { RentedMoviesPage } from "./components/pages/RentedMoviesPage";
 import { ProfilePage } from "./components/pages/ProfilePage";
 import { MovieContextProvider } from "./components/contexts/MovieContextProvider";
+import { AddMoviePage } from "./components/pages/AddMoviePage";
+import { EditMoviePage } from "./components/pages/EditMoviePage";
+import { AdminRoutes } from "./components/routes/AdminRoutes";
 
 const App = () => {
   return (
@@ -21,6 +24,10 @@ const App = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/yourMovies" element={<RentedMoviesPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route element={<AdminRoutes />}>
+                  <Route path="/addMovie" element={<AddMoviePage />} />
+                  <Route path="/editMovie" element={<EditMoviePage />} />
+                </Route>
               </Route>
             </Route>
           </Route>

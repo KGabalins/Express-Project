@@ -27,8 +27,9 @@ export const RentedMovieItem = ({ rentedMovie }: RentedMovieItemProps) => {
       .put(`/rentedMovies/id/${rentedMovie.id}`, { method })
       .then(() => {
         refreshMovies();
-      }).catch((error: any) => {
-        alert(error.response.data.message)
+      })
+      .catch((error: any) => {
+        alert(error.response.data.message);
       });
   };
 

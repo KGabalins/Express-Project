@@ -3,16 +3,18 @@ const payload = {
     body: object({
         name: string({
             required_error: "Name is required"
-        }),
+        }).nonempty("Name field cannot be empty!"),
         genre: string({
             required_error: "Genres is required"
-        }),
+        }).nonempty("Genre field cannot be empty!"),
         price: number({
-            required_error: "Price is required"
-        }).min(0.01),
+            required_error: "Price is required",
+            invalid_type_error: "The price value is not valid!"
+        }).min(0.01, "The price value is not valid!"),
         stock: number({
-            required_error: "Stock is required"
-        }).min(1)
+            required_error: "Stock is required",
+            invalid_type_error: "The stock value is not valid!"
+        }).min(0, "The stock value is not valid!")
     }).strict()
 };
 const params = {
@@ -32,13 +34,15 @@ export const updateMovieSchema = object({
     body: object({
         genre: string({
             required_error: "Genres is required"
-        }),
+        }).nonempty("Genre field cannot be empty!"),
         price: number({
-            required_error: "Price is required"
-        }).min(0.01),
+            required_error: "Price is required",
+            invalid_type_error: "The price value is not valid!"
+        }).min(0.01, "The price value is not valid!"),
         stock: number({
-            required_error: "Stock is required"
-        }).min(1)
+            required_error: "Stock is required",
+            invalid_type_error: "The stock value is not valid!"
+        }).min(0, "The stock value is not valid!")
     }),
     ...params
 });

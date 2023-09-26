@@ -47,7 +47,7 @@ export const UpdatePasswordForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="popupForm">
-      <label htmlFor="password">
+      <label htmlFor="oldPassword">
         Current Password
         {successMessage && (
           <span className="successText">{` - ${successMessage}`}</span>
@@ -58,7 +58,7 @@ export const UpdatePasswordForm = () => {
       </label>
       <input
         type="password"
-        id="password"
+        id="oldPassword"
         value={updatePasswordForm.oldPassword}
         placeholder="password"
         onChange={(e) =>
