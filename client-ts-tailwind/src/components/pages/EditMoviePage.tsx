@@ -1,5 +1,4 @@
 import { EditMovieForm } from "../forms/EditMovieForm";
-import "../styles/Card.css"
 
 export const EditMoviePage = () => {
   return (

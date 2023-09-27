@@ -1,0 +1,10 @@
+/* src/index.css */
+@import './tailwind.css';
+
+/* Your other styles and CSS imports */
+
+/* body {
+  @apply bg-neutral-300;
+  font-family: Inter;
+  margin: 20px 50px;
+} */

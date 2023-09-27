@@ -1,0 +1,9 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@font-face {
+  font-family: "Inter";
+  src: url("https://fonts.googleapis.com/css?family=Inter") format("Inter");
+  font-weight: normal;
+  font-style: normal;
+}
