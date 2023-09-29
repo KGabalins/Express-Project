@@ -45,15 +45,21 @@ export const UpdatePasswordForm = () => {
     });
   };
 
+  const handelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdatePasswordForm((prevState) => {
+      return { ...prevState, [e.target.name]: e.target.value };
+    });
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="popupForm">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <label htmlFor="oldPassword">
         Current Password
         {successMessage && (
-          <span className="successText">{` - ${successMessage}`}</span>
+          <span className="text-green-700">{` - ${successMessage}`}</span>
         )}
         {errorMessage && (
-          <span className="errorText">{` - ${errorMessage}`}</span>
+          <span className="text-red-700">{` - ${errorMessage}`}</span>
         )}
       </label>
       <input
@@ -61,11 +67,8 @@ export const UpdatePasswordForm = () => {
         id="oldPassword"
         value={updatePasswordForm.oldPassword}
         placeholder="password"
-        onChange={(e) =>
-          setUpdatePasswordForm((prevState) => {
-            return { ...prevState, oldPassword: e.target.value };
-          })
-        }
+        name="oldPassword"
+        onChange={handelChange}
       />
       <label htmlFor="newPassword">New Password</label>
       <input
@@ -73,11 +76,8 @@ export const UpdatePasswordForm = () => {
         id="newPassword"
         value={updatePasswordForm.newPassword}
         placeholder="new password"
-        onChange={(e) =>
-          setUpdatePasswordForm((prevState) => {
-            return { ...prevState, newPassword: e.target.value };
-          })
-        }
+        name="newPassword"
+        onChange={handelChange}
       />
       <label htmlFor="confirmNewPassword">Confirm New Password</label>
       <input
@@ -85,14 +85,13 @@ export const UpdatePasswordForm = () => {
         id="confirmNewPassword"
         value={updatePasswordForm.confirmNewPassword}
         placeholder="new password"
-        onChange={(e) =>
-          setUpdatePasswordForm((prevState) => {
-            return { ...prevState, confirmNewPassword: e.target.value };
-          })
-        }
+        name="confirmNewPassword"
+        onChange={handelChange}
       />
 
-      <button className="acceptButton">Update</button>
+      <button className="bg-zinc-700 text-white w-28 h-8 rounded-full self-center my-2">
+        Update
+      </button>
     </form>
   );
 };

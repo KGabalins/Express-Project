@@ -25,7 +25,7 @@ export const UpdateEmailForm = () => {
       .then(() => {
         setErrorMessage("");
         setSuccessMessage("Email updated successfully!");
-        clearForm()
+        clearForm();
       })
       .catch((error: any) => {
         setSuccessMessage("");
@@ -41,15 +41,21 @@ export const UpdateEmailForm = () => {
     setUpdateEmailForm({ newEmail: "", confirmNewEmail: "", password: "" });
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateEmailForm((prevState) => {
+      return { ...prevState, [e.target.name]: e.target.value };
+    });
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="popupForm">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <label htmlFor="newEmail">
         New Email
         {successMessage && (
-          <span className="successText">{` - ${successMessage}`}</span>
+          <span className="text-green-700">{` - ${successMessage}`}</span>
         )}
         {errorMessage && (
-          <span className="errorText">{` - ${errorMessage}`}</span>
+          <span className=" text-red-700">{` - ${errorMessage}`}</span>
         )}
       </label>
       <input
@@ -57,11 +63,8 @@ export const UpdateEmailForm = () => {
         id="newEmail"
         value={updateEmailForm.newEmail}
         placeholder="email@example.com"
-        onChange={(e) =>
-          setUpdateEmailForm((prevState) => {
-            return { ...prevState, newEmail: e.target.value };
-          })
-        }
+        name="newEmail"
+        onChange={handleChange}
       />
       <label htmlFor="confirmNewEmail">Confirm New Email</label>
       <input
@@ -69,11 +72,8 @@ export const UpdateEmailForm = () => {
         id="confirmNewEmail"
         value={updateEmailForm.confirmNewEmail}
         placeholder="email@example.com"
-        onChange={(e) =>
-          setUpdateEmailForm((prevState) => {
-            return { ...prevState, confirmNewEmail: e.target.value };
-          })
-        }
+        name="confirmNewEmail"
+        onChange={handleChange}
       />
       <label htmlFor="password">Current Password</label>
       <input
@@ -81,13 +81,10 @@ export const UpdateEmailForm = () => {
         id="password"
         value={updateEmailForm.password}
         placeholder="password"
-        onChange={(e) =>
-          setUpdateEmailForm((prevState) => {
-            return { ...prevState, password: e.target.value };
-          })
-        }
+        name="password"
+        onChange={handleChange}
       />
-      <button className="acceptButton">Update</button>
+      <button className="bg-zinc-700 w-28 h-8 rounded-full self-center text-white my-2">Update</button>
     </form>
   );
 };

@@ -3,6 +3,14 @@
 
 /* Your other styles and CSS imports */
 
+.page {
+  @apply bg-white rounded-3xl my-5 p-10 w-full;
+}
+
+.card {
+  @apply bg-white rounded-3xl w-[400px] mx-auto my-5 p-10 shadow-2xl ;
+}
+
 /* body {
   @apply bg-neutral-300;
   font-family: Inter;

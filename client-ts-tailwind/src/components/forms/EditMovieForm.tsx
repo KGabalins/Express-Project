@@ -8,48 +8,56 @@ export const EditMovieForm = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleDelete = () => {
+    axiosInstance
+      .delete(`/movies/${selectedMovie?.name}`)
+      .then(() => {
+        setSelectedMovie(null);
+        setError("");
+        setSuccess("Movie deleted successfully!");
+        refreshMovies();
+      })
+      .catch((error: any) => {
+        if (Array.isArray(error.response.data)) {
+          setError(error.response.data[0].message);
+        } else {
+          setError(error.response.data.message);
+        }
+      });
+  };
 
-    const submitter = (e.nativeEvent as any).submitter;
+  const handleEdit = () => {
+    axiosInstance
+      .put(`/movies/${selectedMovie?.name}`, selectedMovie)
+      .then(() => {
+        setSelectedMovie(null);
+        setError("");
+        setSuccess("Movie updated successfully!");
+        refreshMovies();
+      })
+      .catch((error: any) => {
+        if (Array.isArray(error.response.data)) {
+          setError(error.response.data[0].message);
+        } else {
+          setError(error.response.data.message);
+        }
+      });
+  };
 
-    if (submitter.className === "okButton") {
-      axiosInstance
-        .put(`/movies/${selectedMovie?.name}`, selectedMovie)
-        .then(() => {
-          setSelectedMovie(null);
-          setError("");
-          setSuccess("Movie updated successfully!");
-          refreshMovies();
-        })
-        .catch((error: any) => {
-          if (Array.isArray(error.response.data)) {
-            setError(error.response.data[0].message);
-          } else {
-            setError(error.response.data.message);
-          }
-        });
-    } else if (submitter.className === "noButton") {
-      axiosInstance
-        .delete(`/movies/${selectedMovie?.name}`)
-        .then(() => {
-          setSelectedMovie(null);
-          setError("");
-          setSuccess("Movie deleted successfully!");
-          refreshMovies();
-        })
-        .catch((error: any) => {
-          if (Array.isArray(error.response.data)) {
-            setError(error.response.data[0].message);
-          } else {
-            setError(error.response.data.message);
-          }
-        });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (selectedMovie) {
+      setSelectedMovie((prevState) => {
+        if (prevState) {
+          return { ...prevState, [e.target.name]: parseFloat(e.target.value) };
+        }
+
+        return prevState;
+      });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-2">
       <select
         value={selectedMovie?.name || ""}
         onChange={(e) =>
@@ -83,6 +91,7 @@ export const EditMovieForm = () => {
         readOnly
         placeholder="Name of the movie"
         value={selectedMovie?.name || ""}
+        className="bg-neutral-300 rounded-lg p-2 mb-4"
       />
       <label htmlFor="movieGenre">Genre</label>
       <input
@@ -90,17 +99,8 @@ export const EditMovieForm = () => {
         id="movieGenre"
         placeholder="Genre of the movie"
         value={selectedMovie?.genre || ""}
-        onChange={(e) => {
-          if (selectedMovie) {
-            setSelectedMovie((prevState) => {
-              if (prevState) {
-                return { ...prevState, genre: e.target.value };
-              }
-
-              return null;
-            });
-          }
-        }}
+        className="bg-neutral-300 rounded-lg p-2 mb-4"
+        onChange={handleChange}
       />
       <label htmlFor="moviePrice">Price</label>
       <input
@@ -110,17 +110,8 @@ export const EditMovieForm = () => {
         step={0.01}
         placeholder="Price of the movie"
         value={selectedMovie?.price || ""}
-        onChange={(e) => {
-          if (selectedMovie) {
-            setSelectedMovie((prevState) => {
-              if (prevState) {
-                return { ...prevState, price: parseFloat(e.target.value) };
-              }
-
-              return prevState;
-            });
-          }
-        }}
+        className="bg-neutral-300 rounded-lg p-2 mb-4"
+        onChange={handleChange}
       />
       <label htmlFor="movieStock">Stock</label>
       <input
@@ -130,30 +121,23 @@ export const EditMovieForm = () => {
         step={1}
         placeholder="Movie's stock"
         value={selectedMovie ? selectedMovie?.stock || 0 : ""}
-        onChange={(e) => {
-          if (selectedMovie) {
-            setSelectedMovie((prevState) => {
-              if (prevState) {
-                return { ...prevState, stock: parseInt(e.target.value) };
-              }
-
-              return prevState;
-            });
-          }
-        }}
+        className="bg-neutral-300 rounded-lg p-2 mb-4"
+        name="stock"
+        onChange={handleChange}
       />
-      <div
-        className="buttonDiv"
-        style={
-          !selectedMovie
-            ? { pointerEvents: "none", userSelect: "none" }
-            : { pointerEvents: "initial", userSelect: "initial" }
-        }
-      >
-        <button className="okButton" type="submit">
+      <div className="grid grid-cols-2 gap-2 h-10">
+        <button
+          className="bg-zinc-700 text-white"
+          type="button"
+          onClick={handleEdit}
+        >
           Edit
         </button>
-        <button className="noButton" type="submit">
+        <button
+          className="bg-red-700 text-white"
+          type="button"
+          onClick={handleDelete}
+        >
           Delete
         </button>
       </div>

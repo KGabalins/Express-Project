@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 type PopupProps = {
   id: string;
   title: string;
@@ -8,35 +10,37 @@ type PopupProps = {
 
 const Popup = (props: PopupProps) => {
   const { id, title, children, btnText, closingFunction } = props;
+  const [isActive, setIsActive] = useState(false);
 
-  const changePopupState = () => {
-    const popup = document.getElementById(`popup-${id}`);
-
-    popup?.classList.toggle("active");
-
-    changeDisplayButtons();
-
-    if (closingFunction) closingFunction()
+  const toggleDisplay = () => {
+    setIsActive(!isActive);
   };
 
-  const changeDisplayButtons = () => {
-    const allButtons = document.getElementsByClassName("displayBtnDiv");
-
-    for (let i = 0; i < allButtons.length; i++) {
-      allButtons[i].classList.toggle("active");
-    }
+  const handleClose = () => {
+    toggleDisplay();
+    if (closingFunction) closingFunction();
   };
 
   return (
     <>
-      <div id={`displayBtnDiv-${id}`} className="displayBtnDiv">
-        <button onClick={changePopupState}>{btnText}</button>
+      <div id={`displayBtnDiv-${id}`}>
+        <button
+          onClick={toggleDisplay}
+          className="bg-zinc-700 sm:w-44 text-base text-white rounded-full py-1"
+        >
+          {btnText}
+        </button>
       </div>
-      <div id={`popup-${id}`} className="popup">
-        <div className="cancelBtnDiv">
-          <button onClick={changePopupState}>X</button>
+      <div
+        id={`popup-${id}`}
+        className={`fixed shadow-xl transition-all duration-500 px-5 py-3 w-3/5 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col bg-neutral-200 ${
+          isActive ? " opacity-100 visible place-self-center top-1/2" : "opacity-0 invisible top-[40%]"
+        }`}
+      >
+        <div className="self-end font-bold hover:text-gray-600 active:text-gray-800">
+          <button onClick={handleClose}>X</button>
         </div>
-        <span className="popupTitle">{title}</span>
+        <h2 className="text-center font-bold text-2xl mb-5">{title}</h2>
         {children}
       </div>
     </>

@@ -6,8 +6,8 @@ export const RentedMoviesList = () => {
   const { rentedMovies } = useContext(MovieContext);
 
   return (
-    <div className="movieContainer">
-      <div className="grid grid-cols-[repeat(3,2fr)_1fr_100px] mb-3 rounded-3xl">
+    <div>
+      <div className="sm:grid grid-cols-[repeat(3,2fr)_1fr_100px] mb-3 rounded-3xl hidden sm:visible">
         <span className="ml-5">Name</span>
         <span className="ml-5">Genre</span>
         <span className="ml-5">Time</span>

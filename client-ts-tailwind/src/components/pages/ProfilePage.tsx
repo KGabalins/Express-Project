@@ -8,16 +8,16 @@ export const ProfilePage = () => {
   const { currentUser, getCurrentUser } = useContext(UserContext);
 
   return (
-    <div className="bg-white rounded-3xl my-5 p-10">
-      <h2 className="pageTitle">Profile</h2>
+    <div className="page">
+      <h2 className="text-2xl text-center font-bold mb-5">Profile</h2>
       <div className="profileDiv">
-        <div className="profileContainer">
+        <div className="grid grid-cols-[190px_1fr] gap-5">
           <img
             src={require("../icons/default.png")}
             alt="profilePicture"
             className="profilePicture"
           />
-          <div className="profileDetails">
+          <div className="flex flex-col justify-center">
             <span className="detail">
               Name: <span>{currentUser?.name}</span>
             </span>
