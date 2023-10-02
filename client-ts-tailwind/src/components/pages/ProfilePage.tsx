@@ -10,7 +10,7 @@ export const ProfilePage = () => {
   return (
     <div className="page">
       <h2 className="text-2xl text-center font-bold mb-5">Profile</h2>
-      <div className="profileDiv">
+      <div className=" my-10 mx-16">
         <div className="grid grid-cols-[190px_1fr] gap-5">
           <img
             src={require("../icons/default.png")}
