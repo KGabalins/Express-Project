@@ -1,9 +1,10 @@
-import { useContext, useState } from "react";
-import { MovieContext, MovieType } from "../contexts/MovieContext";
+import { useState } from "react";
+import { MovieType } from "../contexts/MovieContext";
 import axiosInstance from "../configs/AxiosConfig";
+import { useMovieContext } from "../contexts/MovieContext";
 
 export const EditMovieForm = () => {
-  const { movies, refreshMovies } = useContext(MovieContext);
+  const { movies, refreshMovies } = useMovieContext();
   const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");

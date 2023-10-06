@@ -1,13 +1,14 @@
-import { useContext } from "react";
 import axiosInstance from "../configs/AxiosConfig";
-import { MovieContext, MovieType } from "../contexts/MovieContext";
+import { MovieType, useMovieContext } from "../contexts/MovieContext";
+import { useRentedMovieContext } from "../contexts/RentedMoviesContext";
 
 type MovieItemProps = {
   movie: MovieType;
 };
 
 export const MovieItem = ({ movie }: MovieItemProps) => {
-  const { refreshMovies } = useContext(MovieContext);
+  const { refreshMovies } = useMovieContext();
+  const { refreshRentedMovies } = useRentedMovieContext();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -16,6 +17,7 @@ export const MovieItem = ({ movie }: MovieItemProps) => {
       .post(`/rentedMovies/${movie.name}`)
       .then(() => {
         refreshMovies();
+        refreshRentedMovies();
       })
       .catch((error: any) => {
         alert(error.response.data.message);

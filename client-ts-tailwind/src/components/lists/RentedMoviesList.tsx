@@ -1,9 +1,8 @@
-import { useContext } from "react";
-import { MovieContext } from "../contexts/MovieContext";
+import { useRentedMovieContext } from "../contexts/RentedMoviesContext";
 import { RentedMovieItem } from "../items/RentedMovieItem";
 
 export const RentedMoviesList = () => {
-  const { rentedMovies } = useContext(MovieContext);
+  const { rentedMovies } = useRentedMovieContext();
 
   return (
     <div>
@@ -14,10 +13,14 @@ export const RentedMoviesList = () => {
         <span className="ml-5">Price</span>
       </div>
       {rentedMovies.length === 0 ? (
-        <p className="emptyMovieText">You haven't rented any movie yet. Go to the home page to rent some!</p>
+        <p className="emptyMovieText">
+          You haven't rented any movie yet. Go to the home page to rent some!
+        </p>
       ) : (
         rentedMovies.map((rentedMovie) => {
-          return <RentedMovieItem rentedMovie={rentedMovie} key={rentedMovie.id} />;
+          return (
+            <RentedMovieItem rentedMovie={rentedMovie} key={rentedMovie.id} />
+          );
         })
       )}
     </div>

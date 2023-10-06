@@ -1,6 +1,6 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import axiosInstance from "../configs/AxiosConfig";
-import { MovieContext } from "../contexts/MovieContext";
+import { useMovieContext } from "../contexts/MovieContext";
 
 type AddMovieFormAttributes = {
   name: string;
@@ -20,7 +20,7 @@ export const AddMovieForm = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  const { refreshMovies } = useContext(MovieContext);
+  const { refreshMovies } = useMovieContext();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,8 +65,13 @@ export const AddMovieForm = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <label htmlFor="movieName" className="font-bold">
-        Name {success && <span className="text-green-700 font-normal">{` - ${success}`}</span>}{" "}
-        {error && <span className="text-red-700 font-normal">{` - ${error}`}</span>}
+        Name{" "}
+        {success && (
+          <span className="text-green-700 font-normal">{` - ${success}`}</span>
+        )}{" "}
+        {error && (
+          <span className="text-red-700 font-normal">{` - ${error}`}</span>
+        )}
       </label>
       <input
         type="text"
@@ -77,7 +82,9 @@ export const AddMovieForm = () => {
         value={addMovieFormAttributes.name}
         onChange={handleChange}
       />
-      <label htmlFor="movieGenre" className="font-bold">Genre</label>
+      <label htmlFor="movieGenre" className="font-bold">
+        Genre
+      </label>
       <input
         type="text"
         id="movieGenre"
@@ -87,7 +94,9 @@ export const AddMovieForm = () => {
         value={addMovieFormAttributes.genre}
         onChange={handleChange}
       />
-      <label htmlFor="moviePrice" className="font-bold">Price</label>
+      <label htmlFor="moviePrice" className="font-bold">
+        Price
+      </label>
       <input
         type="number"
         id="moviePrice"
@@ -99,7 +108,9 @@ export const AddMovieForm = () => {
         value={addMovieFormAttributes.price}
         onChange={handleChange}
       />
-      <label htmlFor="movieStock" className="font-bold">Stock</label>
+      <label htmlFor="movieStock" className="font-bold">
+        Stock
+      </label>
       <input
         type="number"
         id="movieStock"

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { RegisterFormAttributes } from "../contexts/UserContextProvider";
+import { RegisterFormAttributes } from "../contexts/UserContext";
 import axiosInstance from "../configs/AxiosConfig";
 
 export const RegisterForm = () => {
@@ -124,7 +124,12 @@ export const RegisterForm = () => {
           value={registerFormAttributes.confirmPassword}
           onChange={handleChange}
         />
-        <button type="submit" className="text-white bg-zinc-700 font-bold self-center px-10 py-1 text-xl rounded-3xl">Sign up</button>
+        <button
+          type="submit"
+          className="text-white bg-zinc-700 font-bold self-center px-10 py-1 text-xl rounded-3xl"
+        >
+          Sign up
+        </button>
       </form>
     </div>
   );

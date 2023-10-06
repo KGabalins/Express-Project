@@ -1,13 +1,17 @@
-import { useContext } from "react";
 import axiosInstance from "../configs/AxiosConfig";
-import { MovieContext, RentedMovieType } from "../contexts/MovieContext";
+import { useMovieContext } from "../contexts/MovieContext";
+import {
+  RentedMovieType,
+  useRentedMovieContext,
+} from "../contexts/RentedMoviesContext";
 
 type RentedMovieItemProps = {
   rentedMovie: RentedMovieType;
 };
 
 export const RentedMovieItem = ({ rentedMovie }: RentedMovieItemProps) => {
-  const { refreshMovies } = useContext(MovieContext);
+  const { refreshRentedMovies } = useRentedMovieContext();
+  const { refreshMovies } = useMovieContext();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,6 +19,7 @@ export const RentedMovieItem = ({ rentedMovie }: RentedMovieItemProps) => {
     axiosInstance
       .delete(`/rentedMovies/id/${rentedMovie.id}`)
       .then(() => {
+        refreshRentedMovies();
         refreshMovies();
       })
       .catch((error: any) => {
@@ -26,6 +31,7 @@ export const RentedMovieItem = ({ rentedMovie }: RentedMovieItemProps) => {
     axiosInstance
       .put(`/rentedMovies/id/${rentedMovie.id}`, { method })
       .then(() => {
+        refreshRentedMovies();
         refreshMovies();
       })
       .catch((error: any) => {

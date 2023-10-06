@@ -1,11 +1,10 @@
-import { useContext } from "react";
 import Popup from "../html/Popup";
-import { UserContext } from "../contexts/UserContext";
+import { useUserContext } from "../contexts/UserContext";
 import { UpdateEmailForm } from "../forms/UpdateEmailForm";
 import { UpdatePasswordForm } from "../forms/UpdatePasswordForm";
 
 export const ProfilePage = () => {
-  const { currentUser, getCurrentUser } = useContext(UserContext);
+  const { currentUser, getCurrentUser } = useUserContext();
 
   return (
     <div className="page">
@@ -39,7 +38,12 @@ export const ProfilePage = () => {
             <UpdatePasswordForm />
           </Popup>
 
-          <Popup id="updateEmail" title="Update email" btnText="Update email" closingFunction={getCurrentUser}>
+          <Popup
+            id="updateEmail"
+            title="Update email"
+            btnText="Update email"
+            closingFunction={getCurrentUser}
+          >
             <UpdateEmailForm />
           </Popup>
         </div>

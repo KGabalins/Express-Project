@@ -1,10 +1,9 @@
-import { useContext, useState } from "react";
-import { LoginFormAttributes } from "../contexts/UserContextProvider";
-import { UserContext } from "../contexts/UserContext";
+import { useState } from "react";
+import { LoginFormAttributes, useUserContext } from "../contexts/UserContext";
 import axiosInstance from "../configs/AxiosConfig";
 
 export const LoginForm = () => {
-  const { setCurrentUser } = useContext(UserContext);
+  const { setCurrentUser } = useUserContext();
   const [loginFormAttributes, setLoginFormAttributes] =
     useState<LoginFormAttributes>({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");

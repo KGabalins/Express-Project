@@ -1,4 +1,6 @@
-import { createContext } from "react";
+import { useEffect, useState, useContext, createContext } from "react";
+import { Outlet } from "react-router-dom";
+import axiosInstance from "../configs/AxiosConfig";
 
 export type MovieType = {
   id: number;
@@ -8,15 +10,44 @@ export type MovieType = {
   stock: number;
 };
 
-export type RentedMovieType = {
-  time: number;
-  renter: string;
-} & Omit<MovieType, "stock">;
-
 type MovieContextType = {
   movies: MovieType[];
-  rentedMovies: RentedMovieType[];
   refreshMovies: () => void;
 };
 
-export const MovieContext = createContext({} as MovieContextType);
+const MovieContext = createContext({} as MovieContextType);
+
+const MovieContextProvider = () => {
+  const [movies, setMovies] = useState<MovieType[]>([]);
+
+  useEffect(() => {
+    refreshMovies();
+  }, []);
+
+  const refreshMovies = () => {
+    axiosInstance
+      .get(`/movies`)
+      .then((response) => {
+        setMovies(
+          response.data.sort((a: MovieType, b: MovieType) => {
+            return a.id - b.id;
+          })
+        );
+      })
+      .catch(() => {
+        setMovies([]);
+      });
+  };
+
+  return (
+    <MovieContext.Provider value={{ movies, refreshMovies }}>
+      <Outlet />
+    </MovieContext.Provider>
+  );
+};
+
+const useMovieContext = () => {
+  return useContext(MovieContext);
+};
+
+export { MovieContextProvider, useMovieContext };
