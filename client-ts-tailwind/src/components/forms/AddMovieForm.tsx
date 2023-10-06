@@ -1,6 +1,5 @@
 import { useState } from "react";
-import axiosInstance from "../configs/AxiosConfig";
-import { useMovieContext } from "../contexts/MovieContext";
+import { addMovie, useMovieContext } from "../contexts/MovieContext";
 
 type AddMovieFormAttributes = {
   name: string;
@@ -10,6 +9,7 @@ type AddMovieFormAttributes = {
 };
 
 export const AddMovieForm = () => {
+  const { setMovies } = useMovieContext();
   const [addMovieFormAttributes, setAddMovieFormAttributes] =
     useState<AddMovieFormAttributes>({
       name: "",
@@ -17,34 +17,28 @@ export const AddMovieForm = () => {
       price: "",
       stock: "",
     });
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const { refreshMovies } = useMovieContext();
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    axiosInstance
-      .post(`/movies`, {
-        ...addMovieFormAttributes,
-        price: parseFloat(addMovieFormAttributes.price),
-        stock: parseInt(addMovieFormAttributes.stock),
-      })
-      .then(() => {
-        setSuccess("Movie added successfully!");
-        setError("");
-        clearForm();
-        refreshMovies();
-      })
-      .catch((error: any) => {
-        setSuccess("");
-        if (Array.isArray(error.response.data)) {
-          setError(error.response.data[0].message);
-        } else {
-          setError(error.response.data.message);
-        }
-      });
+    try {
+      await addMovie(
+        {
+          ...addMovieFormAttributes,
+          price: parseFloat(addMovieFormAttributes.price),
+          stock: parseInt(addMovieFormAttributes.stock),
+        },
+        setMovies
+      );
+      clearForm();
+      setErrorMessage("");
+      setSuccessMessage("Movie added successfully!");
+    } catch (error: any) {
+      setSuccessMessage("");
+      setErrorMessage(error.message);
+    }
   };
 
   const clearForm = () => {
@@ -65,12 +59,12 @@ export const AddMovieForm = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <label htmlFor="movieName" className="font-bold">
-        Name{" "}
-        {success && (
-          <span className="text-green-700 font-normal">{` - ${success}`}</span>
-        )}{" "}
-        {error && (
-          <span className="text-red-700 font-normal">{` - ${error}`}</span>
+        Name
+        {successMessage && (
+          <span className="text-green-700 font-normal">{` - ${successMessage}`}</span>
+        )}
+        {errorMessage && (
+          <span className="text-red-700 font-normal">{` - ${errorMessage}`}</span>
         )}
       </label>
       <input

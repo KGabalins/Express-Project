@@ -1,7 +1,8 @@
-import axiosInstance from "../configs/AxiosConfig";
 import { useMovieContext } from "../contexts/MovieContext";
 import {
   RentedMovieType,
+  changeRentedMovieTime,
+  removeRentedMovie,
   useRentedMovieContext,
 } from "../contexts/RentedMoviesContext";
 
@@ -10,33 +11,25 @@ type RentedMovieItemProps = {
 };
 
 export const RentedMovieItem = ({ rentedMovie }: RentedMovieItemProps) => {
-  const { refreshRentedMovies } = useRentedMovieContext();
-  const { refreshMovies } = useMovieContext();
+  const { setRentedMovies } = useRentedMovieContext();
+  const { setMovies } = useMovieContext();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    axiosInstance
-      .delete(`/rentedMovies/id/${rentedMovie.id}`)
-      .then(() => {
-        refreshRentedMovies();
-        refreshMovies();
-      })
-      .catch((error: any) => {
-        alert(error.response.data.message);
-      });
+    try {
+      await removeRentedMovie(rentedMovie.id, setMovies, setRentedMovies);
+    } catch (error: any) {
+      alert(error.message);
+    }
   };
 
-  const changeTimeHandler = (method: "+" | "-") => {
-    axiosInstance
-      .put(`/rentedMovies/id/${rentedMovie.id}`, { method })
-      .then(() => {
-        refreshRentedMovies();
-        refreshMovies();
-      })
-      .catch((error: any) => {
-        alert(error.response.data.message);
-      });
+  const changeTimeHandler = async (method: "+" | "-") => {
+    try {
+      changeRentedMovieTime(rentedMovie.id, method, setRentedMovies);
+    } catch (error: any) {
+      alert(error.message);
+    }
   };
 
   return (

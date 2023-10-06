@@ -1,48 +1,38 @@
 import { useState } from "react";
-import { MovieType } from "../contexts/MovieContext";
-import axiosInstance from "../configs/AxiosConfig";
+import { MovieType, deleteMovie, editMovie } from "../contexts/MovieContext";
 import { useMovieContext } from "../contexts/MovieContext";
 
 export const EditMovieForm = () => {
-  const { movies, refreshMovies } = useMovieContext();
+  const { movies, setMovies } = useMovieContext();
   const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleDelete = () => {
-    axiosInstance
-      .delete(`/movies/${selectedMovie?.name}`)
-      .then(() => {
+  const handleDelete = async () => {
+    if (selectedMovie) {
+      try {
+        await deleteMovie(selectedMovie?.name, setMovies);
         setSelectedMovie(null);
-        setError("");
-        setSuccess("Movie deleted successfully!");
-        refreshMovies();
-      })
-      .catch((error: any) => {
-        if (Array.isArray(error.response.data)) {
-          setError(error.response.data[0].message);
-        } else {
-          setError(error.response.data.message);
-        }
-      });
+        setErrorMessage("");
+        setSuccessMessage("Movie deleted successfully!");
+      } catch (error: any) {
+        setSuccessMessage("");
+        setErrorMessage(error.message);
+      }
+    }
   };
 
-  const handleEdit = () => {
-    axiosInstance
-      .put(`/movies/${selectedMovie?.name}`, selectedMovie)
-      .then(() => {
-        setSelectedMovie(null);
-        setError("");
-        setSuccess("Movie updated successfully!");
-        refreshMovies();
-      })
-      .catch((error: any) => {
-        if (Array.isArray(error.response.data)) {
-          setError(error.response.data[0].message);
-        } else {
-          setError(error.response.data.message);
-        }
-      });
+  const handleEdit = async () => {
+    if (selectedMovie) {
+      try {
+        await editMovie(selectedMovie.name, selectedMovie, setMovies);
+        setErrorMessage("");
+        setSuccessMessage("Movie updated successfully!");
+      } catch (error: any) {
+        setSuccessMessage("");
+        setErrorMessage(error.message);
+      }
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,8 +53,8 @@ export const EditMovieForm = () => {
         value={selectedMovie?.name || ""}
         onChange={(e) =>
           setSelectedMovie(() => {
-            setSuccess("");
-            setError("");
+            setSuccessMessage("");
+            setErrorMessage("");
             if (e.target.value === "") {
               return null;
             } else {
@@ -83,8 +73,13 @@ export const EditMovieForm = () => {
         })}
       </select>
       <label htmlFor="movieName">
-        Name {success && <span className="successText">{` - ${success}`}</span>}{" "}
-        {error && <span className="errorText">{` - ${error}`}</span>}
+        Name{" "}
+        {successMessage && (
+          <span className="successText">{` - ${successMessage}`}</span>
+        )}{" "}
+        {errorMessage && (
+          <span className="errorText">{` - ${errorMessage}`}</span>
+        )}
       </label>
       <input
         type="text"
