@@ -17,9 +17,6 @@ export type ErrorData = {
 type UserContextType = {
   currentUser: UserType | null;
   setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>;
-  logoutUser: () => void;
-  getCurrentUser: () => void;
-  checkUserStatus: () => void;
 };
 
 export type LoginFormAttributes = {
@@ -44,21 +41,6 @@ const UserContextProvider = () => {
   );
 
   useEffect(() => {
-    getCurrentUser();
-  }, []);
-
-  const logoutUser = () => {
-    axiosInstance
-      .delete(`/users/logout`)
-      .then(() => {
-        setCurrentUser(null);
-      })
-      .catch(() => {
-        setCurrentUser(null);
-      });
-  };
-
-  const getCurrentUser = () => {
     axiosInstance
       .get(`/users`)
       .then((response) => {
@@ -69,15 +51,7 @@ const UserContextProvider = () => {
       .catch(() => {
         setCurrentUser(null);
       });
-  };
-
-  const checkUserStatus = () => {
-    axiosInstance.get(`users/isLoggedIn`).then((response) => {
-      if (!response.data.isLoggedIn && currentUser) {
-        setCurrentUser(null);
-      }
-    });
-  };
+  }, []);
 
   return (
     <>
@@ -85,9 +59,6 @@ const UserContextProvider = () => {
         value={{
           currentUser,
           setCurrentUser,
-          logoutUser,
-          getCurrentUser,
-          checkUserStatus,
         }}
       >
         <Outlet />
@@ -96,8 +67,92 @@ const UserContextProvider = () => {
   );
 };
 
+const logoutUser = (
+  setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
+) => {
+  axiosInstance
+    .delete(`/users/logout`)
+    .then(() => {
+      setCurrentUser(null);
+    })
+    .catch(() => {
+      setCurrentUser(null);
+    });
+};
+
+const refreshUserData = (
+  setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
+) => {
+  axiosInstance
+    .get(`/users`)
+    .then((response) => {
+      const userData: UserType = response.data;
+
+      setCurrentUser(userData);
+    })
+    .catch(() => {
+      setCurrentUser(null);
+    });
+};
+
+const checkUserStatus = (
+  currentUser: UserType | null,
+  setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
+) => {
+  axiosInstance.get(`users/isLoggedIn`).then((response) => {
+    if (!response.data.isLoggedIn && currentUser) {
+      setCurrentUser(null);
+    }
+  });
+};
+
+const loginUser = (
+  loginFormAttributes: LoginFormAttributes,
+  setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
+) => {
+  axiosInstance
+    .post(`/users/login`, loginFormAttributes)
+    .then((response) => {
+      setCurrentUser(response.data);
+    })
+    .catch((error: any) => {
+      if (Array.isArray(error.response.data)) {
+        throw new Error(error.response.data[0].message);
+      } else {
+        throw new Error(error.response.data.message);
+      }
+    });
+};
+
+const registerUser = async (registerFormAttributes: RegisterFormAttributes) => {
+  try {
+    await axiosInstance.post("/users", registerFormAttributes);
+  } catch (error: any) {
+    if (Array.isArray(error.response.data)) {
+      throw new Error(error.response.data[0].message);
+    } else {
+      throw new Error(error.response.data.message);
+    }
+  }
+  // axiosInstance.post(`/users`, registerFormAttributes).catch((error: any) => {
+  //   if (Array.isArray(error.response.data)) {
+  //     throw new Error(error.response.data[0].message);
+  //   } else {
+  //     throw new Error(error.response.data.message);
+  //   }
+  // });
+};
+
 const useUserContext = () => {
   return useContext(UserContext);
 };
 
-export { UserContextProvider, useUserContext };
+export {
+  UserContextProvider,
+  useUserContext,
+  logoutUser,
+  checkUserStatus,
+  refreshUserData,
+  loginUser,
+  registerUser,
+};

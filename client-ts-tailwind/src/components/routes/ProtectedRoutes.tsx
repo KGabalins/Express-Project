@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import { useUserContext } from "../contexts/UserContext";
+import { checkUserStatus, useUserContext } from "../contexts/UserContext";
 
 export const ProtectedRoutes = () => {
-  const { currentUser, checkUserStatus } = useUserContext();
+  const { currentUser, setCurrentUser } = useUserContext();
 
   useEffect(() => {
-    const intervalId = setInterval(checkUserStatus, 60000);
+    const intervalId = setInterval(() => {
+      checkUserStatus(currentUser, setCurrentUser);
+    }, 60000);
 
     return () => clearInterval(intervalId);
   });

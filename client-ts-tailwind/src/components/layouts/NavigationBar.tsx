@@ -1,8 +1,8 @@
-import { useUserContext } from "../contexts/UserContext";
+import { logoutUser, useUserContext } from "../contexts/UserContext";
 import { Link, Outlet } from "react-router-dom";
 
 export const NavigationBar = () => {
-  const { logoutUser, currentUser } = useUserContext();
+  const { currentUser, setCurrentUser } = useUserContext();
 
   return (
     <>
@@ -41,7 +41,7 @@ export const NavigationBar = () => {
         )}
         <li className="float-right">
           <Link
-            onClick={logoutUser}
+            onClick={() => logoutUser(setCurrentUser)}
             to="/login"
             className=" text-center px-6 py-4 block"
           >

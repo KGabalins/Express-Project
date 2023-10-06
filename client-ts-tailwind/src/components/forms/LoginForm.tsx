@@ -1,29 +1,19 @@
 import { useState } from "react";
-import { LoginFormAttributes, useUserContext } from "../contexts/UserContext";
-import axiosInstance from "../configs/AxiosConfig";
+import {
+  LoginFormAttributes,
+  loginUser,
+  useUserContext,
+} from "../contexts/UserContext";
 
 export const LoginForm = () => {
   const { setCurrentUser } = useUserContext();
   const [loginFormAttributes, setLoginFormAttributes] =
     useState<LoginFormAttributes>({ email: "", password: "" });
-  const [errorMessage, setErrorMessage] = useState("");
-  console.log();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    axiosInstance
-      .post(`/users/login`, loginFormAttributes)
-      .then((response) => {
-        setCurrentUser(response.data);
-      })
-      .catch((error: any) => {
-        if (Array.isArray(error.response.data)) {
-          setErrorMessage(error.response.data[0].message);
-        } else {
-          setErrorMessage(error.response.data.message);
-        }
-      });
+    loginUser(loginFormAttributes, setCurrentUser);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,12 +28,7 @@ export const LoginForm = () => {
         className="flex flex-col border-none bg-white px-8 py-6 rounded-3xl mb-14 w-72"
         onSubmit={handleSubmit}
       >
-        <label id="emailInput">
-          Email
-          {errorMessage && (
-            <span className="errorText">{` - ${errorMessage}`}</span>
-          )}
-        </label>
+        <label id="emailInput">Email</label>
         <input
           type="email"
           id="emailInput"

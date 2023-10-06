@@ -1,10 +1,10 @@
 import Popup from "../html/Popup";
-import { useUserContext } from "../contexts/UserContext";
+import { refreshUserData, useUserContext } from "../contexts/UserContext";
 import { UpdateEmailForm } from "../forms/UpdateEmailForm";
 import { UpdatePasswordForm } from "../forms/UpdatePasswordForm";
 
 export const ProfilePage = () => {
-  const { currentUser, getCurrentUser } = useUserContext();
+  const { currentUser, setCurrentUser } = useUserContext();
 
   return (
     <div className="page">
@@ -42,7 +42,7 @@ export const ProfilePage = () => {
             id="updateEmail"
             title="Update email"
             btnText="Update email"
-            closingFunction={getCurrentUser}
+            closingFunction={() => refreshUserData(setCurrentUser)}
           >
             <UpdateEmailForm />
           </Popup>

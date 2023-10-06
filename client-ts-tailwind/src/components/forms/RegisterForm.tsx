@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { RegisterFormAttributes } from "../contexts/UserContext";
-import axiosInstance from "../configs/AxiosConfig";
+import { RegisterFormAttributes, registerUser } from "../contexts/UserContext";
 
 export const RegisterForm = () => {
   const [success, setSuccess] = useState("");
@@ -15,24 +14,17 @@ export const RegisterForm = () => {
       confirmPassword: "",
     });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    axiosInstance
-      .post(`/users`, registerFormAttributes)
-      .then(() => {
-        setSuccess("User succesfully registered!");
-        setErrorMessage("");
-        clearForm();
-      })
-      .catch((error: any) => {
-        setSuccess("");
-        if (Array.isArray(error.response.data)) {
-          setErrorMessage(error.response.data[0].message);
-        } else {
-          setErrorMessage(error.response.data.message);
-        }
-      });
+    try {
+      await registerUser(registerFormAttributes);
+      clearForm();
+      setSuccess("User registered successfully!");
+      setErrorMessage("");
+    } catch (error: any) {
+      setErrorMessage(error.message);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
