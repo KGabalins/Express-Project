@@ -7,21 +7,21 @@ import expressWinston from "express-winston";
 import { transports, format } from "winston";
 import cookieParser from "cookie-parser";
 import { deserializeUser } from "./middleware/deserializeUser.js";
-import dotenv from "dotenv"
-import cors, { CorsOptions } from "cors"
-dotenv.config()
+import dotenv from "dotenv";
+import cors, { CorsOptions } from "cors";
+dotenv.config();
 
 export default function createServer(): Express {
   const corsOptions: CorsOptions = {
     origin: "http://localhost:3000",
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
     optionsSuccessStatus: 204,
-  }
+  };
 
   const app = express();
 
-  app.use(cors(corsOptions))
+  app.use(cors(corsOptions));
   app.use(json());
   app.use(cookieParser());
   app.use(urlencoded({ extended: false }));
@@ -40,10 +40,10 @@ export default function createServer(): Express {
   );
 
   app
-    .use("/movies", movieRoutes)
-    .use("/rentedMovies", rentedMoviesRoutes)
-    .use("/users", usersRoutes)
-    .use("/perm", permissionsRoutes);
+    .use("/api/movies", movieRoutes)
+    .use("/api/rentedMovies", rentedMoviesRoutes)
+    .use("/api/users", usersRoutes)
+    .use("/api/perm", permissionsRoutes);
 
   return app;
 }

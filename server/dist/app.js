@@ -13,7 +13,7 @@ dotenv.config();
 export default function createServer() {
     const corsOptions = {
         origin: "http://localhost:3000",
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
         optionsSuccessStatus: 204,
     };
@@ -29,9 +29,9 @@ export default function createServer() {
         statusLevels: true,
     }));
     app
-        .use("/movies", movieRoutes)
-        .use("/rentedMovies", rentedMoviesRoutes)
-        .use("/users", usersRoutes)
-        .use("/perm", permissionsRoutes);
+        .use("/api/movies", movieRoutes)
+        .use("/api/rentedMovies", rentedMoviesRoutes)
+        .use("/api/users", usersRoutes)
+        .use("/api/perm", permissionsRoutes);
     return app;
 }

@@ -42,7 +42,7 @@ const UserContextProvider = () => {
 
   useEffect(() => {
     axiosInstance
-      .get(`/users`)
+      .get(`api/users`)
       .then((response) => {
         const userData: UserType = response.data;
 
@@ -71,7 +71,7 @@ const logoutUser = (
   setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
 ) => {
   axiosInstance
-    .delete(`/users/logout`)
+    .delete(`/api/users/logout`)
     .then(() => {
       setCurrentUser(null);
     })
@@ -84,7 +84,7 @@ const refreshUserData = (
   setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
 ) => {
   axiosInstance
-    .get(`/users`)
+    .get(`/api/users`)
     .then((response) => {
       const userData: UserType = response.data;
 
@@ -111,11 +111,12 @@ const loginUser = (
   setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
 ) => {
   axiosInstance
-    .post(`/users/login`, loginFormAttributes)
+    .post(`/api/users/login`, loginFormAttributes)
     .then((response) => {
       setCurrentUser(response.data);
     })
     .catch((error: any) => {
+      console.log(error);
       if (Array.isArray(error.response.data)) {
         throw new Error(error.response.data[0].message);
       } else {
@@ -126,7 +127,7 @@ const loginUser = (
 
 const registerUser = async (registerFormAttributes: RegisterFormAttributes) => {
   try {
-    await axiosInstance.post("/users", registerFormAttributes);
+    await axiosInstance.post("/api/users", registerFormAttributes);
   } catch (error: any) {
     if (Array.isArray(error.response.data)) {
       throw new Error(error.response.data[0].message);
@@ -134,13 +135,6 @@ const registerUser = async (registerFormAttributes: RegisterFormAttributes) => {
       throw new Error(error.response.data.message);
     }
   }
-  // axiosInstance.post(`/users`, registerFormAttributes).catch((error: any) => {
-  //   if (Array.isArray(error.response.data)) {
-  //     throw new Error(error.response.data[0].message);
-  //   } else {
-  //     throw new Error(error.response.data.message);
-  //   }
-  // });
 };
 
 const useUserContext = () => {
