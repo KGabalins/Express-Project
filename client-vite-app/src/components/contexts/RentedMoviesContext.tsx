@@ -1,7 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import axiosInstance from "../configs/AxiosConfig";
+import { createContext, useEffect, useState } from "react";
+import axios from "axios";
 import { Outlet } from "react-router-dom";
-import { MovieType, refreshMovies } from "./MovieContext";
 
 export type RentedMovieType = {
   id: number;
@@ -15,15 +14,20 @@ export type RentedMovieType = {
 type RentedMovieContextType = {
   rentedMovies: RentedMovieType[];
   setRentedMovies: React.Dispatch<React.SetStateAction<RentedMovieType[]>>;
+  refreshRentedMovies: () => void;
 };
 
-const RentedMovieContext = createContext({} as RentedMovieContextType);
+export const RentedMovieContext = createContext({} as RentedMovieContextType);
 
 const RentedMovieContextProvider = () => {
   const [rentedMovies, setRentedMovies] = useState<RentedMovieType[]>([]);
 
   useEffect(() => {
-    axiosInstance
+    refreshRentedMovies();
+  }, []);
+
+  const refreshRentedMovies = () => {
+    axios
       .get(`api/rentedMovies`)
       .then((response) => {
         setRentedMovies(
@@ -35,65 +39,15 @@ const RentedMovieContextProvider = () => {
       .catch(() => {
         setRentedMovies([]);
       });
-  }, []);
+  };
 
   return (
-    <RentedMovieContext.Provider value={{ rentedMovies, setRentedMovies }}>
+    <RentedMovieContext.Provider
+      value={{ rentedMovies, setRentedMovies, refreshRentedMovies }}
+    >
       <Outlet />
     </RentedMovieContext.Provider>
   );
 };
 
-const useRentedMovieContext = () => {
-  return useContext(RentedMovieContext);
-};
-
-const refreshRentedMovies = async (
-  setRentedMovies: React.Dispatch<React.SetStateAction<RentedMovieType[]>>
-) => {
-  try {
-    const response = await axiosInstance.get(`api/rentedMovies`);
-    setRentedMovies(
-      response.data.sort((a: RentedMovieType, b: RentedMovieType) => {
-        return a.id - b.id;
-      })
-    );
-  } catch (error) {
-    setRentedMovies([]);
-  }
-};
-
-const removeRentedMovie = async (
-  id: number,
-  setMovies: React.Dispatch<React.SetStateAction<MovieType[]>>,
-  setRentedMovies: React.Dispatch<React.SetStateAction<RentedMovieType[]>>
-) => {
-  try {
-    await axiosInstance.delete(`api/rentedMovies/id/${id}`);
-    refreshRentedMovies(setRentedMovies);
-    refreshMovies(setMovies);
-  } catch (error: any) {
-    throw new Error(error.response.data.message);
-  }
-};
-
-const changeRentedMovieTime = async (
-  id: number,
-  method: "+" | "-",
-  setRentedMovies: React.Dispatch<React.SetStateAction<RentedMovieType[]>>
-) => {
-  try {
-    await axiosInstance.put(`api/rentedMovies/id/${id}`, { method });
-    refreshRentedMovies(setRentedMovies);
-  } catch (error: any) {
-    throw new Error(error.response.data.message);
-  }
-};
-
-export {
-  RentedMovieContextProvider,
-  useRentedMovieContext,
-  refreshRentedMovies,
-  removeRentedMovie,
-  changeRentedMovieTime,
-};
+export { RentedMovieContextProvider };

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { RegisterFormAttributes, registerUser } from "../contexts/UserContext";
+import { RegisterFormAttributes } from "../contexts/UserContext";
+import { registerUser } from "../utils/userFunctions";
 
 export const RegisterForm = () => {
   const [success, setSuccess] = useState("");

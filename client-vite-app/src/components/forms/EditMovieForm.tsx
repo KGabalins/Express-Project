@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { MovieType, deleteMovie, editMovie } from "../contexts/MovieContext";
-import { useMovieContext } from "../contexts/MovieContext";
+import { MovieType } from "../contexts/MovieContext";
+import useMovieContext from "../hooks/useMovieContext";
+import { deleteMovie, editMovie } from "../utils/moviesFunctions";
 
 export const EditMovieForm = () => {
-  const { movies, setMovies } = useMovieContext();
+  const { movies, refreshMovies } = useMovieContext();
   const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -11,7 +12,8 @@ export const EditMovieForm = () => {
   const handleDelete = async () => {
     if (selectedMovie) {
       try {
-        await deleteMovie(selectedMovie?.name, setMovies);
+        await deleteMovie(selectedMovie?.name);
+        refreshMovies();
         setSelectedMovie(null);
         setErrorMessage("");
         setSuccessMessage("Movie deleted successfully!");
@@ -25,7 +27,8 @@ export const EditMovieForm = () => {
   const handleEdit = async () => {
     if (selectedMovie) {
       try {
-        await editMovie(selectedMovie.name, selectedMovie, setMovies);
+        await editMovie(selectedMovie.name, selectedMovie);
+        refreshMovies();
         setErrorMessage("");
         setSuccessMessage("Movie updated successfully!");
       } catch (error: any) {

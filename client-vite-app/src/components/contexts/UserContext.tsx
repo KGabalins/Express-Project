@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState, createContext } from "react";
+import { useEffect, useState, createContext } from "react";
 import { Outlet } from "react-router-dom";
-import axiosInstance from "../configs/AxiosConfig";
+import axios from "axios";
 
 export type UserType = {
   email: string;
@@ -17,6 +17,7 @@ export type ErrorData = {
 type UserContextType = {
   currentUser: UserType | null;
   setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>;
+  refreshUsers: () => void;
 };
 
 export type LoginFormAttributes = {
@@ -41,7 +42,7 @@ const UserContextProvider = () => {
   );
 
   useEffect(() => {
-    axiosInstance
+    axios
       .get(`api/users`)
       .then((response) => {
         const userData: UserType = response.data;
@@ -53,12 +54,26 @@ const UserContextProvider = () => {
       });
   }, []);
 
+  const refreshUsers = () => {
+    axios
+      .get(`api/users`)
+      .then((response) => {
+        const userData: UserType = response.data;
+
+        setCurrentUser(userData);
+      })
+      .catch(() => {
+        setCurrentUser(null);
+      });
+  };
+
   return (
     <>
       <UserContext.Provider
         value={{
           currentUser,
           setCurrentUser,
+          refreshUsers,
         }}
       >
         <Outlet />
@@ -67,86 +82,4 @@ const UserContextProvider = () => {
   );
 };
 
-const logoutUser = (
-  setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
-) => {
-  axiosInstance
-    .delete(`/api/users/logout`)
-    .then(() => {
-      setCurrentUser(null);
-    })
-    .catch(() => {
-      setCurrentUser(null);
-    });
-};
-
-const refreshUserData = (
-  setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
-) => {
-  axiosInstance
-    .get(`/api/users`)
-    .then((response) => {
-      const userData: UserType = response.data;
-
-      setCurrentUser(userData);
-    })
-    .catch(() => {
-      setCurrentUser(null);
-    });
-};
-
-const checkUserStatus = (
-  currentUser: UserType | null,
-  setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
-) => {
-  axiosInstance.get(`users/isLoggedIn`).then((response) => {
-    if (!response.data.isLoggedIn && currentUser) {
-      setCurrentUser(null);
-    }
-  });
-};
-
-const loginUser = (
-  loginFormAttributes: LoginFormAttributes,
-  setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
-) => {
-  axiosInstance
-    .post(`/api/users/login`, loginFormAttributes)
-    .then((response) => {
-      setCurrentUser(response.data);
-    })
-    .catch((error: any) => {
-      console.log(error);
-      if (Array.isArray(error.response.data)) {
-        throw new Error(error.response.data[0].message);
-      } else {
-        throw new Error(error.response.data.message);
-      }
-    });
-};
-
-const registerUser = async (registerFormAttributes: RegisterFormAttributes) => {
-  try {
-    await axiosInstance.post("/api/users", registerFormAttributes);
-  } catch (error: any) {
-    if (Array.isArray(error.response.data)) {
-      throw new Error(error.response.data[0].message);
-    } else {
-      throw new Error(error.response.data.message);
-    }
-  }
-};
-
-const useUserContext = () => {
-  return useContext(UserContext);
-};
-
-export {
-  UserContextProvider,
-  useUserContext,
-  logoutUser,
-  checkUserStatus,
-  refreshUserData,
-  loginUser,
-  registerUser,
-};
+export { UserContextProvider };

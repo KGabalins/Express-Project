@@ -1,4 +1,4 @@
-import { useRentedMovieContext } from "../contexts/RentedMoviesContext";
+import useRentedMovieContext from "../hooks/useRentedMovieContext";
 import { RentedMovieItem } from "../items/RentedMovieItem";
 
 export const RentedMoviesList = () => {

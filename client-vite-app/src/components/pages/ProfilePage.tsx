@@ -1,11 +1,11 @@
 import Popup from "../html/Popup";
-import { refreshUserData, useUserContext } from "../contexts/UserContext";
 import { UpdateEmailForm } from "../forms/UpdateEmailForm";
 import { UpdatePasswordForm } from "../forms/UpdatePasswordForm";
 import defaultImg from "../icons/default.png";
+import useUserContext from "../hooks/useUserContext";
 
 export const ProfilePage = () => {
-  const { currentUser, setCurrentUser } = useUserContext();
+  const { currentUser, refreshUsers } = useUserContext();
 
   return (
     <div className="page">
@@ -43,7 +43,7 @@ export const ProfilePage = () => {
             id="updateEmail"
             title="Update email"
             btnText="Update email"
-            closingFunction={() => refreshUserData(setCurrentUser)}
+            closingFunction={() => refreshUsers()}
           >
             <UpdateEmailForm />
           </Popup>

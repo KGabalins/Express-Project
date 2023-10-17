@@ -1,5 +1,5 @@
-import { useUserContext } from "../contexts/UserContext";
 import { Outlet, Navigate } from "react-router-dom";
+import useUserContext from "../hooks/useUserContext";
 
 export const GuestRoutes = () => {
   const { currentUser } = useUserContext();

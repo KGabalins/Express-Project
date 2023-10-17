@@ -1,5 +1,6 @@
-import { logoutUser, useUserContext } from "../contexts/UserContext";
 import { Link, Outlet } from "react-router-dom";
+import useUserContext from "../hooks/useUserContext";
+import { logoutUser } from "../utils/userFunctions";
 
 export const NavigationBar = () => {
   const { currentUser, setCurrentUser } = useUserContext();

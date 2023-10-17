@@ -2,13 +2,13 @@ import express from "express";
 import * as controller from "../controllers/movie.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
-import { createMovieSchema, deleteMovieSchema, getMovieSchema, updateMovieSchema } from "../schema/movie.schema.js";
+import { createMovieSchema, deleteMovieSchema, getMovieSchema, updateMovieSchema, } from "../schema/movie.schema.js";
 import validate from "../middleware/validateResource.js";
 const router = express.Router();
 router
     /**
      * @openapi
-     * /movies:
+     * /api/movies:
      *  get:
      *    tags:
      *    - Movies
@@ -26,7 +26,7 @@ router
     .get("/", requireUser, controller.getAllMoviesHandler)
     /**
      * @openapi
-     * /movies/{name}:
+     * /api/movies/{name}:
      *  get:
      *    tags:
      *    - Movies
@@ -53,7 +53,7 @@ router
     .get("/:name", requireUser, validate(getMovieSchema), controller.getMovieByNameHandler)
     /**
      * @openapi
-     * /movies:
+     * /api/movies:
      *  post:
      *    tags:
      *    - Movies
@@ -84,7 +84,7 @@ router
     .post("/", requireUser, requireAdmin, validate(createMovieSchema), controller.createMovieHandler)
     /**
      * @openapi
-     * /movies/{name}:
+     * /api/movies/{name}:
      *  put:
      *    tags:
      *    - Movies
@@ -118,7 +118,7 @@ router
     .put("/:name", requireUser, requireAdmin, validate(updateMovieSchema), controller.updateMovieHandler)
     /**
      * @openapi
-     * /movies/{name}:
+     * /api/movies/{name}:
      *  delete:
      *    tags:
      *    - Movies

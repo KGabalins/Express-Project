@@ -2,13 +2,13 @@ import express from "express";
 import * as controller from "../controllers/user.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 import validate from "../middleware/validateResource.js";
-import { getUserDataSchema, registerUserSchema, updateUserEmailSchema, updateUserPasswordSchema, deleteUserSchema } from "../schema/user.schema.js";
+import { getUserDataSchema, registerUserSchema, updateUserEmailSchema, updateUserPasswordSchema, deleteUserSchema, } from "../schema/user.schema.js";
 import { loginUserSchema } from "../schema/session.schema.js";
 const router = express.Router();
 router
     /**
      * @openapi
-     * /users:
+     * /api/users:
      *  get:
      *    tags:
      *    - Users
@@ -25,24 +25,24 @@ router
      */
     .get("/", requireUser, controller.getMyUserHandler)
     /**
-   * @openapi
-   * /users/isLoggedIn:
-   *  get:
-   *    tags:
-   *    - Users
-   *    summary: Get data if the current user is logged in
-   *    responses:
-   *      200:
-   *        description: Success - Shows if a user is logged in
-   *        content:
-   *          application/json:
-   *            schema:
-   *
-   */
+     * @openapi
+     * /api/users/isLoggedIn:
+     *  get:
+     *    tags:
+     *    - Users
+     *    summary: Get data if the current user is logged in
+     *    responses:
+     *      200:
+     *        description: Success - Shows if a user is logged in
+     *        content:
+     *          application/json:
+     *            schema:
+     *
+     */
     .get("/isLoggedIn", controller.getIsLoggedInHandler)
     /**
      * @openapi
-     * /users/{email}:
+     * /api/users/{email}:
      *  get:
      *    tags:
      *    - Users
@@ -71,7 +71,7 @@ router
     .get("/:email", requireUser, validate(getUserDataSchema), controller.getUserDataHandler)
     /**
      * @openapi
-     * /users:
+     * /api/users:
      *  post:
      *    tags:
      *    - Users
@@ -97,7 +97,7 @@ router
     .post("/", validate(registerUserSchema), controller.registerUserHandler)
     /**
      * @openapi
-     * /users/login:
+     * /api/users/login:
      *  post:
      *    tags:
      *    - Users
@@ -124,7 +124,7 @@ router
     .post("/login", validate(loginUserSchema), controller.loginUserHandler)
     /**
      * @openapi
-     * /users/changeEmail:
+     * /api/users/changeEmail:
      *  put:
      *    tags:
      *    - Users
@@ -151,7 +151,7 @@ router
     .put("/changeEmail", requireUser, validate(updateUserEmailSchema), controller.updateUserEmailHandler)
     /**
      * @openapi
-     * /users/changePassword:
+     * /api/users/changePassword:
      *  put:
      *    tags:
      *    - Users
@@ -176,7 +176,7 @@ router
     .put("/changePassword", requireUser, validate(updateUserPasswordSchema), controller.updateUserPasswordHandler)
     /**
      * @openapi
-     * /users/logout:
+     * /api/users/logout:
      *  delete:
      *    tags:
      *    - Users
@@ -190,7 +190,7 @@ router
     .delete("/logout", requireUser, controller.logoutUserHandler)
     /**
      * @openapi
-     * /users/{email}:
+     * /api/users/{email}:
      *  delete:
      *    tags:
      *    - Users

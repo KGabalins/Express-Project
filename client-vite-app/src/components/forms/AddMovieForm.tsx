@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { addMovie, useMovieContext } from "../contexts/MovieContext";
+import useMovieContext from "../hooks/useMovieContext";
+import { addMovie } from "../utils/moviesFunctions";
 
 type AddMovieFormAttributes = {
   name: string;
@@ -9,7 +10,7 @@ type AddMovieFormAttributes = {
 };
 
 export const AddMovieForm = () => {
-  const { setMovies } = useMovieContext();
+  const { refreshMovies } = useMovieContext();
   const [addMovieFormAttributes, setAddMovieFormAttributes] =
     useState<AddMovieFormAttributes>({
       name: "",
@@ -24,14 +25,12 @@ export const AddMovieForm = () => {
     e.preventDefault();
 
     try {
-      await addMovie(
-        {
-          ...addMovieFormAttributes,
-          price: parseFloat(addMovieFormAttributes.price),
-          stock: parseInt(addMovieFormAttributes.stock),
-        },
-        setMovies
-      );
+      await addMovie({
+        ...addMovieFormAttributes,
+        price: parseFloat(addMovieFormAttributes.price),
+        stock: parseInt(addMovieFormAttributes.stock),
+      });
+      refreshMovies();
       clearForm();
       setErrorMessage("");
       setSuccessMessage("Movie added successfully!");

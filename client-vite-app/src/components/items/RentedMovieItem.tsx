@@ -1,24 +1,26 @@
-import { useMovieContext } from "../contexts/MovieContext";
+import { RentedMovieType } from "../contexts/RentedMoviesContext";
+import useMovieContext from "../hooks/useMovieContext";
+import useRentedMovieContext from "../hooks/useRentedMovieContext";
 import {
-  RentedMovieType,
   changeRentedMovieTime,
   removeRentedMovie,
-  useRentedMovieContext,
-} from "../contexts/RentedMoviesContext";
+} from "../utils/rentedMoviesFunctions";
 
 type RentedMovieItemProps = {
   rentedMovie: RentedMovieType;
 };
 
 export const RentedMovieItem = ({ rentedMovie }: RentedMovieItemProps) => {
-  const { setRentedMovies } = useRentedMovieContext();
-  const { setMovies } = useMovieContext();
+  const { refreshRentedMovies } = useRentedMovieContext();
+  const { refreshMovies } = useMovieContext();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      await removeRentedMovie(rentedMovie.id, setMovies, setRentedMovies);
+      await removeRentedMovie(rentedMovie.id);
+      refreshRentedMovies();
+      refreshMovies();
     } catch (error: any) {
       alert(error.message);
     }
@@ -26,7 +28,8 @@ export const RentedMovieItem = ({ rentedMovie }: RentedMovieItemProps) => {
 
   const changeTimeHandler = async (method: "+" | "-") => {
     try {
-      changeRentedMovieTime(rentedMovie.id, method, setRentedMovies);
+      await changeRentedMovieTime(rentedMovie.id, method);
+      refreshRentedMovies();
     } catch (error: any) {
       alert(error.message);
     }
@@ -36,6 +39,7 @@ export const RentedMovieItem = ({ rentedMovie }: RentedMovieItemProps) => {
     <form
       className="grid grid-rows-5 grid-cols-1 sm:grid sm:grid-cols-[repeat(3,2fr)_1fr_100px] sm:grid-rows-1 sm:rounded-full bg-neutral-300 mb-5"
       onSubmit={handleSubmit}
+      aria-label="rented-movie-item"
       key={rentedMovie.id}
     >
       <span className="text-center sm:text-left m-5">

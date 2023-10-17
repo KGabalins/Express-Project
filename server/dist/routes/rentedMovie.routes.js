@@ -3,13 +3,13 @@ import * as controller from "../controllers/rentedMovie.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 import validate from "../middleware/validateResource.js";
-import { removeRentedMovieSchema, updateRentedMovieTimeSchema } from "../schema/rentedMovie.schema.js";
+import { removeRentedMovieSchema, updateRentedMovieTimeSchema, } from "../schema/rentedMovie.schema.js";
 import { getMovieSchema } from "../schema/movie.schema.js";
 const router = express.Router();
 router
     /**
      * @openapi
-     * /rentedMovies:
+     * /api/rentedMovies:
      *  get:
      *    tags:
      *    - Rented Movies
@@ -27,7 +27,7 @@ router
     .get("/", requireUser, controller.getCurrentUserRentedMoviesHandler)
     /**
      * @openapi
-     * /rentedMovies/{email}:
+     * /api/rentedMovies/{email}:
      *  get:
      *    tags:
      *    - Rented Movies
@@ -56,7 +56,7 @@ router
     .get("/:email", requireUser, requireAdmin, controller.getRentedMoviesByEmailHandler)
     /**
      * @openapi
-     * /rentedMovies/id/{id}:
+     * /api/rentedMovies/id/{id}:
      *  get:
      *    tags:
      *    - Rented Movies
@@ -87,7 +87,7 @@ router
     .get("/id/:id", requireUser, requireAdmin, controller.getRentedMovieByIdHandler)
     /**
      * @openapi
-     * /rentedMovies/{name}:
+     * /api/rentedMovies/{name}:
      *  post:
      *    tags:
      *    - Rented Movies
@@ -116,7 +116,7 @@ router
     .post("/:name", requireUser, validate(getMovieSchema), controller.addRentedMovieHandler)
     /**
      * @openapi
-     * /rentedMovies/id/{id}:
+     * /api/rentedMovies/id/{id}:
      *  put:
      *    tags:
      *    - Rented Movies
@@ -154,7 +154,7 @@ router
     .put("/id/:id", requireUser, validate(updateRentedMovieTimeSchema), controller.updateRentedMovieTimeHandler)
     /**
      * @openapi
-     * /rentedMovies/id/{id}:
+     * /api/rentedMovies/id/{id}:
      *  delete:
      *    tags:
      *    - Rented Movies

@@ -3,7 +3,10 @@ import * as controller from "../controllers/rentedMovie.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 import validate from "../middleware/validateResource.js";
-import { removeRentedMovieSchema, updateRentedMovieTimeSchema } from "../schema/rentedMovie.schema.js";
+import {
+  removeRentedMovieSchema,
+  updateRentedMovieTimeSchema,
+} from "../schema/rentedMovie.schema.js";
 import { getMovieSchema } from "../schema/movie.schema.js";
 
 const router = express.Router();
@@ -11,7 +14,7 @@ const router = express.Router();
 router
   /**
    * @openapi
-   * /rentedMovies:
+   * /api/rentedMovies:
    *  get:
    *    tags:
    *    - Rented Movies
@@ -29,7 +32,7 @@ router
   .get("/", requireUser, controller.getCurrentUserRentedMoviesHandler)
   /**
    * @openapi
-   * /rentedMovies/{email}:
+   * /api/rentedMovies/{email}:
    *  get:
    *    tags:
    *    - Rented Movies
@@ -55,10 +58,15 @@ router
    *      404:
    *        description: Not Found - User does not exist
    */
-  .get("/:email", requireUser, requireAdmin, controller.getRentedMoviesByEmailHandler)
+  .get(
+    "/:email",
+    requireUser,
+    requireAdmin,
+    controller.getRentedMoviesByEmailHandler
+  )
   /**
    * @openapi
-   * /rentedMovies/id/{id}:
+   * /api/rentedMovies/id/{id}:
    *  get:
    *    tags:
    *    - Rented Movies
@@ -86,10 +94,15 @@ router
    *      404:
    *        description: Not Found - Movie does not exist
    */
-  .get("/id/:id", requireUser, requireAdmin, controller.getRentedMovieByIdHandler)
+  .get(
+    "/id/:id",
+    requireUser,
+    requireAdmin,
+    controller.getRentedMovieByIdHandler
+  )
   /**
    * @openapi
-   * /rentedMovies/{name}:
+   * /api/rentedMovies/{name}:
    *  post:
    *    tags:
    *    - Rented Movies
@@ -115,10 +128,15 @@ router
    *      409:
    *        description: Conflict - Movie is out of stock
    */
-  .post("/:name", requireUser, validate(getMovieSchema), controller.addRentedMovieHandler)
+  .post(
+    "/:name",
+    requireUser,
+    validate(getMovieSchema),
+    controller.addRentedMovieHandler
+  )
   /**
    * @openapi
-   * /rentedMovies/id/{id}:
+   * /api/rentedMovies/id/{id}:
    *  put:
    *    tags:
    *    - Rented Movies
@@ -153,10 +171,15 @@ router
    *      422:
    *        description: Unprocessable Entity - Invalid request body
    */
-  .put("/id/:id", requireUser, validate(updateRentedMovieTimeSchema), controller.updateRentedMovieTimeHandler)
+  .put(
+    "/id/:id",
+    requireUser,
+    validate(updateRentedMovieTimeSchema),
+    controller.updateRentedMovieTimeHandler
+  )
   /**
    * @openapi
-   * /rentedMovies/id/{id}:
+   * /api/rentedMovies/id/{id}:
    *  delete:
    *    tags:
    *    - Rented Movies
@@ -180,6 +203,11 @@ router
    *      404:
    *        description: Not Found - Rented movie does not exist
    */
-  .delete("/id/:id", requireUser, validate(removeRentedMovieSchema), controller.removeRentedMovieHandler);
+  .delete(
+    "/id/:id",
+    requireUser,
+    validate(removeRentedMovieSchema),
+    controller.removeRentedMovieHandler
+  );
 
 export default router;

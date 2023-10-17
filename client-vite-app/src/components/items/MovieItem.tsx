@@ -1,25 +1,25 @@
-import {
-  MovieType,
-  rentMovie,
-  useMovieContext,
-} from "../contexts/MovieContext";
-import { useRentedMovieContext } from "../contexts/RentedMoviesContext";
+import { MovieType } from "../contexts/MovieContext";
+import useMovieContext from "../hooks/useMovieContext";
+import useRentedMovieContext from "../hooks/useRentedMovieContext";
 import checkImg from "../icons/check.png";
 import crossImg from "../icons/cross.png";
+import { rentMovie } from "../utils/moviesFunctions";
 
 type MovieItemProps = {
   movie: MovieType;
 };
 
 export const MovieItem = ({ movie }: MovieItemProps) => {
-  const { setMovies } = useMovieContext();
-  const { setRentedMovies } = useRentedMovieContext();
+  const { refreshMovies } = useMovieContext();
+  const { refreshRentedMovies } = useRentedMovieContext();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      await rentMovie(movie.name, setMovies, setRentedMovies);
+      await rentMovie(movie.name);
+      refreshMovies();
+      refreshRentedMovies();
     } catch (error: any) {
       alert(error.message);
     }
@@ -29,6 +29,7 @@ export const MovieItem = ({ movie }: MovieItemProps) => {
     <form
       className="grid grid-rows-5 grid-cols-1 sm:grid sm:grid-cols-[repeat(3,2fr)_1fr_100px] sm:grid-rows-1 sm:rounded-full bg-neutral-300 mb-5"
       onSubmit={handleSubmit}
+      aria-label="movie-item"
       key={movie.id}
     >
       <span className="text-center sm:text-left m-5">

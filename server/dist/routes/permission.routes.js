@@ -6,7 +6,7 @@ const router = express.Router();
 router
     /**
      * @openapi
-     * /perm/{email}:
+     * /api/perm/{email}:
      *  put:
      *    tags:
      *    - Permissions

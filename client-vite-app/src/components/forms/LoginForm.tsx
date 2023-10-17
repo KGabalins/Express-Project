@@ -1,9 +1,7 @@
 import { useState } from "react";
-import {
-  LoginFormAttributes,
-  loginUser,
-  useUserContext,
-} from "../contexts/UserContext";
+import useUserContext from "../hooks/useUserContext";
+import { LoginFormAttributes } from "../contexts/UserContext";
+import { loginUser } from "../utils/userFunctions";
 
 export const LoginForm = () => {
   const { setCurrentUser } = useUserContext();

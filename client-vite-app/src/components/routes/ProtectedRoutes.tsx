@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import { checkUserStatus, useUserContext } from "../contexts/UserContext";
+import useUserContext from "../hooks/useUserContext";
+import { checkUserStatus } from "../utils/userFunctions";
 
 export const ProtectedRoutes = () => {
   const { currentUser, setCurrentUser } = useUserContext();

@@ -2,7 +2,12 @@ import express from "express";
 import * as controller from "../controllers/movie.controller.js";
 import { requireUser } from "../middleware/requireUser.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
-import { createMovieSchema, deleteMovieSchema, getMovieSchema, updateMovieSchema } from "../schema/movie.schema.js"
+import {
+  createMovieSchema,
+  deleteMovieSchema,
+  getMovieSchema,
+  updateMovieSchema,
+} from "../schema/movie.schema.js";
 import validate from "../middleware/validateResource.js";
 
 const router = express.Router();
@@ -10,7 +15,7 @@ const router = express.Router();
 router
   /**
    * @openapi
-   * /movies:
+   * /api/movies:
    *  get:
    *    tags:
    *    - Movies
@@ -28,7 +33,7 @@ router
   .get("/", requireUser, controller.getAllMoviesHandler)
   /**
    * @openapi
-   * /movies/{name}:
+   * /api/movies/{name}:
    *  get:
    *    tags:
    *    - Movies
@@ -52,10 +57,15 @@ router
    *      404:
    *        description: Not Found - Movie does not exist
    */
-  .get("/:name", requireUser, validate(getMovieSchema), controller.getMovieByNameHandler)
+  .get(
+    "/:name",
+    requireUser,
+    validate(getMovieSchema),
+    controller.getMovieByNameHandler
+  )
   /**
    * @openapi
-   * /movies:
+   * /api/movies:
    *  post:
    *    tags:
    *    - Movies
@@ -83,10 +93,16 @@ router
    *      422:
    *        description: Unprocessable Entity - Invalid request body
    */
-  .post("/", requireUser, requireAdmin, validate(createMovieSchema), controller.createMovieHandler)
+  .post(
+    "/",
+    requireUser,
+    requireAdmin,
+    validate(createMovieSchema),
+    controller.createMovieHandler
+  )
   /**
    * @openapi
-   * /movies/{name}:
+   * /api/movies/{name}:
    *  put:
    *    tags:
    *    - Movies
@@ -117,10 +133,16 @@ router
    *      422:
    *        description: Unprocessable Entity - Invalid request body
    */
-  .put("/:name", requireUser, requireAdmin, validate(updateMovieSchema), controller.updateMovieHandler)
+  .put(
+    "/:name",
+    requireUser,
+    requireAdmin,
+    validate(updateMovieSchema),
+    controller.updateMovieHandler
+  )
   /**
    * @openapi
-   * /movies/{name}:
+   * /api/movies/{name}:
    *  delete:
    *    tags:
    *    - Movies
@@ -142,6 +164,12 @@ router
    *      404:
    *        description: Not Found - Movie does not exist
    */
-  .delete("/:name", requireUser, requireAdmin, validate(deleteMovieSchema), controller.deleteMovieHandler);
+  .delete(
+    "/:name",
+    requireUser,
+    requireAdmin,
+    validate(deleteMovieSchema),
+    controller.deleteMovieHandler
+  );
 
 export default router;
