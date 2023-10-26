@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { MovieList } from "./MovieList";
-import { MovieContext, MovieType } from "../contexts/MovieContext";
+import { MovieList } from "../MovieList";
+import { MovieContext, MovieType } from "../../contexts/MovieContext";
 
 // vitest.mock("../contexts/MovieContext.tsx", async () => {
 //   const actual = await vitest.importActual("../contexts/MovieContext.tsx")
@@ -49,5 +49,8 @@ describe("Movie list", () => {
     expect(priceElement).toBeInTheDocument();
     const stockElement = screen.getByText("Stock");
     expect(stockElement).toBeInTheDocument();
+
+    const movieItems = screen.getAllByRole("form");
+    expect(movieItems.length).toBe(mockMovies.length);
   });
 });

@@ -1,8 +1,23 @@
-import useMovieContext from "../hooks/useMovieContext";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { MovieItem } from "../items/MovieItem";
+import {
+  fetchMovies,
+  selectAllMovies,
+  selectMoviesError,
+} from "../../features/moviesSlice";
 
 export const MovieList = () => {
-  const { movies } = useMovieContext();
+  const dispatch = useAppDispatch();
+
+  const movies = useAppSelector(selectAllMovies);
+  const error = useAppSelector(selectMoviesError);
+
+  if (error) console.log(error);
+
+  useEffect(() => {
+    dispatch(fetchMovies());
+  }, [dispatch]);
 
   return (
     <div>

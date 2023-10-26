@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { MovieItem } from "./MovieItem";
-import { MovieType } from "../contexts/MovieContext";
+import { MovieItem } from "../MovieItem";
+import { MovieType } from "../../contexts/MovieContext";
 import user from "@testing-library/user-event";
-import * as utils from "../utils/moviesFunctions";
+import * as utils from "../../utils/moviesFunctions";
 
 const mockMovie: MovieType = {
   id: 12345,
@@ -15,7 +15,7 @@ const mockMovie: MovieType = {
 vitest.mock("../utils/moviesFunctions.tsx");
 
 describe("Movie item", () => {
-  test("should render correctly", () => {
+  test("renders correctly", () => {
     render(<MovieItem movie={mockMovie} />);
 
     const form = screen.queryByRole("form");
@@ -39,7 +39,7 @@ describe("Movie item", () => {
     expect(rentButton).toBeInTheDocument();
   });
 
-  test("rent button works correctly", async () => {
+  test("rent button calls function correctly", async () => {
     render(<MovieItem movie={mockMovie} />);
 
     const spy = vitest.spyOn(utils, "rentMovie");
