@@ -1,9 +1,10 @@
 import { Link, Outlet } from "react-router-dom";
-import useUserContext from "../hooks/useUserContext";
-import { logoutUser } from "../utils/userFunctions";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { logoutUser, selectCurrentUser } from "../../features/usersSlice";
 
 export const NavigationBar = () => {
-  const { currentUser, setCurrentUser } = useUserContext();
+  const currentUser = useAppSelector(selectCurrentUser);
+  const dispatch = useAppDispatch();
 
   return (
     <>
@@ -42,7 +43,7 @@ export const NavigationBar = () => {
         )}
         <li className="float-right">
           <Link
-            onClick={() => logoutUser(setCurrentUser)}
+            onClick={() => dispatch(logoutUser())}
             to="/login"
             className=" text-center px-6 py-4 block"
           >

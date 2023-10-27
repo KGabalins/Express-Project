@@ -1,40 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MovieType } from "../contexts/MovieContext";
-import useMovieContext from "../hooks/useMovieContext";
-import { deleteMovie, editMovie } from "../utils/moviesFunctions";
+import {
+  deleteMovie,
+  editMovie,
+  selectMoviesError,
+  selectMoviesStatus,
+} from "../../features/moviesSlice";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { selectAllMovies } from "../../features/moviesSlice";
 
 export const EditMovieForm = () => {
-  const { movies, refreshMovies } = useMovieContext();
   const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const dispatch = useAppDispatch();
+  const movies = useAppSelector(selectAllMovies);
+  const status = useAppSelector(selectMoviesStatus);
+  const error = useAppSelector(selectMoviesError);
 
   const handleDelete = async () => {
     if (selectedMovie) {
-      try {
-        await deleteMovie(selectedMovie?.name);
-        refreshMovies();
-        setSelectedMovie(null);
-        setErrorMessage("");
-        setSuccessMessage("Movie deleted successfully!");
-      } catch (error: any) {
-        setSuccessMessage("");
-        setErrorMessage(error.message);
-      }
+      dispatch(deleteMovie(selectedMovie.name));
     }
   };
 
   const handleEdit = async () => {
     if (selectedMovie) {
-      try {
-        await editMovie(selectedMovie.name, selectedMovie);
-        refreshMovies();
-        setErrorMessage("");
-        setSuccessMessage("Movie updated successfully!");
-      } catch (error: any) {
-        setSuccessMessage("");
-        setErrorMessage(error.message);
-      }
+      dispatch(editMovie(selectedMovie));
     }
   };
 
@@ -50,14 +41,16 @@ export const EditMovieForm = () => {
     }
   };
 
+  useEffect(() => {
+    if (status === "succeeded" && !error) setSelectedMovie(null);
+  }, [status, error]);
+
   return (
     <form className="flex flex-col gap-2">
       <select
         value={selectedMovie?.name || ""}
         onChange={(e) =>
           setSelectedMovie(() => {
-            setSuccessMessage("");
-            setErrorMessage("");
             if (e.target.value === "") {
               return null;
             } else {
@@ -75,15 +68,7 @@ export const EditMovieForm = () => {
           );
         })}
       </select>
-      <label htmlFor="movieName">
-        Name{" "}
-        {successMessage && (
-          <span className="successText">{` - ${successMessage}`}</span>
-        )}{" "}
-        {errorMessage && (
-          <span className="errorText">{` - ${errorMessage}`}</span>
-        )}
-      </label>
+      <label htmlFor="movieName">Name{error}</label>
       <input
         type="text"
         id="movieName"
@@ -129,6 +114,7 @@ export const EditMovieForm = () => {
           className="bg-zinc-700 text-white"
           type="button"
           onClick={handleEdit}
+          disabled={!selectedMovie}
         >
           Edit
         </button>
@@ -136,6 +122,7 @@ export const EditMovieForm = () => {
           className="bg-red-700 text-white"
           type="button"
           onClick={handleDelete}
+          disabled={!selectedMovie}
         >
           Delete
         </button>

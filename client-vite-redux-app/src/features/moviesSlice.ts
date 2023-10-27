@@ -47,6 +47,24 @@ export const addMovie = createAsyncThunk(
   }
 );
 
+export const editMovie = createAsyncThunk(
+  "movies/editMovie",
+  async (movieData: MovieType) => {
+    await axios.put(`/api/movies/${movieData.name}`, movieData);
+    const response = await axios.get("/api/movies");
+    return response.data;
+  }
+);
+
+export const deleteMovie = createAsyncThunk(
+  "movies/deleteMovie",
+  async (name: string) => {
+    await axios.delete(`/api/movies/${name}`);
+    const response = await axios.get("/api/movies");
+    return response.data;
+  }
+);
+
 export const moviesSlice = createSlice({
   name: "movies",
   initialState,
@@ -85,6 +103,28 @@ export const moviesSlice = createSlice({
       })
       .addCase(addMovie.rejected, (state) => {
         state.error = "Movie with this name already exists!";
+      })
+      .addCase(editMovie.fulfilled, (state, action) => {
+        state.movies = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(editMovie.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(editMovie.rejected, (state) => {
+        state.error = "Invalid movie data!";
+      })
+      .addCase(deleteMovie.fulfilled, (state, action) => {
+        state.movies = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(deleteMovie.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteMovie.rejected, (state) => {
+        state.error = "Movie doesn't exist!";
       });
   },
 });

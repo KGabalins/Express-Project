@@ -1,18 +1,17 @@
 import { useEffect } from "react";
-import { Outlet, Navigate } from "react-router-dom";
-import useUserContext from "../hooks/useUserContext";
-import { checkUserStatus } from "../utils/userFunctions";
+import { Outlet } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
+import { useNavigate } from "react-router-dom";
+import { selectCurrentUserStatus } from "../../features/usersSlice";
 
 export const ProtectedRoutes = () => {
-  const { currentUser, setCurrentUser } = useUserContext();
+  const currentUserStatus = useAppSelector(selectCurrentUserStatus);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      checkUserStatus(currentUser, setCurrentUser);
-    }, 60000);
+    if (currentUserStatus === "failed") navigate("/login");
+  }, [currentUserStatus, navigate]);
 
-    return () => clearInterval(intervalId);
-  });
-
-  return currentUser ? <Outlet /> : <Navigate to="/login" />;
+  return <Outlet />;
 };

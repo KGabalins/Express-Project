@@ -1,8 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
-import useUserContext from "../hooks/useUserContext";
+import { useAppSelector } from "../../app/hooks";
+import { selectCurrentUser } from "../../features/usersSlice";
 
 export const AdminRoutes = () => {
-  const { currentUser } = useUserContext();
+  const currentUser = useAppSelector(selectCurrentUser);
 
   return currentUser?.role === "admin" ? <Outlet /> : <Navigate to="/" />;
 };

@@ -1,12 +1,16 @@
-import React, { useState } from "react";
-import { RegisterFormAttributes } from "../contexts/UserContext";
-import { registerUser } from "../utils/userFunctions";
+import React, { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import {
+  RegisterUserData,
+  registerUser,
+  selectRegisterStatus,
+} from "../../features/usersSlice";
 
 export const RegisterForm = () => {
   const [success, setSuccess] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [registerFormAttributes, setRegisterFormAttributes] =
-    useState<RegisterFormAttributes>({
+    useState<RegisterUserData>({
       name: "",
       surname: "",
       email: "",
@@ -15,17 +19,17 @@ export const RegisterForm = () => {
       confirmPassword: "",
     });
 
+  const dispatch = useAppDispatch();
+  const status = useAppSelector(selectRegisterStatus);
+
+  useEffect(() => {
+    if (status === "failed") setErrorMessage("Not valid data");
+  }, [status]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      await registerUser(registerFormAttributes);
-      clearForm();
-      setSuccess("User registered successfully!");
-      setErrorMessage("");
-    } catch (error: any) {
-      setErrorMessage(error.message);
-    }
+    dispatch(registerUser(registerFormAttributes));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

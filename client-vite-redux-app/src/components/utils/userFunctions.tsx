@@ -9,7 +9,7 @@ const checkUserStatus = (
   currentUser: UserType | null,
   setCurrentUser: React.Dispatch<React.SetStateAction<UserType | null>>
 ) => {
-  axios.get(`users/isLoggedIn`).then((response) => {
+  axios.get(`api/users/isLoggedIn`).then((response) => {
     if (!response.data.isLoggedIn && currentUser) {
       setCurrentUser(null);
     }

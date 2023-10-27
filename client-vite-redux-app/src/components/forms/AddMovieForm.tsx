@@ -21,8 +21,6 @@ export const AddMovieForm = () => {
       price: "",
       stock: "",
     });
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const dispatch = useAppDispatch();
   const error = useAppSelector(selectMoviesError);
@@ -30,7 +28,7 @@ export const AddMovieForm = () => {
 
   useEffect(() => {
     if (status === "succeeded" && !error) clearForm();
-  }, [status]);
+  }, [status, error]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,7 +43,7 @@ export const AddMovieForm = () => {
   };
 
   const canSubmit = () => {
-    return !(
+    return (
       Boolean(addMovieFormAttributes.genre) &&
       Boolean(addMovieFormAttributes.name) &&
       Boolean(addMovieFormAttributes.price) &&
@@ -73,12 +71,6 @@ export const AddMovieForm = () => {
       <label htmlFor="movieName" className="font-bold">
         Name
         {error}
-        {/* {successMessage && (
-          <span className="text-green-700 font-normal">{` - ${successMessage}`}</span>
-        )}
-        {errorMessage && (
-          <span className="text-red-700 font-normal">{` - ${errorMessage}`}</span>
-        )} */}
       </label>
       <input
         type="text"
@@ -131,7 +123,7 @@ export const AddMovieForm = () => {
       />
       <button
         className="bg-zinc-700 text-white rounded-l h-10"
-        disabled={canSubmit()}
+        disabled={!canSubmit()}
       >
         Submit
       </button>

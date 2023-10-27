@@ -2,10 +2,12 @@ import Popup from "../html/Popup";
 import { UpdateEmailForm } from "../forms/UpdateEmailForm";
 import { UpdatePasswordForm } from "../forms/UpdatePasswordForm";
 import defaultImg from "../icons/default.png";
-import useUserContext from "../hooks/useUserContext";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { fetchUser, selectCurrentUser } from "../../features/usersSlice";
 
 export const ProfilePage = () => {
-  const { currentUser, refreshUsers } = useUserContext();
+  const currentUser = useAppSelector(selectCurrentUser);
+  const dispatch = useAppDispatch();
 
   return (
     <div className="page">
@@ -31,22 +33,23 @@ export const ProfilePage = () => {
               Role: <span>{currentUser?.role}</span>
             </span>
           </div>
-          <Popup
+          {/* <Popup
             id="updatePassword"
             title="Update password"
             btnText="Update password"
           >
             <UpdatePasswordForm />
-          </Popup>
+          </Popup> */}
 
-          <Popup
+          {/* <Popup
             id="updateEmail"
             title="Update email"
             btnText="Update email"
-            closingFunction={() => refreshUsers()}
           >
             <UpdateEmailForm />
-          </Popup>
+          </Popup> */}
+          <UpdatePasswordForm />
+          <UpdateEmailForm />
         </div>
       </div>
     </div>

@@ -1,28 +1,32 @@
 import { useState } from "react";
-import useUserContext from "../hooks/useUserContext";
-import { LoginFormAttributes } from "../contexts/UserContext";
-import { loginUser } from "../utils/userFunctions";
+import { useAppDispatch } from "../../app/hooks";
+import { LoginUserData, loginUser } from "../../features/usersSlice";
 
 export const LoginForm = () => {
-  const { setCurrentUser } = useUserContext();
   const [errorMessage, setErrorMessage] = useState("");
-  const [loginFormAttributes, setLoginFormAttributes] =
-    useState<LoginFormAttributes>({ email: "", password: "" });
+  const [loginFormAttributes, setLoginFormAttributes] = useState<LoginUserData>(
+    { email: "", password: "" }
+  );
+
+  const dispatch = useAppDispatch();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      await loginUser(loginFormAttributes, setCurrentUser);
-    } catch (error: any) {
-      setErrorMessage(error.message);
-    }
+    dispatch(loginUser(loginFormAttributes));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginFormAttributes((prevState) => {
       return { ...prevState, [e.target.name]: e.target.value };
     });
+  };
+
+  const canSubmit = () => {
+    return (
+      Boolean(loginFormAttributes.email) &&
+      Boolean(loginFormAttributes.password)
+    );
   };
 
   return (
@@ -59,7 +63,8 @@ export const LoginForm = () => {
         />
         <button
           type="submit"
-          className="text-white bg-zinc-700 font-bold self-center px-10 py-1 text-xl rounded-3xl"
+          className="text-white bg-zinc-700 font-bold self-center px-10 py-1 text-xl rounded-3xl disabled:opacity-80"
+          disabled={!canSubmit()}
         >
           Sign in
         </button>
