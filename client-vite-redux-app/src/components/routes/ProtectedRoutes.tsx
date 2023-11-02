@@ -1,11 +1,10 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { useNavigate } from "react-router-dom";
-import { selectCurrentUserStatus } from "../../features/usersSlice";
+import { selectUserStatus } from "../../features/usersSlice";
 
 export const ProtectedRoutes = () => {
-  const currentUserStatus = useAppSelector(selectCurrentUserStatus);
+  const currentUserStatus = useAppSelector(selectUserStatus);
 
   const navigate = useNavigate();
 

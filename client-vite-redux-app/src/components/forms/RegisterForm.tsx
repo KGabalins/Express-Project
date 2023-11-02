@@ -4,6 +4,7 @@ import {
   RegisterUserData,
   registerUser,
   selectRegisterStatus,
+  selectUserError,
 } from "../../features/usersSlice";
 
 export const RegisterForm = () => {
@@ -20,11 +21,6 @@ export const RegisterForm = () => {
     });
 
   const dispatch = useAppDispatch();
-  const status = useAppSelector(selectRegisterStatus);
-
-  useEffect(() => {
-    if (status === "failed") setErrorMessage("Not valid data");
-  }, [status]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,6 +43,10 @@ export const RegisterForm = () => {
       password: "",
       confirmPassword: "",
     });
+  };
+
+  const canSubmit = () => {
+    return Object.values(registerFormAttributes).every(Boolean);
   };
 
   return (
@@ -126,6 +126,7 @@ export const RegisterForm = () => {
         <button
           type="submit"
           className="text-white bg-zinc-700 font-bold self-center px-10 py-1 text-xl rounded-3xl"
+          disabled={!canSubmit()}
         >
           Sign up
         </button>

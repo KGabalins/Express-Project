@@ -3,7 +3,6 @@ import { useAppDispatch } from "../../app/hooks";
 import { LoginUserData, loginUser } from "../../features/usersSlice";
 
 export const LoginForm = () => {
-  const [errorMessage, setErrorMessage] = useState("");
   const [loginFormAttributes, setLoginFormAttributes] = useState<LoginUserData>(
     { email: "", password: "" }
   );
@@ -23,10 +22,7 @@ export const LoginForm = () => {
   };
 
   const canSubmit = () => {
-    return (
-      Boolean(loginFormAttributes.email) &&
-      Boolean(loginFormAttributes.password)
-    );
+    return Object.values(loginFormAttributes).every(Boolean);
   };
 
   return (
@@ -36,12 +32,7 @@ export const LoginForm = () => {
         aria-label="login-form"
         onSubmit={handleSubmit}
       >
-        <label id="emailInput">
-          Email
-          {errorMessage && (
-            <span className="text-red-700 font-normal">{` - ${errorMessage}`}</span>
-          )}
-        </label>
+        <label id="emailInput">Email</label>
         <input
           type="email"
           id="emailInput"

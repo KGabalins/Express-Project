@@ -43,12 +43,7 @@ export const AddMovieForm = () => {
   };
 
   const canSubmit = () => {
-    return (
-      Boolean(addMovieFormAttributes.genre) &&
-      Boolean(addMovieFormAttributes.name) &&
-      Boolean(addMovieFormAttributes.price) &&
-      Boolean(addMovieFormAttributes.stock)
-    );
+    return Object.values(addMovieFormAttributes).every(Boolean);
   };
 
   const clearForm = () => {
@@ -70,7 +65,12 @@ export const AddMovieForm = () => {
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <label htmlFor="movieName" className="font-bold">
         Name
-        {error}
+        {/* {success && (
+          <span className="text-green-700 font-normal">{` - ${success}`}</span>
+        )} */}
+        {error && (
+          <span className="text-red-700 font-normal">{` - ${error.message}`}</span>
+        )}
       </label>
       <input
         type="text"

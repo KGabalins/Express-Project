@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../app/store";
 import axios from "axios";
 
@@ -37,34 +37,16 @@ export type UpdatePasswordData = {
 
 type StatusType = "idle" | "loading" | "succeeded" | "failed";
 
-type Statuses = {
-  login: StatusType;
-  register: StatusType;
-  currentUser: StatusType;
-  updateEmail: StatusType;
-  updatePassword: StatusType;
-  logout: StatusType;
-};
-
-type UserState = {
+type InitialState = {
   user: UserType | null;
-  status: Statuses;
-  error: null | string;
+  status: StatusType;
+  error: string;
 };
 
-const idleStatuses: Statuses = {
-  currentUser: "idle",
-  login: "idle",
-  register: "idle",
-  updateEmail: "idle",
-  updatePassword: "idle",
-  logout: "idle",
-};
-
-const initialState: UserState = {
+const initialState: InitialState = {
   user: null,
-  status: idleStatuses,
-  error: null,
+  status: "idle",
+  error: "",
 };
 
 export const fetchUser = createAsyncThunk("users/fetchUser", async () => {
@@ -72,35 +54,80 @@ export const fetchUser = createAsyncThunk("users/fetchUser", async () => {
   return response.data;
 });
 
-export const loginUser = createAsyncThunk(
-  "users/loginUser",
-  async (loginData: LoginUserData) => {
+export const loginUser = createAsyncThunk<
+  UserType,
+  LoginUserData,
+  { rejectValue: string }
+>("users/loginUser", async (loginData: LoginUserData, { rejectWithValue }) => {
+  try {
     await axios.post("/api/users/login", loginData);
     const response = await axios.get("/api/users");
     return response.data;
+  } catch (error: any) {
+    if (Array.isArray(error.response.data)) {
+      return rejectWithValue(error.response.data[0].message);
+    } else {
+      return rejectWithValue(error.response.data.message);
+    }
   }
-);
+});
 
-export const registerUser = createAsyncThunk(
+export const registerUser = createAsyncThunk<
+  void,
+  RegisterUserData,
+  { rejectValue: string }
+>(
   "users/registerUser",
-  async (registerData: RegisterUserData) => {
-    await axios.post("/api/users", registerData);
+  async (registerData: RegisterUserData, { rejectWithValue }) => {
+    try {
+      await axios.post("/api/users", registerData);
+    } catch (error: any) {
+      if (Array.isArray(error.response.data)) {
+        return rejectWithValue(error.response.data[0].message);
+      } else {
+        return rejectWithValue(error.response.data.message);
+      }
+    }
   }
 );
 
-export const updateEmail = createAsyncThunk(
+export const updateEmail = createAsyncThunk<
+  UserType,
+  UpdateEmailData,
+  { rejectValue: string }
+>(
   "users/updateEmail",
-  async (updateEmailData: UpdateEmailData) => {
-    await axios.put("/api/users/changeEmail", updateEmailData);
-    const response = await axios.get("/api/users");
-    return response.data;
+  async (updateEmailData: UpdateEmailData, { rejectWithValue }) => {
+    try {
+      await axios.put("/api/users/changeEmail", updateEmailData);
+      const response = await axios.get("/api/users");
+      return response.data;
+    } catch (error: any) {
+      if (Array.isArray(error.response.data)) {
+        return rejectWithValue(error.response.data[0].message);
+      } else {
+        return rejectWithValue(error.response.data.message);
+      }
+    }
   }
 );
 
-export const updatePassword = createAsyncThunk(
+export const updatePassword = createAsyncThunk<
+  void,
+  UpdatePasswordData,
+  { rejectValue: string }
+>(
   "users/updatePassword",
-  async (updatePasswordData: UpdatePasswordData) => {
-    await axios.put("/api/users/changePassword", updatePasswordData);
+  async (updatePasswordData: UpdatePasswordData, { rejectWithValue }) => {
+    try {
+      await axios.put("/api/users/changePassword", updatePasswordData);
+    } catch (error: any) {
+      if (Array.isArray(error.response.data)) {
+        return rejectWithValue(error.response.data[0].message);
+      } else {
+        return rejectWithValue(error.response.data.message);
+      }
+    }
   }
 );
 
@@ -112,108 +139,96 @@ const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    resetStatuses(state) {
-      state.status = {
-        currentUser: "succeeded",
-        login: "idle",
-        register: "idle",
-        updateEmail: "idle",
-        updatePassword: "idle",
-        logout: "idle",
-      };
+    clearError: (state) => {
+      state.error = "";
+    },
+    clearAllErrors: (state) => {
+      state.error = "";
+    },
+    createErrorMessage: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
     },
   },
   extraReducers(builder) {
     builder
       .addCase(fetchUser.pending, (state) => {
-        state.status.currentUser = "loading";
-        state.error = null;
+        state.status = "loading";
       })
-      .addCase(fetchUser.fulfilled, (state, action) => {
-        state.status.currentUser = "succeeded";
-        state.user = action.payload;
-      })
-      .addCase(fetchUser.rejected, (state, action) => {
-        state.status.currentUser = "failed";
-        if (action.error.message) state.error = action.error.message;
+      .addCase(
+        fetchUser.fulfilled,
+        (state, action: PayloadAction<UserType>) => {
+          state.status = "succeeded";
+          state.user = action.payload;
+        }
+      )
+      .addCase(fetchUser.rejected, (state) => {
+        state.status = "failed";
+        state.error = "User is not logged in!";
       })
       .addCase(loginUser.pending, (state) => {
-        state.status.login = "loading";
-        state.error = null;
+        state.status = "loading";
+        state.error = "";
       })
-      .addCase(loginUser.fulfilled, (state) => {
-        state.status.login = "succeeded";
-        state.status.currentUser = "idle";
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.status.login = "failed";
-        if (action.error.message) state.error = action.error.message;
+        state.status = "failed";
+        state.error = action.payload || "Something went wrong!";
       })
       .addCase(registerUser.pending, (state) => {
-        state.status.register = "loading";
-        state.error = null;
+        state.status = "loading";
+        state.error = "";
       })
       .addCase(registerUser.fulfilled, (state) => {
-        state.status.register = "succeeded";
+        state.status = "succeeded";
       })
       .addCase(registerUser.rejected, (state, action) => {
-        state.status.register = "failed";
-        if (action.error.message) state.error = action.error.message;
+        state.status = "failed";
+        state.error = action.payload || "Something went wrong!";
       })
       .addCase(updateEmail.pending, (state) => {
-        state.status.updateEmail = "loading";
-        state.error = null;
+        state.status = "loading";
+        state.error = "";
       })
       .addCase(updateEmail.fulfilled, (state, action) => {
-        state.status.updateEmail = "succeeded";
+        state.status = "succeeded";
         state.user = action.payload;
       })
       .addCase(updateEmail.rejected, (state, action) => {
-        state.status.updateEmail = "failed";
-        if (action.error.message) state.error = action.error.message;
+        state.status = "failed";
+        state.error = action.payload || "Something went wrong!";
       })
       .addCase(updatePassword.pending, (state) => {
-        state.status.updatePassword = "loading";
-        state.error = null;
+        state.status = "loading";
+        state.error = "";
       })
       .addCase(updatePassword.fulfilled, (state) => {
-        state.status.updatePassword = "succeeded";
+        state.status = "succeeded";
       })
       .addCase(updatePassword.rejected, (state, action) => {
-        state.status.updatePassword = "failed";
-        // if (action.error.message) state.error = action.error.message;
-        state.error = action;
+        state.status = "failed";
+        state.error = action.payload || "Something went wrong!";
       })
       .addCase(logoutUser.pending, (state) => {
-        state.status.logout = "loading";
-        state.error = null;
+        state.status = "loading";
+        state.error = "";
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
-        state.status = idleStatuses;
+        state.status = "idle";
       })
       .addCase(logoutUser.rejected, (state, action) => {
-        state.status.logout = "failed";
+        state.status = "failed";
         if (action.error.message) state.error = action.error.message;
       });
   },
 });
 
 export const selectCurrentUser = (state: RootState) => state.users.user;
-export const selectAllUserStatuses = (state: RootState) => state.users.status;
-export const selectCurrentUserStatus = (state: RootState) =>
-  state.users.status.currentUser;
-export const selectLoginStatus = (state: RootState) => state.users.status.login;
-export const selectRegisterStatus = (state: RootState) =>
-  state.users.status.register;
-export const selectLogoutStatus = (state: RootState) =>
-  state.users.status.logout;
-export const selectUpdateEmailStatus = (state: RootState) =>
-  state.users.status.updateEmail;
-export const selectUpdatePasswordStatus = (state: RootState) =>
-  state.users.status.updatePassword;
+export const selectUserStatus = (state: RootState) => state.users.status;
 export const selectUserError = (state: RootState) => state.users.error;
 
-export const { resetStatuses } = usersSlice.actions;
-
 export default usersSlice.reducer;
+export const userActions = usersSlice.actions;

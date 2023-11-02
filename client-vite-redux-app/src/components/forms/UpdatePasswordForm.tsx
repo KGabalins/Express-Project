@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   UpdatePasswordData,
-  resetStatuses,
-  selectUpdatePasswordStatus,
   selectUserError,
   updatePassword,
 } from "../../features/usersSlice";
@@ -20,30 +18,6 @@ export const UpdatePasswordForm = () => {
   const [isActive, setIsActive] = useState(false);
 
   const dispatch = useAppDispatch();
-  const status = useAppSelector(selectUpdatePasswordStatus);
-  const error = useAppSelector(selectUserError);
-
-  console.log(error);
-
-  // useEffect(() => {
-  //   // if (status === "succeeded") {
-  //   //   setSuccessMessage("Password updated successfully!");
-  //   //   setErrorMessage("");
-  //   //   clearForm();
-  //   // } else if (status === "failed") {
-  //   //   setSuccessMessage("");
-  //   //   const errorCode = error?.substr(-3);
-  //   //   console.log(errorCode);
-  //   //   if (errorCode === "422")
-  //   //     setErrorMessage("Incorrectly filled input fields!");
-  //   //   else if (errorCode === "403") {
-  //   //     setErrorMessage("Incorect old password!");
-  //   //   }
-  //   // } else {
-  //   //   setErrorMessage("");
-  //   //   setSuccessMessage("");
-  //   // }
-  // }, [status, error]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,8 +41,6 @@ export const UpdatePasswordForm = () => {
     allButtons.forEach((button) => {
       button.disabled = !button.disabled;
     });
-
-    dispatch(resetStatuses());
   };
 
   const handelChange = (e: React.ChangeEvent<HTMLInputElement>) => {

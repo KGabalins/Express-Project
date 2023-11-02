@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import {
-  UpdateEmailData,
-  resetStatuses,
-  selectUpdateEmailStatus,
-  selectUserError,
-  updateEmail,
-} from "../../features/usersSlice";
+import { UpdateEmailData, updateEmail } from "../../features/usersSlice";
 
 export const UpdateEmailForm = () => {
   const [updateEmailForm, setUpdateEmailForm] = useState<UpdateEmailData>({
@@ -19,26 +13,6 @@ export const UpdateEmailForm = () => {
   const [isActive, setIsActive] = useState(false);
 
   const dispatch = useAppDispatch();
-  const status = useAppSelector(selectUpdateEmailStatus);
-  const error = useAppSelector(selectUserError);
-
-  useEffect(() => {
-    if (status === "succeeded") {
-      setSuccessMessage("Email updated successfully!");
-      setErrorMessage("");
-      clearForm();
-    } else if (status === "failed") {
-      setSuccessMessage("");
-      const errorCode = error?.substr(-3);
-      if (errorCode === "422")
-        setErrorMessage("Incorrectly filled input fields!");
-      else if (errorCode === "409")
-        setErrorMessage("This email is already taken!");
-    } else {
-      setErrorMessage("");
-      setSuccessMessage("");
-    }
-  }, [status, error]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,8 +38,6 @@ export const UpdateEmailForm = () => {
     allButtons.forEach((button) => {
       button.disabled = !button.disabled;
     });
-
-    dispatch(resetStatuses());
   };
 
   return (
